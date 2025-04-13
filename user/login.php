@@ -34,13 +34,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($baptism_name) || empty($password)) {
         $error = "Both baptism name and password are required.";
     } else {
-        // Check if user exists
-        $stmt = $conn->prepare("SELECT id, baptism_name, password, unique_id, role FROM users WHERE baptism_name = ?");
+        // Check if user exists - there may be multiple users with the same baptism name
+        $stmt = $conn->prepare("SELECT id, baptism_name, password, unique_id, role, last_ip, user_agent FROM users WHERE baptism_name = ?");
         $stmt->bind_param("s", $baptism_name);
         $stmt->execute();
         $result = $stmt->get_result();
         
-        if ($result->num_rows === 1) {
+        $users_count = $result->num_rows;
+        
+        if ($users_count === 0) {
+            $error = "Baptism name not found.";
+        } elseif ($users_count === 1) {
+            // Single user with this baptism name
             $user = $result->fetch_assoc();
             
             // Verify password
@@ -55,7 +60,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $error = "Invalid password.";
             }
         } else {
-            $error = "Baptism name not found.";
+            // Multiple users with the same baptism name
+            // Check if at least one user has the correct password
+            $valid_users = [];
+            $result->data_seek(0); // Reset result pointer
+            
+            while ($user = $result->fetch_assoc()) {
+                if (password_verify($password, $user['password'])) {
+                    $valid_users[] = $user;
+                }
+            }
+            
+            if (count($valid_users) > 0) {
+                // Store valid users in session and redirect to account selection page
+                $_SESSION['valid_users'] = $valid_users;
+                $_SESSION['redirect_url'] = $redirect;
+                $_SESSION['account_select_password'] = $password;
+                
+                header("Location: account_select.php");
+                exit;
+            } else {
+                $error = "Invalid password.";
+            }
         }
         $stmt->close();
     }

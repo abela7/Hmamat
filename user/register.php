@@ -24,47 +24,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = trim($_POST['password']);
     $confirm_password = trim($_POST['confirm_password']);
     
-    // Generate unique identifier
-    $unique_id = generate_unique_id();
-    
     // Validate input
     if (empty($baptism_name) || empty($password) || empty($confirm_password)) {
         $error = "All fields are required.";
     } elseif ($password !== $confirm_password) {
         $error = "Passwords do not match.";
     } else {
-        // Check if baptism name already exists
-        $stmt = $conn->prepare("SELECT id FROM users WHERE baptism_name = ?");
-        $stmt->bind_param("s", $baptism_name);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        // Create new user - baptism names can be duplicated
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         
-        if ($result->num_rows > 0) {
-            $error = "Baptism name already exists. Please choose another one or login.";
+        // Get client info for tracking
+        $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+        $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
+        
+        // Set role to 'user' for regular user registration
+        $role = 'user';
+        
+        // Generate unique identifier - this will differentiate users with same baptism name
+        $unique_id = generate_unique_id();
+        
+        // Insert user with unique identifier and role
+        $stmt = $conn->prepare("INSERT INTO users (baptism_name, role, password, unique_id, last_ip, user_agent, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())");
+        $stmt->bind_param("ssssss", $baptism_name, $role, $hashed_password, $unique_id, $ip_address, $user_agent);
+        
+        if ($stmt->execute()) {
+            // Auto-login the user and redirect to dashboard
+            $user_id = $stmt->insert_id;
+            createUserSession($user_id, $baptism_name, $unique_id, $role);
+            header("Location: dashboard.php");
+            exit;
         } else {
-            // Create new user
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            
-            // Get client info for tracking
-            $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
-            $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
-            
-            // Set role to 'user' for regular user registration
-            $role = 'user';
-            
-            // Insert user with unique identifier and role
-            $stmt = $conn->prepare("INSERT INTO users (baptism_name, role, password, unique_id, last_ip, user_agent, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())");
-            $stmt->bind_param("ssssss", $baptism_name, $role, $hashed_password, $unique_id, $ip_address, $user_agent);
-            
-            if ($stmt->execute()) {
-                // Auto-login the user and redirect to dashboard
-                $user_id = $stmt->insert_id;
-                createUserSession($user_id, $baptism_name, $unique_id, $role);
-                header("Location: dashboard.php");
-                exit;
-            } else {
-                $error = "Registration failed. Please try again.";
-            }
+            $error = "Registration failed. Please try again.";
         }
         $stmt->close();
     }
