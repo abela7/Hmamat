@@ -15,6 +15,53 @@ $baptism_name = $_SESSION['baptism_name'];
 $current_date = date('Y-m-d');
 $day_of_week = date('N'); // 1-7 (Monday-Sunday)
 
+// Calculate Easter date and remaining time
+function getEasterDate($year = null) {
+    if ($year === null) {
+        $year = date('Y');
+    }
+    
+    $a = $year % 19;
+    $b = floor($year / 100);
+    $c = $year % 100;
+    $d = floor($b / 4);
+    $e = $b % 4;
+    $f = floor(($b + 8) / 25);
+    $g = floor(($b - $f + 1) / 3);
+    $h = (19 * $a + $b - $d - $g + 15) % 30;
+    $i = floor($c / 4);
+    $k = $c % 4;
+    $l = (32 + 2 * $e + 2 * $i - $h - $k) % 7;
+    $m = floor(($a + 11 * $h + 22 * $l) / 451);
+    $month = floor(($h + $l - 7 * $m + 114) / 31);
+    $day = (($h + $l - 7 * $m + 114) % 31) + 1;
+    
+    return mktime(0, 0, 0, $month, $day, $year);
+}
+
+// Calculate Easter Sunday and time remaining
+$easter = getEasterDate();
+$easter_date = date('Y-m-d', $easter);
+$current_timestamp = time();
+$remaining_seconds = $easter - $current_timestamp;
+
+// Calculate full days and remaining hours
+$remaining_days = floor($remaining_seconds / 86400);
+$remaining_hours = floor(($remaining_seconds % 86400) / 3600);
+
+// Calculate progress percentage (assuming Holy Week is 7 days)
+$holy_week_start = $easter - (7 * 86400);
+$total_holy_week_seconds = 7 * 86400;
+$elapsed_seconds = $current_timestamp - $holy_week_start;
+$progress_percentage = 0;
+
+if ($current_timestamp >= $holy_week_start) {
+    $progress_percentage = min(100, round(($elapsed_seconds / $total_holy_week_seconds) * 100));
+}
+
+// Has Easter already passed this year?
+$easter_passed = $current_timestamp > $easter;
+
 // Get daily message
 $daily_message = "";
 $stmt = $conn->prepare("SELECT message_text FROM daily_messages WHERE day_of_week = ? OR day_of_week IS NULL ORDER BY day_of_week DESC LIMIT 1");
@@ -169,6 +216,54 @@ $stmt->close();
                 <p class="mb-0"><?php echo htmlspecialchars($daily_message); ?></p>
             </div>
             <?php endif; ?>
+            
+            <!-- Easter Countdown -->
+            <div class="card mb-4">
+                <h3 class="card-title">
+                    <?php if ($easter_passed): ?>
+                        Easter Sunday has passed
+                    <?php else: ?>
+                        Countdown to Easter Sunday
+                    <?php endif; ?>
+                </h3>
+                <div class="p-3">
+                    <?php if (!$easter_passed): ?>
+                        <div class="easter-countdown">
+                            <div class="countdown-info mb-2">
+                                <div class="countdown-date">
+                                    <strong>Easter Date:</strong> <?php echo date('F j, Y', $easter); ?>
+                                </div>
+                                <div class="countdown-remaining">
+                                    <strong>Remaining:</strong> 
+                                    <?php if ($remaining_days > 0): ?>
+                                        <?php echo $remaining_days; ?> day<?php echo $remaining_days != 1 ? 's' : ''; ?> 
+                                    <?php endif; ?>
+                                    <?php echo $remaining_hours; ?> hour<?php echo $remaining_hours != 1 ? 's' : ''; ?>
+                                </div>
+                            </div>
+                            <div class="progress" style="height: 25px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: <?php echo $progress_percentage; ?>%;" 
+                                     aria-valuenow="<?php echo $progress_percentage; ?>" aria-valuemin="0" aria-valuemax="100">
+                                    <?php echo $progress_percentage; ?>%
+                                </div>
+                            </div>
+                            <div class="text-center mt-2">
+                                <small class="text-muted">Holy Week Progress</small>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <div class="text-center py-2">
+                            <p>Christ is Risen! Easter Sunday was on <?php echo date('F j, Y', $easter); ?></p>
+                            <div class="progress" style="height: 25px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 100%;" 
+                                     aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                                    Completed 100%
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
 
             <!-- Progress Tracker -->
             <div class="card mb-4">
