@@ -71,9 +71,6 @@ $stmt->close();
     <header class="header">
         <div class="container">
             <div class="logo"><?php echo APP_NAME; ?></div>
-            <div class="menu-toggle">
-                <i class="fas fa-bars"></i>
-            </div>
             <nav class="nav">
                 <a href="dashboard.php" class="nav-link">Dashboard</a>
                 <a href="leaderboard.php" class="nav-link active">Leaderboard</a>
@@ -135,9 +132,5 @@ $stmt->close();
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Responsive Menu -->
-    <script src="js/responsive.js"></script>
 </body>
 </html> 
