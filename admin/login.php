@@ -91,8 +91,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                 </form>
                 
-                <div class="mt-3 text-center">
-                    <a href="../" class="text-decoration-none">Back to User Interface</a>
+                <div class="text-center mt-3">
+                    <p>Need an admin account? <a href="register.php">Register</a></p>
+                    <p><a href="../" class="text-decoration-none">Back to User Interface</a></p>
                 </div>
             </div>
         </div>
