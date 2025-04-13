@@ -2,6 +2,7 @@
 // Include necessary files
 require_once '../includes/config.php';
 require_once '../includes/db.php';
+require_once '../includes/auth_check.php';
 
 // If already logged in, redirect to dashboard
 if (isset($_SESSION['user_id'])) {
@@ -13,6 +14,7 @@ if (isset($_SESSION['user_id'])) {
 $baptism_name = "";
 $password = "";
 $confirm_password = "";
+$email = ""; // Optional email for identification
 $error = "";
 $success = "";
 
@@ -22,6 +24,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $baptism_name = trim($_POST['baptism_name']);
     $password = trim($_POST['password']);
     $confirm_password = trim($_POST['confirm_password']);
+    $email = isset($_POST['email']) ? trim($_POST['email']) : ""; // Optional email
+    
+    // Generate unique identifier
+    $unique_id = generate_unique_id();
     
     // Validate input
     if (empty($baptism_name) || empty($password) || empty($confirm_password)) {
@@ -40,24 +46,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             // Create new user
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $conn->prepare("INSERT INTO users (baptism_name, password) VALUES (?, ?)");
-            $stmt->bind_param("ss", $baptism_name, $hashed_password);
+            
+            // Get client info for tracking
+            $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+            $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
+            
+            // Insert user with unique identifier
+            $stmt = $conn->prepare("INSERT INTO users (baptism_name, password, unique_id, email, last_ip, user_agent, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())");
+            $stmt->bind_param("ssssss", $baptism_name, $hashed_password, $unique_id, $email, $ip_address, $user_agent);
             
             if ($stmt->execute()) {
                 $success = "Registration successful! You can now login.";
                 
                 // Optionally auto-login the user
-                // $user_id = $stmt->insert_id;
-                // require_once '../includes/auth_check.php';
-                // createUserSession($user_id, $baptism_name);
-                // header("Location: dashboard.php");
-                // exit;
+                $user_id = $stmt->insert_id;
+                require_once '../includes/auth_check.php';
+                createUserSession($user_id, $baptism_name, $unique_id);
+                header("Location: dashboard.php");
+                exit;
             } else {
                 $error = "Registration failed. Please try again.";
             }
         }
         $stmt->close();
     }
+}
+
+/**
+ * Generate a unique identifier for the user
+ * @return string A unique identifier
+ */
+function generate_unique_id() {
+    // Combine multiple factors for uniqueness
+    $base = $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT'] . time() . rand(1000, 9999);
+    return md5($base);
 }
 ?>
 <!DOCTYPE html>
@@ -92,6 +114,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <div class="form-group mb-3">
                                 <label for="baptism_name" class="form-label">Baptism Name</label>
                                 <input type="text" class="form-control" id="baptism_name" name="baptism_name" value="<?php echo htmlspecialchars($baptism_name); ?>" required>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="email" class="form-label">Email (Optional - helps identify your account)</label>
+                                <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>">
+                                <small class="text-muted">We won't share your email with anyone. This is only to help identify your account if needed.</small>
                             </div>
                             
                             <div class="form-group mb-3">
