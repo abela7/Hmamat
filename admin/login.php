@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error = "Both username and password are required.";
     } else {
         // Check if admin exists
-        $stmt = $conn->prepare("SELECT id, username, password FROM admins WHERE username = ?");
+        $stmt = $conn->prepare("SELECT id, username, password, role FROM admins WHERE username = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Verify password
             if (password_verify($password, $admin['password'])) {
                 // Create admin session
-                createAdminSession($admin['id'], $admin['username']);
+                createAdminSession($admin['id'], $admin['username'], $admin['role']);
                 
                 // Redirect to dashboard or specified page
                 header("Location: " . $redirect);

@@ -19,6 +19,14 @@ function isAdminLoggedIn() {
 }
 
 /**
+ * Check if the logged-in user has the admin role
+ * @return bool True if user has admin role, false otherwise
+ */
+function hasAdminRole() {
+    return (isset($_SESSION['role']) && $_SESSION['role'] === 'admin');
+}
+
+/**
  * Redirect user to login page if not authenticated
  * @param string $redirect URL to redirect to after login
  */
@@ -40,6 +48,12 @@ function requireAdminLogin($redirect = '') {
         header("Location: " . ADMIN_URL . "/login.php" . $redirect_url);
         exit;
     }
+    
+    // Check admin role
+    if (!hasAdminRole()) {
+        header("Location: " . USER_URL . "/dashboard.php");
+        exit;
+    }
 }
 
 /**
@@ -47,14 +61,16 @@ function requireAdminLogin($redirect = '') {
  * @param int $user_id User ID
  * @param string $baptism_name User's baptism name
  * @param string $unique_id User's unique identifier
+ * @param string $role User's role
  * @return void
  */
-function createUserSession($user_id, $baptism_name, $unique_id = '') {
+function createUserSession($user_id, $baptism_name, $unique_id = '', $role = 'user') {
     $session_token = bin2hex(random_bytes(32));
     $_SESSION['user_id'] = $user_id;
     $_SESSION['baptism_name'] = $baptism_name;
     $_SESSION['unique_id'] = $unique_id;
     $_SESSION['is_user'] = true;
+    $_SESSION['role'] = $role;
     
     // Store session in database
     require_once 'db.php';
@@ -96,7 +112,7 @@ function identifyReturningUser() {
     
     if ($unique_id) {
         // Try to find user by unique ID
-        $stmt = $conn->prepare("SELECT id, baptism_name, unique_id FROM users WHERE unique_id = ?");
+        $stmt = $conn->prepare("SELECT id, baptism_name, unique_id, role FROM users WHERE unique_id = ?");
         $stmt->bind_param("s", $unique_id);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -108,7 +124,7 @@ function identifyReturningUser() {
     }
     
     // Try to find user by IP and user agent as fallback
-    $stmt = $conn->prepare("SELECT id, baptism_name, unique_id FROM users WHERE last_ip = ? AND user_agent = ? LIMIT 1");
+    $stmt = $conn->prepare("SELECT id, baptism_name, unique_id, role FROM users WHERE last_ip = ? AND user_agent = ? LIMIT 1");
     $stmt->bind_param("ss", $ip, $device_info);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -124,12 +140,14 @@ function identifyReturningUser() {
  * Create admin session
  * @param int $admin_id Admin ID
  * @param string $username Admin username
+ * @param string $role Admin's role
  * @return void
  */
-function createAdminSession($admin_id, $username) {
+function createAdminSession($admin_id, $username, $role = 'admin') {
     $_SESSION['admin_id'] = $admin_id;
     $_SESSION['admin_username'] = $username;
     $_SESSION['is_admin'] = true;
+    $_SESSION['role'] = $role;
     
     // Update admin's last login
     require_once 'db.php';
@@ -166,6 +184,7 @@ function endUserSession() {
     unset($_SESSION['baptism_name']);
     unset($_SESSION['unique_id']);
     unset($_SESSION['is_user']);
+    unset($_SESSION['role']);
     
     // Remove the unique ID cookie
     setcookie('user_unique_id', '', time() - 3600, '/');
@@ -179,5 +198,6 @@ function endAdminSession() {
     unset($_SESSION['admin_id']);
     unset($_SESSION['admin_username']);
     unset($_SESSION['is_admin']);
+    unset($_SESSION['role']);
 }
 ?> 

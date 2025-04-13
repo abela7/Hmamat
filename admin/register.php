@@ -48,14 +48,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Get client info for tracking
             $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
             
-            // Insert admin
-            $stmt = $conn->prepare("INSERT INTO admins (username, password, last_ip, created_at) VALUES (?, ?, ?, NOW())");
-            $stmt->bind_param("sss", $username, $hashed_password, $ip_address);
+            // Set role to 'admin' for admin registration
+            $role = 'admin';
+            
+            // Insert admin with role
+            $stmt = $conn->prepare("INSERT INTO admins (username, role, password, last_ip, created_at) VALUES (?, ?, ?, ?, NOW())");
+            $stmt->bind_param("ssss", $username, $role, $hashed_password, $ip_address);
             
             if ($stmt->execute()) {
                 // Auto-login the admin and redirect to dashboard
                 $admin_id = $stmt->insert_id;
-                createAdminSession($admin_id, $username);
+                createAdminSession($admin_id, $username, $role);
                 header("Location: index.php");
                 exit;
             } else {

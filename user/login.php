@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error = "Both baptism name and password are required.";
     } else {
         // Check if user exists
-        $stmt = $conn->prepare("SELECT id, baptism_name, password, unique_id FROM users WHERE baptism_name = ?");
+        $stmt = $conn->prepare("SELECT id, baptism_name, password, unique_id, role FROM users WHERE baptism_name = ?");
         $stmt->bind_param("s", $baptism_name);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Verify password
             if (password_verify($password, $user['password'])) {
                 // Create user session
-                createUserSession($user['id'], $user['baptism_name'], $user['unique_id']);
+                createUserSession($user['id'], $user['baptism_name'], $user['unique_id'], $user['role']);
                 
                 // Redirect to dashboard or specified page
                 header("Location: " . $redirect);

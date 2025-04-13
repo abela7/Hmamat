@@ -49,14 +49,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
             $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
             
-            // Insert user with unique identifier
-            $stmt = $conn->prepare("INSERT INTO users (baptism_name, password, unique_id, last_ip, user_agent, created_at) VALUES (?, ?, ?, ?, ?, NOW())");
-            $stmt->bind_param("sssss", $baptism_name, $hashed_password, $unique_id, $ip_address, $user_agent);
+            // Set role to 'user' for regular user registration
+            $role = 'user';
+            
+            // Insert user with unique identifier and role
+            $stmt = $conn->prepare("INSERT INTO users (baptism_name, role, password, unique_id, last_ip, user_agent, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())");
+            $stmt->bind_param("ssssss", $baptism_name, $role, $hashed_password, $unique_id, $ip_address, $user_agent);
             
             if ($stmt->execute()) {
                 // Auto-login the user and redirect to dashboard
                 $user_id = $stmt->insert_id;
-                createUserSession($user_id, $baptism_name, $unique_id);
+                createUserSession($user_id, $baptism_name, $unique_id, $role);
                 header("Location: dashboard.php");
                 exit;
             } else {
