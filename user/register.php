@@ -56,11 +56,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bind_param("ssssss", $baptism_name, $hashed_password, $unique_id, $email, $ip_address, $user_agent);
             
             if ($stmt->execute()) {
-                $success = "Registration successful! You can now login.";
-                
-                // Optionally auto-login the user
+                // Auto-login the user and redirect to dashboard
                 $user_id = $stmt->insert_id;
-                require_once '../includes/auth_check.php';
                 createUserSession($user_id, $baptism_name, $unique_id);
                 header("Location: dashboard.php");
                 exit;
