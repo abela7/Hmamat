@@ -83,6 +83,14 @@ a:hover {
     color: var(--primary-color);
 }
 
+/* Mobile menu toggle */
+.menu-toggle {
+    display: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
 /* Navigation */
 .nav {
     display: flex;
@@ -401,11 +409,35 @@ a:hover {
 /* Media Queries */
 @media (max-width: 768px) {
     .header .container {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
     }
     
     .logo {
-        margin-bottom: 1rem;
+        margin-bottom: 0;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+    
+    .nav {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        margin-top: 1rem;
+        text-align: center;
+        gap: 0;
+    }
+
+    .nav.active {
+        display: flex;
+    }
+
+    .nav-link {
+        padding: 0.75rem 0;
+        border-top: 1px solid var(--bg-color);
+        display: block;
     }
     
     .progress-tracker {
