@@ -58,6 +58,8 @@ function createUserSession($user_id, $baptism_name, $unique_id = '') {
     
     // Store session in database
     require_once 'db.php';
+    global $conn;
+    
     $device_info = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
     $ip = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
     
@@ -86,6 +88,7 @@ function createUserSession($user_id, $baptism_name, $unique_id = '') {
  */
 function identifyReturningUser() {
     require_once 'db.php';
+    global $conn;
     
     $unique_id = isset($_COOKIE['user_unique_id']) ? $_COOKIE['user_unique_id'] : null;
     $ip = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
@@ -130,6 +133,8 @@ function createAdminSession($admin_id, $username) {
     
     // Update admin's last login
     require_once 'db.php';
+    global $conn;
+    
     $ip = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
     
     $stmt = $conn->prepare("UPDATE admins SET last_login = NOW(), last_ip = ? WHERE id = ?");
@@ -145,6 +150,8 @@ function createAdminSession($admin_id, $username) {
 function endUserSession() {
     if (isset($_SESSION['user_id'])) {
         require_once 'db.php';
+        global $conn;
+        
         $user_id = $_SESSION['user_id'];
         
         // Remove session from database
