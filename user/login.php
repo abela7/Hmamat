@@ -226,7 +226,7 @@ include_once '../includes/user_header.php';
                             </div>
                             
                             <div class="d-grid">
-                                <button type="submit" name="check_baptism_name" class="btn btn-block"><?php echo $language === 'am' ? 'ቀጥል' : 'Continue'; ?></button>
+                                <button type="submit" name="check_baptism_name" class="btn btn-block"><?php echo $language === 'am' ? 'ቀጥል' : 'ቀጥል'; ?></button>
                             </div>
                         </form>
                     <?php else: ?>
