@@ -1,6 +1,10 @@
 <?php
+require_once '../includes/config.php';
 require_once '../includes/db.php';
 require_once '../includes/auth_check.php';
+
+// Set page title
+$page_title = "Select Account";
 
 // Initialize variables
 $baptism_name = '';
@@ -77,60 +81,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $stmt->close();
 }
-?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Account - Hmamat</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
-</head>
-<body>
-    <div class="container">
-        <div class="auth-container">
-            <h1>Select Your Account</h1>
-            <p>Multiple accounts found with the baptism name: <strong><?php echo htmlspecialchars($baptism_name); ?></strong></p>
-            
-            <?php if ($error): ?>
-                <div class="alert alert-danger"><?php echo $error; ?></div>
-            <?php endif; ?>
-            
-            <div class="account-list">
-                <?php foreach ($users as $user): ?>
-                    <div class="account-item">
-                        <form method="POST" action="account_select.php">
-                            <input type="hidden" name="baptism_name" value="<?php echo htmlspecialchars($baptism_name); ?>">
-                            <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                            <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect); ?>">
-                            
-                            <div class="account-info">
-                                <p><strong>Baptism Name:</strong> <?php echo htmlspecialchars($user['baptism_name']); ?></p>
-                                <p><strong>Last Login:</strong> <?php echo !empty($user['last_login']) ? $user['last_login'] : 'Never'; ?></p>
-                                <p><strong>Last Device:</strong> <?php echo getDeviceInfo($user['user_agent']); ?></p>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="password_<?php echo $user['id']; ?>">Password:</label>
-                                <input type="password" id="password_<?php echo $user['id']; ?>" name="password" required>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary">Log In</button>
-                        </form>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-            
-            <p><a href="login.php">Back to Login</a></p>
-        </div>
-    </div>
-    
-    <script src="../assets/js/script.js"></script>
-</body>
-</html>
+// Include header (without user check)
+include_once '../includes/user_header.php';
 
-<?php
 // Helper function to get simplified device info
 function getDeviceInfo($userAgent) {
     if (empty($userAgent) || $userAgent === 'Unknown') {
@@ -177,4 +131,53 @@ function getDeviceInfo($userAgent) {
     
     return $device;
 }
+?>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Select Your Account</h2>
+    </div>
+    <div class="card-body">
+        <p>Multiple accounts found with the baptism name: <strong><?php echo htmlspecialchars($baptism_name); ?></strong></p>
+        
+        <?php if ($error): ?>
+            <div class="alert alert-danger"><?php echo $error; ?></div>
+        <?php endif; ?>
+        
+        <div class="account-list mt-4">
+            <?php foreach ($users as $user): ?>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <form method="POST" action="account_select.php">
+                            <input type="hidden" name="baptism_name" value="<?php echo htmlspecialchars($baptism_name); ?>">
+                            <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                            <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect); ?>">
+                            
+                            <div class="mb-3">
+                                <p><strong>Baptism Name:</strong> <?php echo htmlspecialchars($user['baptism_name']); ?></p>
+                                <p><strong>Last Login:</strong> <?php echo !empty($user['last_login']) ? $user['last_login'] : 'Never'; ?></p>
+                                <p><strong>Last Device:</strong> <?php echo getDeviceInfo($user['user_agent']); ?></p>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="password_<?php echo $user['id']; ?>" class="form-label">Password:</label>
+                                <input type="password" class="form-control" id="password_<?php echo $user['id']; ?>" name="password" required>
+                            </div>
+                            
+                            <button type="submit" class="btn">Log In</button>
+                        </form>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        
+        <div class="text-center mt-3">
+            <a href="login.php" class="btn btn-outline">Back to Login</a>
+        </div>
+    </div>
+</div>
+
+<?php
+// Include footer
+include_once '../includes/user_footer.php';
 ?> 

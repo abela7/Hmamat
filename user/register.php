@@ -4,6 +4,9 @@ require_once '../includes/config.php';
 require_once '../includes/db.php';
 require_once '../includes/auth_check.php';
 
+// Set page title
+$page_title = "Register";
+
 // If already logged in, redirect to dashboard
 if (isset($_SESSION['user_id'])) {
     header("Location: dashboard.php");
@@ -69,66 +72,55 @@ function generate_unique_id() {
     $base = $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT'] . time() . rand(1000, 9999);
     return md5($base);
 }
+
+// Include header
+include_once '../includes/user_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - <?php echo APP_NAME; ?></title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-    <div class="container">
-        <div class="row justify-content-center mt-5">
-            <div class="col-md-6 col-lg-5">
-                <div class="card">
-                    <div class="card-body">
-                        <h1 class="text-center mb-4"><?php echo APP_NAME; ?></h1>
-                        <h2 class="card-title text-center">Register</h2>
-                        
-                        <?php if (!empty($error)): ?>
-                            <div class="alert alert-danger"><?php echo $error; ?></div>
-                        <?php endif; ?>
-                        
-                        <?php if (!empty($success)): ?>
-                            <div class="alert alert-success"><?php echo $success; ?></div>
-                        <?php endif; ?>
-                        
-                        <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-                            <div class="form-group mb-3">
-                                <label for="baptism_name" class="form-label">Baptism Name</label>
-                                <input type="text" class="form-control" id="baptism_name" name="baptism_name" value="<?php echo htmlspecialchars($baptism_name); ?>" required>
-                            </div>
-                            
-                            <div class="form-group mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="password" name="password" required>
-                            </div>
-                            
-                            <div class="form-group mb-4">
-                                <label for="confirm_password" class="form-label">Confirm Password</label>
-                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                            </div>
-                            
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-block">Register</button>
-                            </div>
-                        </form>
-                        
-                        <p class="text-center mt-3">
-                            Already have an account? <a href="login.php">Login</a>
-                        </p>
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center">Register</h2>
+                
+                <?php if (!empty($error)): ?>
+                    <div class="alert alert-danger"><?php echo $error; ?></div>
+                <?php endif; ?>
+                
+                <?php if (!empty($success)): ?>
+                    <div class="alert alert-success"><?php echo $success; ?></div>
+                <?php endif; ?>
+                
+                <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                    <div class="form-group mb-3">
+                        <label for="baptism_name" class="form-label">Baptism Name</label>
+                        <input type="text" class="form-control" id="baptism_name" name="baptism_name" value="<?php echo htmlspecialchars($baptism_name); ?>" required>
                     </div>
-                </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    
+                    <div class="form-group mb-4">
+                        <label for="confirm_password" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-block">Register</button>
+                    </div>
+                </form>
+                
+                <p class="text-center mt-3">
+                    Already have an account? <a href="login.php">Login</a>
+                </p>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html> 
+<?php
+// Include footer
+include_once '../includes/user_footer.php';
+?> 
