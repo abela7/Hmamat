@@ -264,4 +264,16 @@ include_once '../includes/user_header.php';
 <?php
 // Include footer
 include_once '../includes/user_footer.php';
-?> 
+?>
+
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('shown.bs.collapse', function () {
+            // Scroll the form into view smoothly when it's shown
+            loginForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+    }
+});
+</script> 
