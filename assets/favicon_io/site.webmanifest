@@ -1,5 +1,5 @@
 {
-    "name": "Hmamat",
+    "name": "Hmamat - Holy Week Companion",
     "short_name": "Hmamat",
     "icons": [
         {
@@ -11,9 +11,21 @@
             "src": "/assets/favicon_io/android-chrome-512x512.png",
             "sizes": "512x512",
             "type": "image/png"
+        },
+        {
+            "src": "/assets/favicon_io/apple-touch-icon.png",
+            "sizes": "180x180",
+            "type": "image/png",
+            "purpose": "any maskable"
         }
     ],
     "theme_color": "#301934",
     "background_color": "#F1ECE2",
-    "display": "standalone"
+    "display": "standalone",
+    "start_url": "/index.php",
+    "scope": "/",
+    "description": "Holy Week activity tracker application. Track your annual Holy Week activities and engage with the community.",
+    "orientation": "portrait",
+    "dir": "ltr",
+    "lang": "en"
 }

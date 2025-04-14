@@ -33,152 +33,130 @@ if ($user_logged_in) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($page_title) ? $page_title . ' - ' : ''; ?><?php echo APP_NAME; ?></title>
+    <title><?php echo isset($page_title) ? $page_title . ' - ' : ''; ?>Hmamat - Holy Week Companion</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="<?php echo $language == 'am' ? 'የሐሙስ ሰሞን እንቅስቃሴዎችን የሚከታተል መተግበሪያ። አመታዊ የሐሙስ ሰሞን እንቅስቃሴዎችን ይመዝግቡ እና በማህበረሰቡ ይሳተፉ።' : 'Holy Week activity tracker application. Track your annual Holy Week activities and engage with the community.'; ?>">
+    <meta name="keywords" content="Holy Week, ሐሙስ ሰሞን, Ethiopian Orthodox, Fasting, Prayer, Spiritual Activities, Tracker">
+    <meta name="author" content="St. Raphael Church">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://hmamat.abunetediros.org/">
+    <meta property="og:title" content="<?php echo $language == 'am' ? 'ሐሙስ ሰሞን - የሐሙስ ሰሞን ተሳትፎ መተግበሪያ' : 'Hmamat - Holy Week Companion'; ?>">
+    <meta property="og:description" content="<?php echo $language == 'am' ? 'የሐሙስ ሰሞን እንቅስቃሴዎችን የሚከታተል መተግበሪያ። አመታዊ የሐሙስ ሰሞን እንቅስቃሴዎችን ይመዝግቡ እና በማህበረሰቡ ይሳተፉ።' : 'Holy Week activity tracker application. Track your annual Holy Week activities and engage with the community.'; ?>">
+    <meta property="og:image" content="https://hmamat.abunetediros.org/assets/img/logo.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://hmamat.abunetediros.org/">
+    <meta property="twitter:title" content="<?php echo $language == 'am' ? 'ሐሙስ ሰሞን - የሐሙስ ሰሞን ተሳትፎ መተግበሪያ' : 'Hmamat - Holy Week Companion'; ?>">
+    <meta property="twitter:description" content="<?php echo $language == 'am' ? 'የሐሙስ ሰሞን እንቅስቃሴዎችን የሚከታተል መተግበሪያ። አመታዊ የሐሙስ ሰሞን እንቅስቃሴዎችን ይመዝግቡ እና በማህበረሰቡ ይሳተፉ።' : 'Holy Week activity tracker application. Track your annual Holy Week activities and engage with the community.'; ?>">
+    <meta property="twitter:image" content="https://hmamat.abunetediros.org/assets/img/logo.png">
     
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon_io/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon_io/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon_io/favicon-16x16.png">
-    <link rel="manifest" href="../assets/favicon_io/site.webmanifest">
-    <link rel="shortcut icon" href="../assets/favicon_io/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="/assets/favicon_io/site.webmanifest">
+    <meta name="theme-color" content="#301934">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="../user/css/style.css">
-    <!-- Mobile specific meta -->
-    <meta name="theme-color" content="#DAA520">
-    <!-- jQuery (load before Bootstrap) -->
+    <link rel="stylesheet" href="/user/css/style.css">
+    
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body class="user-body">
-    <!-- Off-canvas Sidebar -->
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasSidebarLabel">
-                <i class="fas fa-cross me-2"></i> <?php echo APP_NAME; ?>
-            </h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <?php if ($user_logged_in): ?>
-            <div class="user-info">
-                <div class="user-name"><?php echo htmlspecialchars($baptism_name); ?></div>
-                <small class="text-muted">Welcome back!</small>
+<body>
+    <div class="container-fluid px-0">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <a class="navbar-brand" href="/index.php">
+                    <img src="/assets/img/logo.png" alt="Hmamat Logo" height="40"> Hmamat
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">
+                            <?php echo $language == 'am' ? 'ምናሌ' : 'Menu'; ?>
+                        </h5>
+                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                            <?php if ($user_logged_in): ?>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/user/dashboard.php">
+                                        <i class="fas fa-tachometer-alt me-1"></i>
+                                        <?php echo $language == 'am' ? 'ዳሽቦርድ' : 'Dashboard'; ?>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/user/leaderboard.php">
+                                        <i class="fas fa-trophy me-1"></i>
+                                        <?php echo $language == 'am' ? 'የደረጃ ሰንጠረዥ' : 'Leaderboard'; ?>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/user/settings.php">
+                                        <i class="fas fa-cog me-1"></i>
+                                        <?php echo $language == 'am' ? 'ቅንብሮች' : 'Settings'; ?>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/user/logout.php">
+                                        <i class="fas fa-sign-out-alt me-1"></i>
+                                        <?php echo $language == 'am' ? 'ውጣ' : 'Logout'; ?>
+                                    </a>
+                                </li>
+                            <?php else: ?>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/user/login.php">
+                                        <i class="fas fa-sign-in-alt me-1"></i>
+                                        <?php echo $language == 'am' ? 'ግባ' : 'Login'; ?>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/user/register.php">
+                                        <i class="fas fa-user-plus me-1"></i>
+                                        <?php echo $language == 'am' ? 'ይመዝገቡ' : 'Register'; ?>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+                            
+                            <!-- Language selector -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-globe me-1"></i>
+                                    <?php echo $language == 'am' ? 'ቋንቋ' : 'Language'; ?>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                                    <li><a class="dropdown-item <?php echo $language == 'en' ? 'active' : ''; ?>" href="#" onclick="setLanguage('en')">English</a></li>
+                                    <li><a class="dropdown-item <?php echo $language == 'am' ? 'active' : ''; ?>" href="#" onclick="setLanguage('am')">አማርኛ</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <?php endif; ?>
-            
-            <ul class="mobile-menu">
-                <?php if ($user_logged_in): ?>
-                <li class="mobile-menu-item">
-                    <a href="../user/dashboard.php" class="mobile-menu-link <?php echo $current_page == 'dashboard.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-tachometer-alt menu-icon"></i> 
-                        <?php echo $language === 'am' ? 'ዳሽቦርድ' : 'Dashboard'; ?>
-                    </a>
-                </li>
-                <li class="mobile-menu-item">
-                    <a href="../user/leaderboard.php" class="mobile-menu-link <?php echo $current_page == 'leaderboard.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-trophy menu-icon"></i> 
-                        <?php echo $language === 'am' ? 'የአሸናፊዎች ሰሌዳ' : 'Leaderboard'; ?>
-                    </a>
-                </li>
-                <li class="mobile-menu-item">
-                    <a href="../user/settings.php" class="mobile-menu-link <?php echo $current_page == 'settings.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-cog menu-icon"></i> 
-                        <?php echo $language === 'am' ? 'ቅንብሮች' : 'Settings'; ?>
-                    </a>
-                </li>
-                <li class="mobile-menu-item">
-                    <a href="../user/logout.php" class="mobile-menu-link">
-                        <i class="fas fa-sign-out-alt menu-icon"></i> 
-                        <?php echo $language === 'am' ? 'ውጣ' : 'Logout'; ?>
-                    </a>
-                </li>
-                <?php else: ?>
-                <li class="mobile-menu-item">
-                    <a href="../user/login.php" class="mobile-menu-link <?php echo $current_page == 'login.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-sign-in-alt menu-icon"></i> 
-                        <?php echo $language === 'am' ? 'ግባ' : 'Login'; ?>
-                    </a>
-                </li>
-                <li class="mobile-menu-item">
-                    <a href="../user/register.php" class="mobile-menu-link <?php echo $current_page == 'register.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-user-plus menu-icon"></i> 
-                        <?php echo $language === 'am' ? 'ይመዝገቡ' : 'Register'; ?>
-                    </a>
-                </li>
-                <?php endif; ?>
-            </ul>
-            
-            <div class="offcanvas-footer mt-auto p-3 text-center">
-                <small>&copy; <?php echo date('Y'); ?> <?php echo APP_NAME; ?></small>
-            </div>
+        </nav>
+        
+        <script>
+            function setLanguage(lang) {
+                document.cookie = "user_language=" + lang + "; path=/; max-age=" + (60 * 60 * 24 * 30); // 30 days
+                location.reload();
+            }
+        </script>
+
+        <!-- Main Content Container -->
+        <div class="container main-content py-4">
         </div>
     </div>
-
-    <!-- Header with fixed Navbar -->
-    <header class="header">
-        <div class="container">
-            <div class="navbar-container">
-                <div class="logo"><?php echo APP_NAME; ?></div>
-                
-                <!-- Mobile Toggle Button - Always Visible -->
-                <button class="navbar-toggle d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
-                    <i class="fas fa-bars"></i>
-                </button>
-                
-                <!-- Desktop Navigation -->
-                <nav class="nav d-none d-md-flex">
-                    <?php if ($user_logged_in): ?>
-                    <a href="../user/dashboard.php" class="nav-link <?php echo $current_page == 'dashboard.php' ? 'active' : ''; ?>">
-                        <?php echo $language === 'am' ? 'ዳሽቦርድ' : 'Dashboard'; ?>
-                    </a>
-                    <a href="../user/leaderboard.php" class="nav-link <?php echo $current_page == 'leaderboard.php' ? 'active' : ''; ?>">
-                        <?php echo $language === 'am' ? 'የአሸናፊዎች ሰሌዳ' : 'Leaderboard'; ?>
-                    </a>
-                    <a href="../user/settings.php" class="nav-link <?php echo $current_page == 'settings.php' ? 'active' : ''; ?>">
-                        <?php echo $language === 'am' ? 'ቅንብሮች' : 'Settings'; ?>
-                    </a>
-                    <a href="../user/logout.php" class="nav-link">
-                        <?php echo $language === 'am' ? 'ውጣ' : 'Logout'; ?>
-                    </a>
-                    <?php else: ?>
-                    <a href="../user/login.php" class="nav-link <?php echo $current_page == 'login.php' ? 'active' : ''; ?>">
-                        <?php echo $language === 'am' ? 'ግባ' : 'Login'; ?>
-                    </a>
-                    <a href="../user/register.php" class="nav-link <?php echo $current_page == 'register.php' ? 'active' : ''; ?>">
-                        <?php echo $language === 'am' ? 'ይመዝገቡ' : 'Register'; ?>
-                    </a>
-                    <?php endif; ?>
-                </nav>
-            </div>
-        </div>
-    </header>
-
-    <main class="main">
-        <div class="container"> 
-        </div>
-    </main>
-
-<!-- Script for language switching -->
-<script>
-$(document).ready(function() {
-    // Function to set cookie
-    function setCookie(name, value, days) {
-        var expires = "";
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + (value || "") + expires + "; path=/";
-    }
-    
-    // We've removed the language toggles from the interface
-    // but keeping the cookie function for potential future use
-});
-</script>
 </body>
 </html> 
