@@ -259,21 +259,6 @@ $stmt->close();
 include_once '../includes/user_header.php';
 ?>
 
-<!-- Alert Messages -->
-<?php if (isset($_SESSION['success_message'])): ?>
-    <div class="alert alert-success">
-        <i class="fas fa-check-circle"></i> <?php echo $_SESSION['success_message']; ?>
-        <?php unset($_SESSION['success_message']); ?>
-    </div>
-<?php endif; ?>
-
-<?php if (isset($_SESSION['error_message'])): ?>
-    <div class="alert alert-danger">
-        <i class="fas fa-exclamation-circle"></i> <?php echo $_SESSION['error_message']; ?>
-        <?php unset($_SESSION['error_message']); ?>
-    </div>
-<?php endif; ?>
-
 <!-- Daily Message -->
 <?php if (!empty($daily_message)): ?>
 <div class="daily-message mb-4">
@@ -328,31 +313,31 @@ include_once '../includes/user_header.php';
                 
                 <div class="activity-actions">
                     <?php if (isset($completed_activities[$activity['id']]) && $completed_activities[$activity['id']] == 'done'): ?>
-                        <a href="#" class="status-badge completed">
-                            <i class="fas fa-check"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Complete'; ?>
-                        </a>
+                        <div class="status-badge completed">
+                            <i class="fas fa-check-circle"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Complete'; ?>
+                        </div>
                         <?php if (strtotime($selected_date) <= strtotime(date('Y-m-d'))): ?>
-                        <a href="process_activity.php?action=reset&activity_id=<?php echo $activity['id']; ?>&date=<?php echo $selected_date; ?>&redirect=dashboard.php" class="reset-btn">
+                        <button class="reset-btn" onclick="resetActivity(<?php echo $activity['id']; ?>, '<?php echo $selected_date; ?>')">
                             <i class="fas fa-undo"></i> <?php echo $language === 'am' ? 'ዳግም አስጀምር' : 'Reset'; ?>
-                        </a>
+                        </button>
                         <?php endif; ?>
                     <?php elseif (isset($completed_activities[$activity['id']]) && $completed_activities[$activity['id']] == 'missed'): ?>
-                        <a href="#" class="status-badge missed">
-                            <i class="fas fa-times"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Done'; ?>
-                        </a>
+                        <div class="status-badge missed">
+                            <i class="fas fa-times-circle"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Done'; ?>
+                        </div>
                         <?php if (strtotime($selected_date) <= strtotime(date('Y-m-d'))): ?>
-                        <a href="process_activity.php?action=reset&activity_id=<?php echo $activity['id']; ?>&date=<?php echo $selected_date; ?>&redirect=dashboard.php" class="reset-btn">
+                        <button class="reset-btn" onclick="resetActivity(<?php echo $activity['id']; ?>, '<?php echo $selected_date; ?>')">
                             <i class="fas fa-undo"></i> <?php echo $language === 'am' ? 'ዳግም አስጀምር' : 'Reset'; ?>
-                        </a>
+                        </button>
                         <?php endif; ?>
                     <?php else: ?>
                         <?php if (strtotime($selected_date) <= strtotime(date('Y-m-d'))): ?>
-                            <a href="process_activity.php?action=complete&activity_id=<?php echo $activity['id']; ?>&date=<?php echo $selected_date; ?>&redirect=dashboard.php" class="action-btn success">
+                            <button class="action-btn success" onclick="markComplete(<?php echo $activity['id']; ?>)">
                                 <i class="fas fa-check"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Complete'; ?>
-                            </a>
-                            <a href="reason_form.php?activity_id=<?php echo $activity['id']; ?>&date=<?php echo $selected_date; ?>&redirect=dashboard.php" class="action-btn secondary">
+                            </button>
+                            <button class="action-btn secondary" onclick="markMissed(<?php echo $activity['id']; ?>)">
                                 <i class="fas fa-times"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Done'; ?>
-                            </a>
+                            </button>
                         <?php else: ?>
                             <div class="future-message">
                                 <?php echo $language === 'am' ? 'ምክንያት የወደፊት ቀን ነው' : 'Future date - cannot mark yet'; ?>
@@ -373,10 +358,10 @@ include_once '../includes/user_header.php';
             <button type="button" class="close-modal">&times;</button>
         </div>
         <div class="modal-body">
-            <form id="notDoneForm" method="post">
-                <input type="hidden" id="activity_id" name="activity_id" value="">
+            <form id="notDoneForm">
+                <input type="hidden" id="activity_id" name="activity_id">
                 
-                <div class="form-group">
+                <div class="form-group mb-3">
                     <label for="reason_id" class="form-label"><?php echo $language === 'am' ? 'እባክዎ ምክንያት ይምረጡ:' : 'Please select a reason:'; ?></label>
                     <select class="form-control" id="reason_id" name="reason_id" required>
                         <option value=""><?php echo $language === 'am' ? 'ምክንያት ይምረጡ' : 'Select a reason'; ?></option>
@@ -395,6 +380,7 @@ include_once '../includes/user_header.php';
 </div>
 
 <style>
+/* Main Dashboard Styles */
 .simple-container {
     max-width: 800px;
     margin: 0 auto;
@@ -465,11 +451,11 @@ include_once '../includes/user_header.php';
     background: #F1ECE2;
     border-radius: 10px;
     padding: 20px;
-    margin-bottom: 15px;
 }
 
 .activity-info {
     display: flex;
+    gap: 15px;
     margin-bottom: 15px;
 }
 
@@ -479,7 +465,7 @@ include_once '../includes/user_header.php';
 
 .activity-name {
     font-size: 1.3rem;
-    font-weight: 700;
+    font-weight: 600;
     color: #301934;
     margin: 0 0 10px;
 }
@@ -492,12 +478,14 @@ include_once '../includes/user_header.php';
 
 .activity-actions {
     display: flex;
-    flex-direction: column;
+    justify-content: flex-end;
     gap: 10px;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    padding-top: 15px;
 }
 
 .action-btn {
-    padding: 15px;
+    padding: 12px 24px;
     border-radius: 5px;
     border: none;
     font-weight: 600;
@@ -505,11 +493,9 @@ include_once '../includes/user_header.php';
     cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
-    text-decoration: none;
-    text-align: center;
+    justify-content: center;
 }
 
 .action-btn.success {
@@ -523,16 +509,15 @@ include_once '../includes/user_header.php';
 }
 
 .status-badge {
-    padding: 15px;
+    padding: 10px 15px;
     border-radius: 5px;
     font-weight: 600;
     font-size: 1.1rem;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
-    text-decoration: none;
+    justify-content: center;
 }
 
 .status-badge.completed {
@@ -570,6 +555,90 @@ include_once '../includes/user_header.php';
     width: 100%;
 }
 
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: #F1ECE2;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    background-color: #301934;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.close-modal {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #301934;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #301934;
+    border-radius: 5px;
+    background-color: white;
+    color: #301934;
+    font-size: 1rem;
+}
+
+.form-actions {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.btn {
+    background-color: #301934;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
 @media (max-width: 576px) {
     .activity-actions {
         flex-direction: column;
@@ -592,284 +661,122 @@ include_once '../includes/user_header.php';
         font-size: 1rem;
         padding: 10px;
     }
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background-color: #F1ECE2;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    position: relative;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-}
-
-.modal-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #301934;
-    margin: 0;
-}
-
-.close-modal {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #301934;
-    transition: color 0.2s ease;
-}
-
-.close-modal:hover {
-    color: #DAA520;
-}
-
-.modal-body {
-    padding: 1.5rem;
-}
-
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.form-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: #301934;
-}
-
-.form-control {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #301934;
-    border-radius: 5px;
-    background-color: white;
-    color: #301934;
-    font-size: 1rem;
-}
-
-.form-control:focus {
-    outline: none;
-    border-color: #DAA520;
-    box-shadow: 0 0 0 2px rgba(218, 165, 32, 0.2);
-}
-
-.form-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 1.5rem;
-}
-
-.btn {
-    background-color: #301934;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 0.75rem 1.5rem;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn:hover {
-    background-color: #DAA520;
-    transform: translateY(-2px);
-}
-
-.alert {
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.alert-danger {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    
+    .modal-title {
+        font-size: 1.1rem;
+    }
 }
 </style>
 
 <script>
 function markComplete(activityId) {
-    // Get current scroll position
-    var scrollPos = window.pageYOffset;
-    
-    // Use vanilla AJAX
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'ajax/update_activity.php', true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    
-    xhr.onload = function() {
-        if (xhr.status === 200) {
-            try {
-                var response = JSON.parse(xhr.responseText);
-                if (response.success) {
-                    window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPos;
-                } else {
-                    alert("Error: " + response.message);
-                    console.log(response);
-                }
-            } catch (e) {
-                console.error("JSON parse error:", e);
-                console.log("Raw response:", xhr.responseText);
-                alert("An error occurred parsing the response.");
+    $.ajax({
+        url: "ajax/update_activity.php",
+        method: "POST",
+        data: {
+            activity_id: activityId,
+            status: 'done',
+            date: '<?php echo $selected_date; ?>'
+        },
+        dataType: "json",
+        success: function(response) {
+            if (response.success) {
+                // Reload page and maintain scroll position
+                const scrollPosition = window.pageYOffset;
+                window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPosition;
+            } else {
+                alert("Error: " + response.message);
             }
-        } else {
-            console.error("AJAX Error:", xhr.status);
-            console.log("Response text:", xhr.responseText);
-            alert("An error occurred. HTTP status: " + xhr.status);
+        },
+        error: function() {
+            alert("An error occurred. Please try again.");
         }
-    };
-    
-    xhr.onerror = function() {
-        console.error("Network Error");
-        alert("A network error occurred.");
-    };
-    
-    xhr.send('activity_id=' + activityId + '&status=done&date=<?php echo $selected_date; ?>');
+    });
 }
 
 function markMissed(activityId) {
-    document.getElementById('activity_id').value = activityId;
-    document.getElementById('notDoneModal').style.display = 'flex';
+    $("#activity_id").val(activityId);
+    $("#notDoneModal").css("display", "flex");
 }
 
 function resetActivity(activityId, date) {
-    // Get current scroll position
-    var scrollPos = window.pageYOffset;
-    
-    // Use vanilla AJAX
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'ajax/reset_activity.php', true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    
-    xhr.onload = function() {
-        if (xhr.status === 200) {
-            try {
-                var response = JSON.parse(xhr.responseText);
-                if (response.success) {
-                    window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPos;
-                } else {
-                    alert("Error: " + response.message);
-                    console.log(response);
-                }
-            } catch (e) {
-                console.error("JSON parse error:", e);
-                console.log("Raw response:", xhr.responseText);
-                alert("An error occurred parsing the response.");
+    $.ajax({
+        url: "ajax/reset_activity.php",
+        method: "POST",
+        data: {
+            activity_id: activityId,
+            date: date
+        },
+        dataType: "json",
+        success: function(response) {
+            if (response.success) {
+                // Reload page and maintain scroll position
+                const scrollPosition = window.pageYOffset;
+                window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPosition;
+            } else {
+                alert("Error: " + response.message);
             }
-        } else {
-            console.error("AJAX Error:", xhr.status);
-            console.log("Response text:", xhr.responseText);
-            alert("An error occurred. HTTP status: " + xhr.status);
+        },
+        error: function() {
+            alert("An error occurred. Please try again.");
         }
-    };
-    
-    xhr.onerror = function() {
-        console.error("Network Error");
-        alert("A network error occurred.");
-    };
-    
-    xhr.send('activity_id=' + activityId + '&date=' + date);
+    });
 }
 
-// Clear any existing event handlers for the form
-$(document).off('submit', '#notDoneForm');
+// Close modal
+$(".close-modal").click(function() {
+    $("#notDoneModal").css("display", "none");
+});
 
-// Add fresh handler for the form submission
-$(document).on('submit', '#notDoneForm', function(e) {
+// Submit not done form
+$("#notDoneForm").submit(function(e) {
     e.preventDefault();
     
-    var activityId = document.getElementById('activity_id').value;
-    var reasonId = document.getElementById('reason_id').value;
+    const activityId = $("#activity_id").val();
+    const reasonId = $("#reason_id").val();
     
     if (!reasonId) {
         alert("Please select a reason.");
-        return false;
+        return;
     }
     
-    // Hide modal
-    document.getElementById('notDoneModal').style.display = 'none';
-    
-    // Get current scroll position
-    var scrollPos = window.pageYOffset;
-    
-    // Create form data
-    var formData = new FormData();
-    formData.append('activity_id', activityId);
-    formData.append('status', 'missed');
-    formData.append('reason_id', reasonId);
-    formData.append('date', '<?php echo $selected_date; ?>');
-    
-    // Use vanilla AJAX
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'ajax/update_activity.php', true);
-    xhr.onload = function() {
-        if (xhr.status === 200) {
-            try {
-                var response = JSON.parse(xhr.responseText);
-                if (response.success) {
-                    window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPos;
-                } else {
-                    alert("Error: " + response.message);
-                    console.log(response);
-                }
-            } catch (e) {
-                console.error("JSON parse error:", e);
-                console.log("Raw response:", xhr.responseText);
-                alert("An error occurred parsing the response.");
+    $.ajax({
+        url: "ajax/update_activity.php",
+        method: "POST",
+        data: {
+            activity_id: activityId,
+            status: 'missed',
+            reason_id: reasonId,
+            date: '<?php echo $selected_date; ?>'
+        },
+        dataType: "json",
+        success: function(response) {
+            if (response.success) {
+                $("#notDoneModal").css("display", "none");
+                
+                // Reload page and maintain scroll position
+                const scrollPosition = window.pageYOffset;
+                window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPosition;
+            } else {
+                alert("Error: " + response.message);
+                console.log(response);
             }
-        } else {
-            console.error("AJAX Error:", xhr.status);
-            console.log("Response text:", xhr.responseText);
-            alert("An error occurred. HTTP status: " + xhr.status);
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX Error:", status, error);
+            console.log(xhr.responseText);
+            alert("An error occurred. Please try again.");
         }
-    };
-    xhr.onerror = function() {
-        console.error("Network Error");
-        alert("A network error occurred.");
-    };
-    xhr.send(formData);
-    
-    return false;
+    });
 });
 
-// Use vanilla JS for the close button
-document.querySelector('.close-modal').addEventListener('click', function() {
-    document.getElementById('notDoneModal').style.display = 'none';
-});
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('notDoneModal');
+    if (event.target === modal) {
+        $("#notDoneModal").css("display", "none");
+    }
+}
 
 // Restore scroll position after page reload
 $(document).ready(function() {
@@ -881,15 +788,8 @@ $(document).ready(function() {
             window.scrollTo(0, scrollPosition);
         }
     }
-});
-</script>
-
-<?php
-// Page-specific scripts
-$page_scripts = <<<EOT
-<script>
-$(document).ready(function() {
-    // Check if it's a new day and reload page
+    
+    // Check for new day (moved from the duplicate script)
     function checkForNewDay() {
         const currentDate = new Date().toISOString().split('T')[0];
         const storedDate = localStorage.getItem('lastVisitDate');
@@ -914,140 +814,10 @@ $(document).ready(function() {
             window.location.href = 'dashboard.php';
         }
     }, 60000); // Check every minute
-    
-    // Mark activity as done
-    $(".mark-done").click(function() {
-        const activityId = $(this).data("activity-id");
-        
-        $.ajax({
-            url: "submit_activity.php",
-            method: "POST",
-            data: {
-                activity_id: activityId,
-                status: 'done'
-            },
-            dataType: "json",
-            success: function(response) {
-                if (response.success) {
-                    // Update UI
-                    $(`#activity-\${activityId} .activity-actions`).html('<span class="badge bg-success">Completed</span> <button class="btn btn-sm btn-danger reset-activity" data-activity-id="' + activityId + '" data-date="<?php echo $selected_date; ?>"><i class="fas fa-undo"></i> Reset</button>');
-                    
-                    // Optional: Update points display
-                    // You might want to refresh the page to show updated progress
-                    setTimeout(function() {
-                        location.reload();
-                    }, 1000);
-                } else {
-                    alert("Error: " + response.message);
-                }
-            },
-            error: function() {
-                alert("An error occurred. Please try again.");
-            }
-        });
-    });
-    
-    // Reset an activity
-    $(document).on("click", ".reset-activity", function() {
-        const activityId = $(this).data("activity-id");
-        const date = $(this).data("date");
-        
-        if (confirm("Are you sure you want to reset this activity? This will remove your record for this activity.")) {
-            $.ajax({
-                url: "ajax/reset_activity.php",
-                method: "POST",
-                data: {
-                    activity_id: activityId,
-                    date: date
-                },
-                dataType: "json",
-                success: function(response) {
-                    if (response.success) {
-                        // Update UI
-                        if (date === "<?php echo date('Y-m-d'); ?>") {
-                            // For today, show action buttons
-                            $(`#activity-\${activityId} .activity-actions`).html(
-                                '<button class="btn btn-sm btn-success mark-done" data-activity-id="' + activityId + '">Done</button> ' +
-                                '<button class="btn btn-sm btn-secondary mark-not-done" data-activity-id="' + activityId + '">Not Done</button>'
-                            );
-                        } else {
-                            // For past days, just show "No Record"
-                            $(`#activity-\${activityId} .activity-actions`).html(
-                                '<span class="badge bg-light text-dark">No Record</span>'
-                            );
-                        }
-                        
-                        // Refresh the page after a delay to update stats
-                        setTimeout(function() {
-                            location.reload();
-                        }, 1000);
-                    } else {
-                        alert("Error: " + response.message);
-                    }
-                },
-                error: function() {
-                    alert("An error occurred. Please try again.");
-                }
-            });
-        }
-    });
-    
-    // Open modal for not done
-    $(".mark-not-done").click(function() {
-        const activityId = $(this).data("activity-id");
-        $("#activity_id").val(activityId);
-        $("#notDoneModal").css("display", "flex");
-    });
-    
-    // Close modal
-    $(".close-modal").click(function() {
-        $("#notDoneModal").css("display", "none");
-    });
-    
-    // Submit not done form
-    $("#notDoneForm").submit(function(e) {
-        e.preventDefault();
-        
-        const activityId = $("#activity_id").val();
-        const reasonId = $("#reason_id").val();
-        
-        if (!reasonId) {
-            alert("Please select a reason.");
-            return;
-        }
-        
-        $.ajax({
-            url: "ajax/update_activity.php",
-            method: "POST",
-            data: {
-                activity_id: activityId,
-                status: 'missed',
-                reason_id: reasonId,
-                date: '<?php echo $selected_date; ?>'
-            },
-            dataType: "json",
-            success: function(response) {
-                if (response.success) {
-                    $("#notDoneModal").css("display", "none");
-                    
-                    // Reload page and maintain scroll position
-                    const scrollPosition = window.pageYOffset;
-                    window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPosition;
-                } else {
-                    alert("Error: " + response.message);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("AJAX Error:", status, error);
-                console.log(xhr.responseText);
-                alert("An error occurred. Please try again.");
-            }
-        });
-    });
 });
 </script>
-EOT;
 
+<?php
 // Include footer
 include_once '../includes/user_footer.php';
 ?> 

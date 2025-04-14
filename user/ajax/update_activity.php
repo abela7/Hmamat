@@ -7,20 +7,11 @@ require_once '../../includes/auth_check.php';
 // Check if user is logged in
 requireUserLogin();
 
-// Set proper headers
-header('Content-Type: application/json');
-
 // Initialize response
 $response = [
     'success' => false,
-    'message' => 'An error occurred.',
-    'data' => null
+    'message' => 'An error occurred.'
 ];
-
-// Log the incoming request for debugging
-error_log('Request Method: ' . $_SERVER['REQUEST_METHOD']);
-error_log('Activity Status Update - Raw POST data: ' . file_get_contents('php://input'));
-error_log('Activity Status Update - POST params: ' . print_r($_POST, true));
 
 // Check if request is POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -32,9 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status = isset($_POST['status']) ? $_POST['status'] : '';
     $reason_id = isset($_POST['reason_id']) ? intval($_POST['reason_id']) : 0;
     $date = isset($_POST['date']) ? $_POST['date'] : date('Y-m-d');
-    
-    // Log the parsed parameters
-    error_log('Parsed parameters - Activity ID: ' . $activity_id . ', Status: ' . $status . ', Reason ID: ' . $reason_id . ', Date: ' . $date);
     
     // Validate input
     if (empty($activity_id) || empty($status)) {
@@ -57,74 +45,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     
-    try {
-        // Get activity details
-        $stmt = $conn->prepare("SELECT default_points FROM activities WHERE id = ?");
-        $stmt->bind_param("i", $activity_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        if ($result->num_rows === 0) {
-            $response['message'] = 'Activity not found.';
-            echo json_encode($response);
-            exit;
-        }
-        
-        $activity = $result->fetch_assoc();
-        $points = $activity['default_points'];
-        $stmt->close();
-        
-        // Check if record already exists
-        $stmt = $conn->prepare("SELECT id FROM user_activity_log WHERE user_id = ? AND activity_id = ? AND date_completed = ?");
-        $stmt->bind_param("iis", $user_id, $activity_id, $date);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        if ($result->num_rows > 0) {
-            // Update existing record
-            $record = $result->fetch_assoc();
-            $record_id = $record['id'];
-            
-            if ($status === 'done') {
-                $stmt = $conn->prepare("UPDATE user_activity_log SET status = ?, points_earned = ?, reason_id = NULL WHERE id = ?");
-                $stmt->bind_param("sii", $status, $points, $record_id);
-            } else {
-                $stmt = $conn->prepare("UPDATE user_activity_log SET status = ?, points_earned = 0, reason_id = ? WHERE id = ?");
-                $stmt->bind_param("sii", $status, $reason_id, $record_id);
-            }
-        } else {
-            // Insert new record
-            if ($status === 'done') {
-                $stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity_id, date_completed, status, points_earned) VALUES (?, ?, ?, ?, ?)");
-                $stmt->bind_param("iissi", $user_id, $activity_id, $date, $status, $points);
-            } else {
-                $stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity_id, date_completed, status, points_earned, reason_id) VALUES (?, ?, ?, ?, 0, ?)");
-                $stmt->bind_param("iissi", $user_id, $activity_id, $date, $status, $reason_id);
-            }
-        }
-        
-        if ($stmt->execute()) {
-            $response['success'] = true;
-            $response['message'] = 'Activity status updated successfully.';
-            $response['data'] = [
-                'activity_id' => $activity_id,
-                'status' => $status,
-                'date' => $date
-            ];
-        } else {
-            $response['message'] = 'Database error: ' . $conn->error;
-        }
-        
-        $stmt->close();
-    } catch (Exception $e) {
-        $response['message'] = 'Exception: ' . $e->getMessage();
-        error_log('Exception in update_activity.php: ' . $e->getMessage());
+    // Get activity details
+    $stmt = $conn->prepare("SELECT default_points FROM activities WHERE id = ?");
+    $stmt->bind_param("i", $activity_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows === 0) {
+        $response['message'] = 'Activity not found.';
+        echo json_encode($response);
+        exit;
     }
-} else {
-    $response['message'] = 'Invalid request method.';
+    
+    $activity = $result->fetch_assoc();
+    $points = $activity['default_points'];
+    
+    // Check if record already exists
+    $stmt = $conn->prepare("SELECT id FROM user_activity_log WHERE user_id = ? AND activity_id = ? AND date_completed = ?");
+    $stmt->bind_param("iis", $user_id, $activity_id, $date);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows > 0) {
+        // Update existing record
+        $record = $result->fetch_assoc();
+        $record_id = $record['id'];
+        
+        if ($status === 'done') {
+            $stmt = $conn->prepare("UPDATE user_activity_log SET status = ?, points_earned = ?, reason_id = NULL WHERE id = ?");
+            $stmt->bind_param("sii", $status, $points, $record_id);
+        } else {
+            $stmt = $conn->prepare("UPDATE user_activity_log SET status = ?, points_earned = 0, reason_id = ? WHERE id = ?");
+            $stmt->bind_param("sii", $status, $reason_id, $record_id);
+        }
+    } else {
+        // Insert new record
+        if ($status === 'done') {
+            $stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity_id, date_completed, status, points_earned) VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("iissi", $user_id, $activity_id, $date, $status, $points);
+        } else {
+            $stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity_id, date_completed, status, points_earned, reason_id) VALUES (?, ?, ?, ?, 0, ?)");
+            $stmt->bind_param("iissi", $user_id, $activity_id, $date, $status, $reason_id);
+        }
+    }
+    
+    if ($stmt->execute()) {
+        $response['success'] = true;
+        $response['message'] = 'Activity status updated successfully.';
+    } else {
+        $response['message'] = 'Database error: ' . $conn->error;
+    }
 }
 
 // Return JSON response
+header('Content-Type: application/json');
 echo json_encode($response);
 exit;
 ?> 
