@@ -272,7 +272,7 @@ include_once '../includes/user_header.php';
                         </p>
                         <form method="post" action="settings.php" onsubmit="return confirm('<?php echo $language === 'am' ? 'እርግጠኛ ነዎት? ይህ እርምጃ አካዉንትዎን በቋሚነት ይሰርዛል።' : 'Are you sure? This will permanently delete your account.'; ?>');">
                             <div class="input-group mb-3">
-                                <input type="text" class="form-control" name="confirm_delete" placeholder="<?php echo $language === 'am' ? 'ለማጥፋት DELETE ብለው ይጻፉ' : 'Type DELETE to confirm'; ?>">
+                                <input type="text" class="form-control" name="confirm_delete" placeholder="<?php echo $language === 'am' ? 'ለማጥፋት DELETE ብለው ይጻፉ' : 'Type DELETE to confirm'; ?>"></br>
                                 <button type="submit" name="delete_account" class="btn btn-danger">
                                     <?php echo $language === 'am' ? 'አካዉንት ሰርዝ' : 'Delete Account'; ?>
                                 </button>

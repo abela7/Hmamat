@@ -27,28 +27,61 @@ if ($user_logged_in) {
     }
     $stmt->close();
 }
+
+// --- START SEO & META TAG LOGIC ---
+$page_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+$site_name = APP_NAME;
+$default_description = APP_FULL_NAME; // Use full name as default description
+$default_image_url = BASE_URL . '/assets/favicon_io/android-chrome-512x512.png'; // Default image
+
+$meta_title = (isset($page_title) ? $page_title . ' - ' : '') . $site_name;
+$meta_description = $default_description;
+$og_image_url = $default_image_url;
+$canonical_url = $page_url;
+
+// Specific tags for welcome.php
+if ($current_page == 'welcome.php') {
+    $meta_description = 'በየቀኑ የሚደረጉ ምስባክ፣ ወንጌል እንዲሁም ምንባቦችን ይከታተሉ ፣ የቤተክርስቲያን አገልግሎቶች ጊዜያት እና ቦታዎችን ይመልከቱ እንዲሁም በየቀኑ የተጠናቀቁ ተግባራትዎን ይመዝግቡ';
+    $og_image_url = BASE_URL . '/assets/img/Eyesus Krstos.jpg'; // ASSUMED PATH - Please verify
+    $canonical_url = USER_URL . '/welcome.php'; // Set specific canonical URL
+    // Title can remain the default or be set specifically if $page_title is set in welcome.php
+}
+// --- END SEO & META TAG LOGIC ---
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($page_title) ? $page_title . ' - ' : ''; ?><?php echo APP_NAME; ?></title>
+    <title><?php echo htmlspecialchars($meta_title); ?></title>
     
-    <!-- Social Media Meta Tags -->
-    <meta name="description" content="የሰሙነ ሕማማት የመንፈሳዊ ምግባራት መከታተያ ፕሮግራም">
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="<?php echo htmlspecialchars($meta_description); ?>">
+    <link rel="canonical" href="<?php echo htmlspecialchars($canonical_url); ?>" />
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"; ?>">
-    <meta property="og:title" content="<?php echo isset($page_title) ? $page_title . ' - ' : ''; ?><?php echo APP_NAME; ?>">
-    <meta property="og:description" content="የሰሙነ ሕማማት የመንፈሳዊ ምግባራት መከታተያ ፕሮግራም">
-    <meta property="og:image" content="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]"; ?>/assets/favicon_io/android-chrome-512x512.png">
+    <meta property="og:site_name" content="<?php echo htmlspecialchars($site_name); ?>">
+    <meta property="og:url" content="<?php echo htmlspecialchars($canonical_url); // Use canonical for consistency ?>">
+    <meta property="og:title" content="<?php echo htmlspecialchars($meta_title); ?>">
+    <meta property="og:description" content="<?php echo htmlspecialchars($meta_description); ?>">
+    <meta property="og:image" content="<?php echo htmlspecialchars($og_image_url); ?>">
+    <?php 
+    // Optional: Add image dimensions if known for better preview rendering
+    // list($width, $height) = getimagesize($og_image_url); // Requires image path on server
+    // if ($width && $height) {
+    //     echo '<meta property="og:image:width" content="' . $width . '">';
+    //     echo '<meta property="og:image:height" content="' . $height . '">';
+    // }
+    ?>
+
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"; ?>">
-    <meta property="twitter:title" content="<?php echo isset($page_title) ? $page_title . ' - ' : ''; ?><?php echo APP_NAME; ?>">
-    <meta property="twitter:description" content="የሰሙነ ሕማማት የመንፈሳዊ ምግባራት መከታተያ ፕሮግራም">
-    <meta property="twitter:image" content="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]"; ?>/assets/favicon_io/android-chrome-512x512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="<?php echo htmlspecialchars($canonical_url); // Use canonical for consistency ?>">
+    <meta name="twitter:title" content="<?php echo htmlspecialchars($meta_title); ?>">
+    <meta name="twitter:description" content="<?php echo htmlspecialchars($meta_description); ?>">
+    <meta name="twitter:image" content="<?php echo htmlspecialchars($og_image_url); // Use same image as OG ?>">
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon_io/apple-touch-icon.png">
