@@ -1,6 +1,7 @@
 <?php
 // Include necessary files
 require_once '../includes/config.php';
+require_once '../includes/db.php'; // Ensure db.php is loaded before auth_check.php
 require_once '../includes/auth_check.php';
 
 // End user session

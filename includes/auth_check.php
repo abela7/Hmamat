@@ -257,16 +257,23 @@ function createAdminSession($admin_id, $username, $role = 'admin') {
  */
 function endUserSession() {
     if (isset($_SESSION['user_id'])) {
-        require_once 'db.php';
-        global $conn;
+        // Make sure we have a database connection
+        if (!isset($conn) || $conn === null) {
+            require_once __DIR__ . '/db.php';
+            global $conn;
+        }
         
         $user_id = $_SESSION['user_id'];
         
         // Remove session from database
-        $stmt = $conn->prepare("DELETE FROM user_sessions WHERE user_id = ?");
-        $stmt->bind_param("i", $user_id);
-        $stmt->execute();
-        $stmt->close();
+        if ($conn) {
+            $stmt = $conn->prepare("DELETE FROM user_sessions WHERE user_id = ?");
+            if ($stmt) {
+                $stmt->bind_param("i", $user_id);
+                $stmt->execute();
+                $stmt->close();
+            }
+        }
     }
     
     // Clear user session variables
