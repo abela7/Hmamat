@@ -314,25 +314,35 @@ include_once '../includes/user_header.php';
                 <div class="activity-actions">
                     <?php if (isset($completed_activities[$activity['id']]) && $completed_activities[$activity['id']] == 'done'): ?>
                         <div class="status-badge completed">
-                            <i class="fas fa-check-circle"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Completed'; ?>
+                            <i class="fas fa-check-circle"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Complete'; ?>
                         </div>
+                        <?php if (strtotime($selected_date) <= strtotime(date('Y-m-d'))): ?>
                         <button class="reset-btn" onclick="resetActivity(<?php echo $activity['id']; ?>, '<?php echo $selected_date; ?>')">
                             <i class="fas fa-undo"></i> <?php echo $language === 'am' ? 'ዳግም አስጀምር' : 'Reset'; ?>
                         </button>
+                        <?php endif; ?>
                     <?php elseif (isset($completed_activities[$activity['id']]) && $completed_activities[$activity['id']] == 'missed'): ?>
                         <div class="status-badge missed">
                             <i class="fas fa-times-circle"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Done'; ?>
                         </div>
+                        <?php if (strtotime($selected_date) <= strtotime(date('Y-m-d'))): ?>
                         <button class="reset-btn" onclick="resetActivity(<?php echo $activity['id']; ?>, '<?php echo $selected_date; ?>')">
                             <i class="fas fa-undo"></i> <?php echo $language === 'am' ? 'ዳግም አስጀምር' : 'Reset'; ?>
                         </button>
+                        <?php endif; ?>
                     <?php else: ?>
-                        <button class="action-btn success" onclick="markComplete(<?php echo $activity['id']; ?>)">
-                            <i class="fas fa-check"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Complete'; ?>
-                        </button>
-                        <button class="action-btn secondary" onclick="markMissed(<?php echo $activity['id']; ?>)">
-                            <i class="fas fa-times"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Done'; ?>
-                        </button>
+                        <?php if (strtotime($selected_date) <= strtotime(date('Y-m-d'))): ?>
+                            <button class="action-btn success" onclick="markComplete(<?php echo $activity['id']; ?>)">
+                                <i class="fas fa-check"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Complete'; ?>
+                            </button>
+                            <button class="action-btn secondary" onclick="markMissed(<?php echo $activity['id']; ?>)">
+                                <i class="fas fa-times"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Done'; ?>
+                            </button>
+                        <?php else: ?>
+                            <div class="future-message">
+                                <?php echo $language === 'am' ? 'ምክንያት የወደፊት ቀን ነው' : 'Future date - cannot mark yet'; ?>
+                            </div>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
             </div>
@@ -374,6 +384,7 @@ include_once '../includes/user_header.php';
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
+    background-color: #f8f5f0;
 }
 
 .simple-date-nav {
@@ -412,18 +423,18 @@ include_once '../includes/user_header.php';
 }
 
 .activity-title-section {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 .main-title {
-    font-size: 1.8rem;
+    font-size: 2.2rem;
     color: #301934;
     margin-bottom: 5px;
     font-weight: 700;
 }
 
 .amharic-title {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     color: #5D4225;
     margin-top: 5px;
     font-weight: 500;
@@ -438,7 +449,7 @@ include_once '../includes/user_header.php';
 .activity-simple-item {
     background: #F1ECE2;
     border-radius: 10px;
-    padding: 15px;
+    padding: 20px;
 }
 
 .activity-info {
@@ -452,16 +463,16 @@ include_once '../includes/user_header.php';
 }
 
 .activity-name {
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     font-weight: 600;
     color: #301934;
-    margin: 0 0 5px;
+    margin: 0 0 10px;
 }
 
 .activity-description {
     margin: 0;
     color: #5D4225;
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
 .activity-actions {
@@ -469,18 +480,21 @@ include_once '../includes/user_header.php';
     justify-content: flex-end;
     gap: 10px;
     border-top: 1px solid rgba(0,0,0,0.1);
-    padding-top: 10px;
+    padding-top: 15px;
 }
 
 .action-btn {
-    padding: 8px 16px;
+    padding: 12px 24px;
     border-radius: 5px;
     border: none;
     font-weight: 600;
+    font-size: 1.1rem;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
+    width: 100%;
+    justify-content: center;
 }
 
 .action-btn.success {
@@ -494,12 +508,15 @@ include_once '../includes/user_header.php';
 }
 
 .status-badge {
-    padding: 5px 10px;
+    padding: 10px 15px;
     border-radius: 5px;
     font-weight: 600;
+    font-size: 1.1rem;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
+    width: 100%;
+    justify-content: center;
 }
 
 .status-badge.completed {
@@ -530,10 +547,34 @@ include_once '../includes/user_header.php';
     border-radius: 5px;
 }
 
+.future-message {
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+    width: 100%;
+}
+
 @media (max-width: 576px) {
     .activity-actions {
         flex-direction: column;
         gap: 10px;
+    }
+    
+    .main-title {
+        font-size: 1.8rem;
+    }
+    
+    .amharic-title {
+        font-size: 1.4rem;
+    }
+    
+    .activity-name {
+        font-size: 1.2rem;
+    }
+    
+    .action-btn, .status-badge {
+        font-size: 1rem;
+        padding: 10px;
     }
 }
 </style>
@@ -605,6 +646,11 @@ $("#notDoneForm").submit(function(e) {
     const activityId = $("#activity_id").val();
     const reasonId = $("#reason_id").val();
     
+    if (!reasonId) {
+        alert("Please select a reason.");
+        return;
+    }
+    
     $.ajax({
         url: "ajax/update_activity.php",
         method: "POST",
@@ -624,9 +670,12 @@ $("#notDoneForm").submit(function(e) {
                 window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPosition;
             } else {
                 alert("Error: " + response.message);
+                console.log(response);
             }
         },
-        error: function() {
+        error: function(xhr, status, error) {
+            console.error("AJAX Error:", status, error);
+            console.log(xhr.responseText);
             alert("An error occurred. Please try again.");
         }
     });
@@ -780,32 +829,35 @@ $(document).ready(function() {
         const activityId = $("#activity_id").val();
         const reasonId = $("#reason_id").val();
         
+        if (!reasonId) {
+            alert("Please select a reason.");
+            return;
+        }
+        
         $.ajax({
-            url: "submit_activity.php",
+            url: "ajax/update_activity.php",
             method: "POST",
             data: {
                 activity_id: activityId,
                 status: 'missed',
-                reason_id: reasonId
+                reason_id: reasonId,
+                date: '<?php echo $selected_date; ?>'
             },
             dataType: "json",
             success: function(response) {
                 if (response.success) {
-                    // Close modal
                     $("#notDoneModal").css("display", "none");
                     
-                    // Update UI
-                    $(`#activity-\${activityId} .activity-actions`).html('<span class="badge bg-secondary">Not Completed</span> <button class="btn btn-sm btn-danger reset-activity" data-activity-id="' + activityId + '" data-date="<?php echo $selected_date; ?>"><i class="fas fa-undo"></i> Reset</button>');
-                    
-                    // Optional: Update points display
-                    setTimeout(function() {
-                        location.reload();
-                    }, 1000);
+                    // Reload page and maintain scroll position
+                    const scrollPosition = window.pageYOffset;
+                    window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPosition;
                 } else {
                     alert("Error: " + response.message);
                 }
             },
-            error: function() {
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                console.log(xhr.responseText);
                 alert("An error occurred. Please try again.");
             }
         });

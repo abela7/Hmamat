@@ -33,7 +33,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Validate status
     if (!in_array($status, ['done', 'missed'])) {
-        $response['message'] = 'Invalid status.';
+        $response['message'] = 'Invalid status: ' . $status;
+        echo json_encode($response);
+        exit;
+    }
+    
+    // Check for future dates (prevent marking future activities)
+    if (strtotime($date) > strtotime(date('Y-m-d'))) {
+        $response['message'] = 'Cannot mark activities for future dates.';
         echo json_encode($response);
         exit;
     }
