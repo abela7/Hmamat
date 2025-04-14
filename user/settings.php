@@ -21,6 +21,104 @@ $language = isset($_COOKIE['user_language']) ? $_COOKIE['user_language'] : 'en';
 $success = '';
 $error = '';
 
+// Handle Reset Progress
+if (isset($_POST['reset_progress'])) {
+    // Delete all activity records for this user
+    $stmt = $conn->prepare("DELETE FROM user_activities WHERE user_id = ?");
+    $stmt->bind_param("i", $user_id);
+    
+    if ($stmt->execute()) {
+        $success = $language === 'am' ? 'እድገትዎ በተሳካ ሁኔታ ዳግም ተጀምሯል።' : 'Your progress has been successfully reset.';
+    } else {
+        $error = $language === 'am' ? 'እድገትዎን ዳግም ሲጀምሩ ስህተት ተከስቷል።' : 'Error resetting your progress.';
+    }
+    $stmt->close();
+}
+
+// Handle Change Baptism Name
+if (isset($_POST['change_name']) && isset($_POST['new_baptism_name'])) {
+    $new_baptism_name = trim($_POST['new_baptism_name']);
+    
+    if (empty($new_baptism_name)) {
+        $error = $language === 'am' ? 'የጥምቀት ስም ባዶ መሆን አይችልም።' : 'Baptism name cannot be empty.';
+    } else {
+        // Update baptism name in database
+        $stmt = $conn->prepare("UPDATE users SET baptism_name = ? WHERE id = ?");
+        $stmt->bind_param("si", $new_baptism_name, $user_id);
+        
+        if ($stmt->execute()) {
+            // Update session
+            $_SESSION['baptism_name'] = $new_baptism_name;
+            $baptism_name = $new_baptism_name;
+            $success = $language === 'am' ? 'የጥምቀት ስምዎ በተሳካ ሁኔታ ተቀይሯል።' : 'Your baptism name has been successfully changed.';
+        } else {
+            $error = $language === 'am' ? 'የጥምቀት ስምዎን በመቀየር ላይ ስህተት ተከስቷል።' : 'Error changing your baptism name.';
+        }
+        $stmt->close();
+    }
+}
+
+// Handle Delete Account
+if (isset($_POST['delete_account']) && isset($_POST['confirm_delete'])) {
+    if ($_POST['confirm_delete'] === 'DELETE') {
+        // Start transaction
+        $conn->begin_transaction();
+        
+        try {
+            // Delete user's activities
+            $stmt = $conn->prepare("DELETE FROM user_activities WHERE user_id = ?");
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $stmt->close();
+            
+            // Delete user's preferences
+            $stmt = $conn->prepare("DELETE FROM user_preferences WHERE user_id = ?");
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $stmt->close();
+            
+            // Delete user's sessions
+            $stmt = $conn->prepare("DELETE FROM user_sessions WHERE user_id = ?");
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $stmt->close();
+            
+            // Delete user's device records
+            $stmt = $conn->prepare("DELETE FROM user_devices WHERE user_id = ?");
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $stmt->close();
+            
+            // Finally delete the user
+            $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $stmt->close();
+            
+            // Commit transaction
+            $conn->commit();
+            
+            // Clear sessions and cookies
+            session_unset();
+            session_destroy();
+            
+            setcookie('user_unique_id', '', time() - 3600, '/');
+            setcookie('hmt_device_token', '', time() - 3600, '/');
+            setcookie('user_language', '', time() - 3600, '/');
+            
+            // Redirect to welcome page
+            header("Location: welcome.php?step=1");
+            exit;
+        } catch (Exception $e) {
+            // Rollback in case of error
+            $conn->rollback();
+            $error = $language === 'am' ? 'መለያዎን በመሰረዝ ላይ ስህተት ተከስቷል።' : 'Error deleting your account.';
+        }
+    } else {
+        $error = $language === 'am' ? 'ለማረጋገጥ እባክዎን "DELETE" ይጻፉ።' : 'Please type "DELETE" to confirm.';
+    }
+}
+
 // Get user preferences
 $show_on_leaderboard = true;
 $email_notifications = true;
@@ -39,8 +137,8 @@ if ($result->num_rows > 0) {
 }
 $stmt->close();
 
-// Process form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+// Process preferences form submission
+if (isset($_POST['save_preferences'])) {
     // Get form data
     $new_language = isset($_POST['language']) ? $_POST['language'] : 'en';
     $new_show_on_leaderboard = isset($_POST['show_on_leaderboard']) ? 1 : 0;
@@ -106,6 +204,7 @@ include_once '../includes/user_header.php';
                         <div class="alert alert-danger"><?php echo $error; ?></div>
                     <?php endif; ?>
                     
+                    <!-- User Preferences -->
                     <form method="post" action="settings.php">
                         <!-- Language Preference -->
                         <div class="form-group mb-4">
@@ -161,7 +260,7 @@ include_once '../includes/user_header.php';
                         </div>
                         
                         <div class="d-grid mt-4">
-                            <button type="submit" class="btn">
+                            <button type="submit" name="save_preferences" class="btn">
                                 <?php echo $language === 'am' ? 'ማስተካከያዎችን አስቀምጥ' : 'Save Settings'; ?>
                             </button>
                         </div>
@@ -207,6 +306,84 @@ include_once '../includes/user_header.php';
                             </div>
                         </div>
                     </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Change Baptism Name -->
+                    <h3>
+                        <?php echo $language === 'am' ? 'የጥምቀት ስምዎን ይቀይሩ' : 'Change Baptism Name'; ?>
+                    </h3>
+                    
+                    <form method="post" action="settings.php" class="mt-3">
+                        <div class="form-group mb-3">
+                            <label for="current_name" class="form-label">
+                                <?php echo $language === 'am' ? 'የአሁኑ የጥምቀት ስም' : 'Current Baptism Name'; ?>
+                            </label>
+                            <input type="text" class="form-control" id="current_name" value="<?php echo htmlspecialchars($baptism_name); ?>" disabled>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="new_baptism_name" class="form-label">
+                                <?php echo $language === 'am' ? 'አዲስ የጥምቀት ስም' : 'New Baptism Name'; ?>
+                            </label>
+                            <input type="text" class="form-control" id="new_baptism_name" name="new_baptism_name" required>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" name="change_name" class="btn">
+                                <?php echo $language === 'am' ? 'የጥምቀት ስም ይቀይሩ' : 'Change Baptism Name'; ?>
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Reset Progress -->
+                    <h3>
+                        <?php echo $language === 'am' ? 'እድገትን ዳግም ያስጀምሩ' : 'Reset Progress'; ?>
+                    </h3>
+                    
+                    <div class="alert alert-warning my-3">
+                        <p>
+                            <?php echo $language === 'am' ? 'ማስጠንቀቂያ፡ እድገትዎን ዳግም ማስጀመር ሁሉንም የተመዘገቡ እንቅስቃሴዎችዎን ይሰርዛል። ይህ እርምጃ የማይቀለበስ ነው።' : 'Warning: Resetting your progress will delete all your recorded activities. This action cannot be undone.'; ?>
+                        </p>
+                    </div>
+                    
+                    <form method="post" action="settings.php" class="mt-3">
+                        <div class="d-grid">
+                            <button type="submit" name="reset_progress" class="btn btn-warning">
+                                <?php echo $language === 'am' ? 'እድገቴን ዳግም አስጀምር' : 'Reset My Progress'; ?>
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Delete Account -->
+                    <h3 class="text-danger">
+                        <?php echo $language === 'am' ? 'መለያን ሰርዝ' : 'Delete Account'; ?>
+                    </h3>
+                    
+                    <div class="alert alert-danger my-3">
+                        <p>
+                            <?php echo $language === 'am' ? 'ማስጠንቀቂያ፡ መለያዎን መሰረዝ ሁሉንም መረጃዎችዎን ይሰርዛል፤ ይህም መተግበሪያውን ለመጠቀም እንደገና መመዝገብ ያስፈልግዎታል። ይህ እርምጃ የማይቀለበስ ነው።' : 'Warning: Deleting your account will remove all your data and you will need to register again to use the application. This action cannot be undone.'; ?>
+                        </p>
+                    </div>
+                    
+                    <form method="post" action="settings.php" class="mt-3">
+                        <div class="form-group mb-3">
+                            <label for="confirm_delete" class="form-label">
+                                <?php echo $language === 'am' ? 'ለማረጋገጥ "DELETE" ይጻፉ' : 'Type "DELETE" to confirm'; ?>
+                            </label>
+                            <input type="text" class="form-control" id="confirm_delete" name="confirm_delete" required>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" name="delete_account" class="btn btn-danger">
+                                <?php echo $language === 'am' ? 'መለያዬን በማግባት ሰርዝ' : 'Permanently Delete My Account'; ?>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
