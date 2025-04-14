@@ -4,6 +4,12 @@ require_once '../includes/config.php';
 require_once '../includes/db.php';
 require_once '../includes/auth_check.php';
 
+// Redirect logged-in users to dashboard
+if (isUserLoggedIn()) {
+    header("Location: dashboard.php");
+    exit;
+}
+
 // Set page title
 $page_title = "የሰሙነ ሕማማት የመንፈሳዊ ምግባራት መከታተያ ፕሮግራም";
 
