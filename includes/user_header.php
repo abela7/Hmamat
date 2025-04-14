@@ -7,7 +7,7 @@ $user_logged_in = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
 $baptism_name = $user_logged_in ? $_SESSION['baptism_name'] : '';
 
 // Get language preference from cookie or database
-$language = isset($_COOKIE['user_language']) ? $_COOKIE['user_language'] : 'en';
+$language = isset($_COOKIE['user_language']) ? $_COOKIE['user_language'] : 'am';
 
 // If user is logged in, try to get language preference from database
 if ($user_logged_in) {
