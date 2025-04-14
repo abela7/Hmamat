@@ -19,6 +19,18 @@ $action = isset($_GET['action']) ? $_GET['action'] : '';
 $error = "";
 $success = "";
 
+// Handle success messages from URL parameters
+if (isset($_GET['success'])) {
+    switch ($_GET['success']) {
+        case 'created':
+            $success = "Message created successfully.";
+            break;
+        case 'updated':
+            $success = "Message updated successfully.";
+            break;
+    }
+}
+
 // Process form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get form data
@@ -40,10 +52,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             if ($stmt->execute()) {
                 $success = "Message updated successfully.";
-                // Reset form
-                $message_text = "";
-                $day_of_week = null;
-                $action = '';
+                // Redirect back to the main page
+                header("Location: manage_messages.php?success=updated");
+                exit;
             } else {
                 $error = "Failed to update message: " . $conn->error;
             }
@@ -68,10 +79,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             if ($stmt->execute()) {
                 $success = "Message created successfully.";
-                // Reset form
-                $message_text = "";
-                $day_of_week = null;
-                $action = '';
+                // Redirect back to the main page
+                header("Location: manage_messages.php?success=created");
+                exit;
             } else {
                 $error = "Failed to create message: " . $conn->error;
             }
@@ -171,6 +181,16 @@ $day_names = [
     <script>
       let editorInitialized = false;
       
+      // Function to sync TinyMCE content to the textarea before form submission
+      function prepareSubmit() {
+        if (editorInitialized && tinymce.get('message_text')) {
+          // Get content from TinyMCE and update textarea
+          const content = tinymce.get('message_text').getContent();
+          document.getElementById('message_text').value = content;
+        }
+        return true; // Continue with form submission
+      }
+      
       document.addEventListener('DOMContentLoaded', function() {
         tinymce.init({
           selector: '#message_text',
@@ -267,7 +287,7 @@ $day_names = [
                 </div>
                 
                 <div class="card-body">
-                    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . '?action=' . $action . (isset($_GET['id']) ? '&id=' . $_GET['id'] : '')); ?>" id="messageForm" onsubmit="return prepareSubmit()">
                         <?php if ($action === 'edit'): ?>
                         <input type="hidden" name="message_id" value="<?php echo $message_id; ?>">
                         <?php endif; ?>
