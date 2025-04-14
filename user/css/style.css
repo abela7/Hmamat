@@ -756,4 +756,86 @@ a:hover {
     background-color: var(--success-color);
     transition: width 0.6s ease;
     font-weight: 600;
+}
+
+/* Day Selector Styles */
+.day-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.day-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #343a40;
+    text-decoration: none;
+    text-align: center;
+    min-width: 85px;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.day-button:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+    color: #212529;
+    text-decoration: none;
+}
+
+.day-button.active {
+    background: #e7effd;
+    border-color: #3f77e5;
+    color: #1a4198;
+    font-weight: bold;
+}
+
+.day-button.today {
+    background: #e7f7ee;
+    border-color: #28a745;
+}
+
+.day-name {
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+
+.day-date {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.today-marker {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #28a745;
+    color: white;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+    .day-selector {
+        justify-content: center;
+    }
+    
+    .day-button {
+        min-width: 70px;
+        padding: 8px 5px;
+    }
+    
+    .day-name {
+        font-size: 0.9rem;
+    }
 } 
