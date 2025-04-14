@@ -17,7 +17,7 @@ $baptism_name = $user_logged_in ? $_SESSION['baptism_name'] : '';
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?php echo USER_URL; ?>/css/style.css">
+    <link rel="stylesheet" href="../user/css/style.css">
 </head>
 <body>
     <!-- Off-canvas Sidebar -->
@@ -37,28 +37,28 @@ $baptism_name = $user_logged_in ? $_SESSION['baptism_name'] : '';
             <ul class="mobile-menu">
                 <?php if ($user_logged_in): ?>
                 <li class="mobile-menu-item">
-                    <a href="<?php echo USER_URL; ?>/dashboard.php" class="mobile-menu-link <?php echo $current_page == 'dashboard.php' ? 'active' : ''; ?>">
+                    <a href="../user/dashboard.php" class="mobile-menu-link <?php echo $current_page == 'dashboard.php' ? 'active' : ''; ?>">
                         <i class="fas fa-tachometer-alt menu-icon"></i> Dashboard
                     </a>
                 </li>
                 <li class="mobile-menu-item">
-                    <a href="<?php echo USER_URL; ?>/leaderboard.php" class="mobile-menu-link <?php echo $current_page == 'leaderboard.php' ? 'active' : ''; ?>">
+                    <a href="../user/leaderboard.php" class="mobile-menu-link <?php echo $current_page == 'leaderboard.php' ? 'active' : ''; ?>">
                         <i class="fas fa-trophy menu-icon"></i> Leaderboard
                     </a>
                 </li>
                 <li class="mobile-menu-item">
-                    <a href="<?php echo USER_URL; ?>/logout.php" class="mobile-menu-link">
+                    <a href="../user/logout.php" class="mobile-menu-link">
                         <i class="fas fa-sign-out-alt menu-icon"></i> Logout
                     </a>
                 </li>
                 <?php else: ?>
                 <li class="mobile-menu-item">
-                    <a href="<?php echo USER_URL; ?>/login.php" class="mobile-menu-link <?php echo $current_page == 'login.php' ? 'active' : ''; ?>">
+                    <a href="../user/login.php" class="mobile-menu-link <?php echo $current_page == 'login.php' ? 'active' : ''; ?>">
                         <i class="fas fa-sign-in-alt menu-icon"></i> Login
                     </a>
                 </li>
                 <li class="mobile-menu-item">
-                    <a href="<?php echo USER_URL; ?>/register.php" class="mobile-menu-link <?php echo $current_page == 'register.php' ? 'active' : ''; ?>">
+                    <a href="../user/register.php" class="mobile-menu-link <?php echo $current_page == 'register.php' ? 'active' : ''; ?>">
                         <i class="fas fa-user-plus menu-icon"></i> Register
                     </a>
                 </li>
@@ -81,12 +81,12 @@ $baptism_name = $user_logged_in ? $_SESSION['baptism_name'] : '';
                 <!-- Desktop Navigation -->
                 <nav class="nav d-none d-md-flex">
                     <?php if ($user_logged_in): ?>
-                    <a href="<?php echo USER_URL; ?>/dashboard.php" class="nav-link <?php echo $current_page == 'dashboard.php' ? 'active' : ''; ?>">Dashboard</a>
-                    <a href="<?php echo USER_URL; ?>/leaderboard.php" class="nav-link <?php echo $current_page == 'leaderboard.php' ? 'active' : ''; ?>">Leaderboard</a>
-                    <a href="<?php echo USER_URL; ?>/logout.php" class="nav-link">Logout</a>
+                    <a href="../user/dashboard.php" class="nav-link <?php echo $current_page == 'dashboard.php' ? 'active' : ''; ?>">Dashboard</a>
+                    <a href="../user/leaderboard.php" class="nav-link <?php echo $current_page == 'leaderboard.php' ? 'active' : ''; ?>">Leaderboard</a>
+                    <a href="../user/logout.php" class="nav-link">Logout</a>
                     <?php else: ?>
-                    <a href="<?php echo USER_URL; ?>/login.php" class="nav-link <?php echo $current_page == 'login.php' ? 'active' : ''; ?>">Login</a>
-                    <a href="<?php echo USER_URL; ?>/register.php" class="nav-link <?php echo $current_page == 'register.php' ? 'active' : ''; ?>">Register</a>
+                    <a href="../user/login.php" class="nav-link <?php echo $current_page == 'login.php' ? 'active' : ''; ?>">Login</a>
+                    <a href="../user/register.php" class="nav-link <?php echo $current_page == 'register.php' ? 'active' : ''; ?>">Register</a>
                     <?php endif; ?>
                 </nav>
             </div>

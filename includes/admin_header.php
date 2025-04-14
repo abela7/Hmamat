@@ -17,7 +17,7 @@ $admin_username = $admin_logged_in ? $_SESSION['admin_username'] : '';
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?php echo ADMIN_URL; ?>/css/style.css">
+    <link rel="stylesheet" href="../admin/css/style.css">
 </head>
 <body>
     <!-- Off-canvas Sidebar -->
@@ -34,41 +34,49 @@ $admin_username = $admin_logged_in ? $_SESSION['admin_username'] : '';
             </div>
             
             <ul class="mobile-menu">
+                <?php if ($admin_logged_in): ?>
                 <li class="mobile-menu-item">
-                    <a href="<?php echo ADMIN_URL; ?>/index.php" class="mobile-menu-link <?php echo $current_page == 'index.php' ? 'active' : ''; ?>">
+                    <a href="../admin/dashboard.php" class="mobile-menu-link <?php echo $current_page == 'dashboard.php' ? 'active' : ''; ?>">
                         <i class="fas fa-tachometer-alt menu-icon"></i> Dashboard
                     </a>
                 </li>
                 <li class="mobile-menu-item">
-                    <a href="<?php echo ADMIN_URL; ?>/manage_activities.php" class="mobile-menu-link <?php echo $current_page == 'manage_activities.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-tasks menu-icon"></i> Activities
+                    <a href="../admin/activities.php" class="mobile-menu-link <?php echo $current_page == 'activities.php' ? 'active' : ''; ?>">
+                        <i class="fas fa-running menu-icon"></i> Activities
                     </a>
                 </li>
                 <li class="mobile-menu-item">
-                    <a href="<?php echo ADMIN_URL; ?>/manage_reasons.php" class="mobile-menu-link <?php echo $current_page == 'manage_reasons.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-question-circle menu-icon"></i> Miss Reasons
+                    <a href="../admin/miss_reasons.php" class="mobile-menu-link <?php echo $current_page == 'miss_reasons.php' ? 'active' : ''; ?>">
+                        <i class="fas fa-exclamation-circle menu-icon"></i> Miss Reasons
                     </a>
                 </li>
                 <li class="mobile-menu-item">
-                    <a href="<?php echo ADMIN_URL; ?>/manage_messages.php" class="mobile-menu-link <?php echo $current_page == 'manage_messages.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-comment menu-icon"></i> Daily Messages
+                    <a href="../admin/daily_messages.php" class="mobile-menu-link <?php echo $current_page == 'daily_messages.php' ? 'active' : ''; ?>">
+                        <i class="fas fa-comment-dots menu-icon"></i> Daily Messages
                     </a>
                 </li>
                 <li class="mobile-menu-item">
-                    <a href="<?php echo ADMIN_URL; ?>/view_users.php" class="mobile-menu-link <?php echo $current_page == 'view_users.php' ? 'active' : ''; ?>">
+                    <a href="../admin/view_users.php" class="mobile-menu-link <?php echo $current_page == 'view_users.php' ? 'active' : ''; ?>">
                         <i class="fas fa-users menu-icon"></i> Users
                     </a>
                 </li>
                 <li class="mobile-menu-item">
-                    <a href="<?php echo ADMIN_URL; ?>/logout.php" class="mobile-menu-link">
+                    <a href="../admin/logout.php" class="mobile-menu-link">
                         <i class="fas fa-sign-out-alt menu-icon"></i> Logout
                     </a>
                 </li>
+                <?php else: ?>
+                <li class="mobile-menu-item">
+                    <a href="../admin/login.php" class="mobile-menu-link <?php echo $current_page == 'login.php' ? 'active' : ''; ?>">
+                        <i class="fas fa-sign-in-alt menu-icon"></i> Login
+                    </a>
+                </li>
+                <?php endif; ?>
             </ul>
             <?php else: ?>
             <ul class="mobile-menu">
                 <li class="mobile-menu-item">
-                    <a href="<?php echo ADMIN_URL; ?>/login.php" class="mobile-menu-link <?php echo $current_page == 'login.php' ? 'active' : ''; ?>">
+                    <a href="../admin/login.php" class="mobile-menu-link <?php echo $current_page == 'login.php' ? 'active' : ''; ?>">
                         <i class="fas fa-sign-in-alt menu-icon"></i> Login
                     </a>
                 </li>
@@ -89,16 +97,16 @@ $admin_username = $admin_logged_in ? $_SESSION['admin_username'] : '';
                 </button>
                 
                 <!-- Desktop Navigation -->
-                <nav class="nav d-none d-lg-flex">
+                <nav class="nav d-none d-md-flex">
                     <?php if ($admin_logged_in): ?>
-                    <a href="<?php echo ADMIN_URL; ?>/index.php" class="nav-link <?php echo $current_page == 'index.php' ? 'active' : ''; ?>">Dashboard</a>
-                    <a href="<?php echo ADMIN_URL; ?>/manage_activities.php" class="nav-link <?php echo $current_page == 'manage_activities.php' ? 'active' : ''; ?>">Activities</a>
-                    <a href="<?php echo ADMIN_URL; ?>/manage_reasons.php" class="nav-link <?php echo $current_page == 'manage_reasons.php' ? 'active' : ''; ?>">Miss Reasons</a>
-                    <a href="<?php echo ADMIN_URL; ?>/manage_messages.php" class="nav-link <?php echo $current_page == 'manage_messages.php' ? 'active' : ''; ?>">Daily Messages</a>
-                    <a href="<?php echo ADMIN_URL; ?>/view_users.php" class="nav-link <?php echo $current_page == 'view_users.php' ? 'active' : ''; ?>">Users</a>
-                    <a href="<?php echo ADMIN_URL; ?>/logout.php" class="nav-link">Logout</a>
+                    <a href="../admin/dashboard.php" class="nav-link <?php echo $current_page == 'dashboard.php' ? 'active' : ''; ?>">Dashboard</a>
+                    <a href="../admin/activities.php" class="nav-link <?php echo $current_page == 'activities.php' ? 'active' : ''; ?>">Activities</a>
+                    <a href="../admin/miss_reasons.php" class="nav-link <?php echo $current_page == 'miss_reasons.php' ? 'active' : ''; ?>">Miss Reasons</a>
+                    <a href="../admin/daily_messages.php" class="nav-link <?php echo $current_page == 'daily_messages.php' ? 'active' : ''; ?>">Daily Messages</a>
+                    <a href="../admin/view_users.php" class="nav-link <?php echo $current_page == 'view_users.php' ? 'active' : ''; ?>">Users</a>
+                    <a href="../admin/logout.php" class="nav-link">Logout</a>
                     <?php else: ?>
-                    <a href="<?php echo ADMIN_URL; ?>/login.php" class="nav-link <?php echo $current_page == 'login.php' ? 'active' : ''; ?>">Login</a>
+                    <a href="../admin/login.php" class="nav-link <?php echo $current_page == 'login.php' ? 'active' : ''; ?>">Login</a>
                     <?php endif; ?>
                 </nav>
             </div>
