@@ -148,8 +148,10 @@ $leaderboard = array();
 $stmt = $conn->prepare("SELECT u.baptism_name, SUM(ual.points_earned) as total_points
                        FROM users u
                        JOIN user_activity_log ual ON u.id = ual.user_id
+                       LEFT JOIN user_preferences up ON u.id = up.user_id
                        WHERE ual.date_completed >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
                        AND ual.status = 'done'
+                       AND (up.show_on_leaderboard = 1 OR up.show_on_leaderboard IS NULL)
                        GROUP BY u.id
                        ORDER BY total_points DESC
                        LIMIT 10");
@@ -166,12 +168,15 @@ $user_total_points = 0;
 
 $stmt = $conn->prepare("SELECT user_id, total_points, rank
                        FROM (
-                           SELECT user_id, SUM(points_earned) as total_points,
-                           RANK() OVER (ORDER BY SUM(points_earned) DESC) as rank
-                           FROM user_activity_log
-                           WHERE date_completed >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
-                           AND status = 'done'
-                           GROUP BY user_id
+                           SELECT ual.user_id, SUM(ual.points_earned) as total_points,
+                           RANK() OVER (ORDER BY SUM(ual.points_earned) DESC) as rank
+                           FROM user_activity_log ual
+                           JOIN users u ON ual.user_id = u.id
+                           LEFT JOIN user_preferences up ON u.id = up.user_id
+                           WHERE ual.date_completed >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+                           AND ual.status = 'done'
+                           AND (up.show_on_leaderboard = 1 OR up.show_on_leaderboard IS NULL)
+                           GROUP BY ual.user_id
                        ) as rankings
                        WHERE user_id = ?");
 $stmt->bind_param("i", $user_id);
