@@ -7,6 +7,9 @@ require_once '../includes/auth_check.php';
 // Check if admin is logged in
 requireAdminLogin();
 
+// Set page title
+$page_title = "View Users";
+
 // Get admin information
 $admin_id = $_SESSION['admin_id'];
 $admin_username = $_SESSION['admin_username'];
@@ -182,180 +185,125 @@ while ($row = $result->fetch_assoc()) {
     $users[] = $row;
 }
 $stmt->close();
+
+// Include header
+include_once '../includes/admin_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Users - <?php echo APP_NAME; ?></title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-    <div class="admin-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <div class="admin-logo"><?php echo APP_NAME; ?> Admin</div>
+
+<div class="admin-header">
+    <h1 class="page-title">View Users</h1>
+</div>
+
+<?php if (!empty($error)): ?>
+<div class="alert alert-danger"><?php echo $error; ?></div>
+<?php endif; ?>
+
+<?php if (!empty($success)): ?>
+<div class="alert alert-success"><?php echo $success; ?></div>
+<?php endif; ?>
+
+<!-- Search and Filter -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="row g-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search by baptism name or email" name="search" value="<?php echo htmlspecialchars($search); ?>">
+                    <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
+                </div>
             </div>
-            
-            <ul class="sidebar-menu">
-                <li class="sidebar-menu-item">
-                    <a href="index.php" class="sidebar-menu-link">
-                        <i class="fas fa-tachometer-alt sidebar-menu-icon"></i> Dashboard
+            <div class="col-md-4">
+                <select class="form-select" name="role" onchange="this.form.submit()">
+                    <option value="">All Roles</option>
+                    <option value="user" <?php echo $role_filter === 'user' ? 'selected' : ''; ?>>Regular Users</option>
+                    <option value="admin" <?php echo $role_filter === 'admin' ? 'selected' : ''; ?>>Admins</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <a href="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="btn btn-secondary w-100">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Users List -->
+<div class="card">
+    <div class="card-body">
+        <?php if (count($users) > 0): ?>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Baptism Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Last Login</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($users as $user): ?>
+                    <tr>
+                        <td><?php echo $user['id']; ?></td>
+                        <td><?php echo htmlspecialchars($user['baptism_name']); ?></td>
+                        <td><?php echo htmlspecialchars($user['email'] ?? 'Not set'); ?></td>
+                        <td>
+                            <span class="badge <?php echo $user['role'] === 'admin' ? 'bg-danger' : 'bg-primary'; ?>">
+                                <?php echo ucfirst($user['role'] ?? 'user'); ?>
+                            </span>
+                        </td>
+                        <td><?php echo $user['last_login'] ? date('M d, Y H:i', strtotime($user['last_login'])) : 'Never'; ?></td>
+                        <td><?php echo date('M d, Y', strtotime($user['created_at'])); ?></td>
+                        <td>
+                            <div class="btn-group">
+                                <?php if ($user['role'] !== 'admin'): ?>
+                                <a href="?action=make_admin&id=<?php echo $user['id']; ?>" class="btn btn-sm btn-warning" onclick="return confirm('Are you sure you want to make this user an admin?');"><i class="fas fa-user-shield"></i> <span class="d-none d-md-inline">Make Admin</span></a>
+                                <?php else: ?>
+                                <a href="?action=remove_admin&id=<?php echo $user['id']; ?>" class="btn btn-sm btn-secondary" onclick="return confirm('Are you sure you want to remove admin privileges?');"><i class="fas fa-user"></i> <span class="d-none d-md-inline">Remove Admin</span></a>
+                                <?php endif; ?>
+                                <a href="?action=delete&id=<?php echo $user['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this user? This action cannot be undone.');"><i class="fas fa-trash"></i> <span class="d-none d-md-inline">Delete</span></a>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        <?php if ($total_pages > 1): ?>
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mt-4">
+                <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
+                    <a class="page-link" href="?page=<?php echo $page-1; ?>&search=<?php echo urlencode($search); ?>&role=<?php echo urlencode($role_filter); ?>" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
-                <li class="sidebar-menu-item">
-                    <a href="manage_activities.php" class="sidebar-menu-link">
-                        <i class="fas fa-tasks sidebar-menu-icon"></i> Activities
-                    </a>
+                
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                <li class="page-item <?php echo $page == $i ? 'active' : ''; ?>">
+                    <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&role=<?php echo urlencode($role_filter); ?>"><?php echo $i; ?></a>
                 </li>
-                <li class="sidebar-menu-item">
-                    <a href="manage_reasons.php" class="sidebar-menu-link">
-                        <i class="fas fa-question-circle sidebar-menu-icon"></i> Miss Reasons
-                    </a>
-                </li>
-                <li class="sidebar-menu-item">
-                    <a href="manage_messages.php" class="sidebar-menu-link">
-                        <i class="fas fa-comment sidebar-menu-icon"></i> Daily Messages
-                    </a>
-                </li>
-                <li class="sidebar-menu-item">
-                    <a href="view_users.php" class="sidebar-menu-link active">
-                        <i class="fas fa-users sidebar-menu-icon"></i> Users
-                    </a>
-                </li>
-                <li class="sidebar-menu-item">
-                    <a href="logout.php" class="sidebar-menu-link">
-                        <i class="fas fa-sign-out-alt sidebar-menu-icon"></i> Logout
+                <?php endfor; ?>
+                
+                <li class="page-item <?php echo $page >= $total_pages ? 'disabled' : ''; ?>">
+                    <a class="page-link" href="?page=<?php echo $page+1; ?>&search=<?php echo urlencode($search); ?>&role=<?php echo urlencode($role_filter); ?>" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
             </ul>
-        </div>
+        </nav>
+        <?php endif; ?>
         
-        <!-- Main Content -->
-        <div class="admin-content">
-            <div class="admin-header">
-                <h1 class="page-title">View Users</h1>
-            </div>
-            
-            <?php if (!empty($error)): ?>
-            <div class="alert alert-danger"><?php echo $error; ?></div>
-            <?php endif; ?>
-            
-            <?php if (!empty($success)): ?>
-            <div class="alert alert-success"><?php echo $success; ?></div>
-            <?php endif; ?>
-            
-            <!-- Search and Filter -->
-            <div class="card mb-4">
-                <div class="card-body">
-                    <form method="get" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="row g-3">
-                        <div class="col-md-6">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Search by baptism name or email" name="search" value="<?php echo htmlspecialchars($search); ?>">
-                                <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <select class="form-select" name="role" onchange="this.form.submit()">
-                                <option value="">All Roles</option>
-                                <option value="user" <?php echo $role_filter === 'user' ? 'selected' : ''; ?>>Regular Users</option>
-                                <option value="admin" <?php echo $role_filter === 'admin' ? 'selected' : ''; ?>>Admins</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <a href="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="btn btn-secondary w-100">Reset</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            
-            <!-- Users List -->
-            <div class="card">
-                <div class="card-body">
-                    <?php if (count($users) > 0): ?>
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Baptism Name</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Last Login</th>
-                                    <th>Created</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($users as $user): ?>
-                                <tr>
-                                    <td><?php echo $user['id']; ?></td>
-                                    <td><?php echo htmlspecialchars($user['baptism_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($user['email'] ?? 'Not set'); ?></td>
-                                    <td>
-                                        <span class="badge <?php echo $user['role'] === 'admin' ? 'bg-danger' : 'bg-primary'; ?>">
-                                            <?php echo ucfirst($user['role']); ?>
-                                        </span>
-                                    </td>
-                                    <td><?php echo $user['last_login'] ? date('M d, Y H:i', strtotime($user['last_login'])) : 'Never'; ?></td>
-                                    <td><?php echo date('M d, Y', strtotime($user['created_at'])); ?></td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <?php if ($user['role'] !== 'admin'): ?>
-                                            <a href="?action=make_admin&id=<?php echo $user['id']; ?>" class="btn btn-sm btn-warning" onclick="return confirm('Are you sure you want to make this user an admin?');"><i class="fas fa-user-shield"></i> Make Admin</a>
-                                            <?php else: ?>
-                                            <a href="?action=remove_admin&id=<?php echo $user['id']; ?>" class="btn btn-sm btn-secondary" onclick="return confirm('Are you sure you want to remove admin privileges?');"><i class="fas fa-user"></i> Remove Admin</a>
-                                            <?php endif; ?>
-                                            <a href="?action=delete&id=<?php echo $user['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this user? This action cannot be undone.');"><i class="fas fa-trash"></i> Delete</a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- Pagination -->
-                    <?php if ($total_pages > 1): ?>
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center mt-4">
-                            <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
-                                <a class="page-link" href="?page=<?php echo $page-1; ?>&search=<?php echo urlencode($search); ?>&role=<?php echo urlencode($role_filter); ?>" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
-                            
-                            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                            <li class="page-item <?php echo $page == $i ? 'active' : ''; ?>">
-                                <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&role=<?php echo urlencode($role_filter); ?>"><?php echo $i; ?></a>
-                            </li>
-                            <?php endfor; ?>
-                            
-                            <li class="page-item <?php echo $page >= $total_pages ? 'disabled' : ''; ?>">
-                                <a class="page-link" href="?page=<?php echo $page+1; ?>&search=<?php echo urlencode($search); ?>&role=<?php echo urlencode($role_filter); ?>" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                    <?php endif; ?>
-                    
-                    <?php else: ?>
-                    <div class="alert alert-info">No users found.</div>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
+        <?php else: ?>
+        <div class="alert alert-info">No users found.</div>
+        <?php endif; ?>
     </div>
+</div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html> 
+<?php
+// Include footer
+include_once '../includes/admin_footer.php';
+?> 

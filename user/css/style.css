@@ -69,12 +69,32 @@ a:hover {
     background-color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-.header .container {
+.navbar-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.navbar-toggle {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s;
+}
+
+.navbar-toggle:hover {
+    color: var(--dark-color);
 }
 
 .logo {
@@ -92,10 +112,76 @@ a:hover {
 .nav-link {
     color: var(--text-color);
     font-weight: 500;
+    position: relative;
 }
 
 .nav-link:hover {
     color: var(--primary-color);
+}
+
+.nav-link.active {
+    color: var(--primary-color);
+}
+
+.nav-link.active:after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: var(--primary-color);
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+}
+
+/* Mobile Menu */
+.mobile-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mobile-menu-item {
+    margin-bottom: 1rem;
+}
+
+.mobile-menu-link {
+    display: flex;
+    align-items: center;
+    color: var(--text-color);
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.mobile-menu-link:hover {
+    background-color: rgba(218, 165, 32, 0.1);
+    color: var(--primary-color);
+}
+
+.mobile-menu-link.active {
+    background-color: rgba(218, 165, 32, 0.2);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.menu-icon {
+    margin-right: 0.75rem;
+    width: 20px;
+    text-align: center;
+}
+
+.user-info {
+    padding: 1rem;
+    border-bottom: 1px solid var(--bg-color);
+    margin-bottom: 1rem;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--dark-color);
 }
 
 /* Main content */
@@ -400,12 +486,12 @@ a:hover {
 
 /* Media Queries */
 @media (max-width: 768px) {
-    .header .container {
-        flex-direction: column;
+    .header {
+        padding: 0.75rem 0;
     }
     
     .logo {
-        margin-bottom: 1rem;
+        font-size: 1.3rem;
     }
     
     .progress-tracker {
@@ -415,6 +501,14 @@ a:hover {
     .progress-day {
         flex-basis: calc(25% - 0.5rem);
         margin-bottom: 0.5rem;
+    }
+    
+    .main {
+        padding-top: 1rem;
+    }
+    
+    .card {
+        padding: 1rem;
     }
 }
 
@@ -436,5 +530,14 @@ a:hover {
     
     .modal-content {
         width: 95%;
+    }
+    
+    .countdown-info {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .card-title {
+        font-size: 1.1rem;
     }
 } 

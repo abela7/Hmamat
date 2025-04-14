@@ -7,6 +7,9 @@ require_once '../includes/auth_check.php';
 // Check if user is logged in
 requireUserLogin();
 
+// Set page title
+$page_title = "Dashboard";
+
 // Get user information
 $user_id = $_SESSION['user_id'];
 $baptism_name = $_SESSION['baptism_name'];
@@ -182,300 +185,270 @@ if ($row = $result->fetch_assoc()) {
     $user_total_points = 0;
 }
 $stmt->close();
+
+// Include header
+include_once '../includes/user_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - <?php echo APP_NAME; ?></title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-    <header class="header">
-        <div class="container">
-            <div class="logo"><?php echo APP_NAME; ?></div>
-            <nav class="nav">
-                <a href="dashboard.php" class="nav-link active">Dashboard</a>
-                <a href="leaderboard.php" class="nav-link">Leaderboard</a>
-                <a href="logout.php" class="nav-link">Logout</a>
-            </nav>
-        </div>
-    </header>
 
-    <main class="main">
-        <div class="container">
-            <!-- Daily Message -->
-            <?php if (!empty($daily_message)): ?>
-            <div class="daily-message">
-                <p class="mb-0"><?php echo htmlspecialchars($daily_message); ?></p>
-            </div>
-            <?php endif; ?>
-            
-            <!-- Easter Countdown -->
-            <div class="card mb-4">
-                <h3 class="card-title">
-                    <?php if ($easter_passed): ?>
-                        Easter Sunday has passed
-                    <?php else: ?>
-                        Countdown to Easter Sunday
-                    <?php endif; ?>
-                </h3>
-                <div class="p-3">
-                    <?php if (!$easter_passed): ?>
-                        <div class="easter-countdown">
-                            <div class="countdown-info mb-2">
-                                <div class="countdown-date">
-                                    <strong>Easter Date:</strong> <?php echo date('F j, Y', $easter); ?>
-                                </div>
-                                <div class="countdown-remaining">
-                                    <strong>Remaining:</strong> 
-                                    <?php if ($remaining_days > 0): ?>
-                                        <?php echo $remaining_days; ?> day<?php echo $remaining_days != 1 ? 's' : ''; ?> 
-                                    <?php endif; ?>
-                                    <?php echo $remaining_hours; ?> hour<?php echo $remaining_hours != 1 ? 's' : ''; ?>
-                                </div>
-                            </div>
-                            <div class="progress" style="height: 25px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: <?php echo $progress_percentage; ?>%;" 
-                                     aria-valuenow="<?php echo $progress_percentage; ?>" aria-valuemin="0" aria-valuemax="100">
-                                    <?php echo $progress_percentage; ?>%
-                                </div>
-                            </div>
-                            <div class="text-center mt-2">
-                                <small class="text-muted">Holy Week Progress</small>
-                            </div>
-                        </div>
-                    <?php else: ?>
-                        <div class="text-center py-2">
-                            <p>Christ is Risen! Easter Sunday was on <?php echo date('F j, Y', $easter); ?></p>
-                            <div class="progress" style="height: 25px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: 100%;" 
-                                     aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                                    Completed 100%
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
+<!-- Daily Message -->
+<?php if (!empty($daily_message)): ?>
+<div class="daily-message">
+    <p class="mb-0"><?php echo htmlspecialchars($daily_message); ?></p>
+</div>
+<?php endif; ?>
 
-            <!-- Progress Tracker -->
-            <div class="card mb-4">
-                <h3 class="card-title">Your 7-Day Journey</h3>
-                <div class="progress-tracker">
-                    <?php foreach ($progress as $date => $day): ?>
-                    <div class="progress-day <?php echo $day['is_today'] ? 'active' : ''; ?> <?php echo $day['activities_done'] > 0 ? 'completed' : ''; ?>">
-                        <div class="progress-day-name"><?php echo $day['day_name']; ?></div>
-                        <div class="progress-day-points"><?php echo $day['points']; ?></div>
+<!-- Easter Countdown -->
+<div class="card mb-4">
+    <h3 class="card-title">
+        <?php if ($easter_passed): ?>
+            Easter Sunday has passed
+        <?php else: ?>
+            Countdown to Easter Sunday
+        <?php endif; ?>
+    </h3>
+    <div class="p-3">
+        <?php if (!$easter_passed): ?>
+            <div class="easter-countdown">
+                <div class="countdown-info mb-2">
+                    <div class="countdown-date">
+                        <strong>Easter Date:</strong> <?php echo date('F j, Y', $easter); ?>
                     </div>
-                    <?php endforeach; ?>
+                    <div class="countdown-remaining">
+                        <strong>Remaining:</strong> 
+                        <?php if ($remaining_days > 0): ?>
+                            <?php echo $remaining_days; ?> day<?php echo $remaining_days != 1 ? 's' : ''; ?> 
+                        <?php endif; ?>
+                        <?php echo $remaining_hours; ?> hour<?php echo $remaining_hours != 1 ? 's' : ''; ?>
+                    </div>
                 </div>
-                <div class="text-center">
-                    <p>Your current rank: <strong><?php echo $user_rank; ?></strong> with <strong><?php echo $user_total_points; ?></strong> points</p>
+                <div class="progress" style="height: 25px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: <?php echo $progress_percentage; ?>%;" 
+                         aria-valuenow="<?php echo $progress_percentage; ?>" aria-valuemin="0" aria-valuemax="100">
+                        <?php echo $progress_percentage; ?>%
+                    </div>
+                </div>
+                <div class="text-center mt-2">
+                    <small class="text-muted">Holy Week Progress</small>
                 </div>
             </div>
-
-            <!-- Today's Activities -->
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Today's Spiritual Activities</h3>
+        <?php else: ?>
+            <div class="text-center py-2">
+                <p>Christ is Risen! Easter Sunday was on <?php echo date('F j, Y', $easter); ?></p>
+                <div class="progress" style="height: 25px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%;" 
+                         aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                        Completed 100%
+                    </div>
                 </div>
-                
-                <?php if (empty($activities)): ?>
-                <p class="p-3 text-center">No activities available for today.</p>
-                <?php else: ?>
-                <ul class="activity-list">
-                    <?php foreach ($activities as $activity): ?>
-                    <li class="activity-item" id="activity-<?php echo $activity['id']; ?>">
-                        <div>
-                            <div class="activity-name"><?php echo htmlspecialchars($activity['name']); ?></div>
-                            <?php if (!empty($activity['description'])): ?>
-                            <div class="activity-description"><?php echo htmlspecialchars($activity['description']); ?></div>
-                            <?php endif; ?>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <div class="activity-points me-3"><?php echo $activity['default_points']; ?></div>
-                            <div class="activity-actions">
-                                <?php if (!isset($completed_activities[$activity['id']])): ?>
-                                <button class="btn btn-sm btn-success mark-done" data-activity-id="<?php echo $activity['id']; ?>">Done</button>
-                                <button class="btn btn-sm btn-secondary mark-not-done" data-activity-id="<?php echo $activity['id']; ?>">Not Done</button>
-                                <?php elseif ($completed_activities[$activity['id']] == 'done'): ?>
-                                <span class="badge bg-success">Completed</span>
-                                <?php else: ?>
-                                <span class="badge bg-secondary">Not Completed</span>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </li>
-                    <?php endforeach; ?>
-                </ul>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+
+<!-- Progress Tracker -->
+<div class="card mb-4">
+    <h3 class="card-title">Your 7-Day Journey</h3>
+    <div class="progress-tracker">
+        <?php foreach ($progress as $date => $day): ?>
+        <div class="progress-day <?php echo $day['is_today'] ? 'active' : ''; ?> <?php echo $day['activities_done'] > 0 ? 'completed' : ''; ?>">
+            <div class="progress-day-name"><?php echo $day['day_name']; ?></div>
+            <div class="progress-day-points"><?php echo $day['points']; ?></div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+    <div class="text-center">
+        <p>Your current rank: <strong><?php echo $user_rank; ?></strong> with <strong><?php echo $user_total_points; ?></strong> points</p>
+    </div>
+</div>
+
+<!-- Today's Activities -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Today's Spiritual Activities</h3>
+    </div>
+    
+    <?php if (empty($activities)): ?>
+    <p class="p-3 text-center">No activities available for today.</p>
+    <?php else: ?>
+    <ul class="activity-list">
+        <?php foreach ($activities as $activity): ?>
+        <li class="activity-item" id="activity-<?php echo $activity['id']; ?>">
+            <div>
+                <div class="activity-name"><?php echo htmlspecialchars($activity['name']); ?></div>
+                <?php if (!empty($activity['description'])): ?>
+                <div class="activity-description"><?php echo htmlspecialchars($activity['description']); ?></div>
                 <?php endif; ?>
             </div>
-
-            <!-- Leaderboard Preview -->
-            <div class="card mt-4">
-                <div class="card-header">
-                    <h3 class="card-title">Top Participants</h3>
+            <div class="d-flex align-items-center">
+                <div class="activity-points me-3"><?php echo $activity['default_points']; ?></div>
+                <div class="activity-actions">
+                    <?php if (!isset($completed_activities[$activity['id']])): ?>
+                    <button class="btn btn-sm btn-success mark-done" data-activity-id="<?php echo $activity['id']; ?>">Done</button>
+                    <button class="btn btn-sm btn-secondary mark-not-done" data-activity-id="<?php echo $activity['id']; ?>">Not Done</button>
+                    <?php elseif ($completed_activities[$activity['id']] == 'done'): ?>
+                    <span class="badge bg-success">Completed</span>
+                    <?php else: ?>
+                    <span class="badge bg-secondary">Not Completed</span>
+                    <?php endif; ?>
                 </div>
-                
-                <?php if (empty($leaderboard)): ?>
-                <p class="p-3 text-center">No data available for the leaderboard yet.</p>
-                <?php else: ?>
-                <div class="p-3">
-                    <?php for ($i = 0; $i < min(5, count($leaderboard)); $i++): ?>
-                    <div class="leaderboard-item">
-                        <div class="leaderboard-rank"><?php echo $i + 1; ?></div>
-                        <div class="leaderboard-name"><?php echo htmlspecialchars($leaderboard[$i]['baptism_name']); ?></div>
-                        <div class="leaderboard-points"><?php echo $leaderboard[$i]['total_points']; ?> points</div>
-                    </div>
-                    <?php endfor; ?>
-                    
-                    <div class="text-center mt-3">
-                        <a href="leaderboard.php" class="btn btn-outline">View Full Leaderboard</a>
-                    </div>
-                </div>
-                <?php endif; ?>
             </div>
-        </div>
-    </main>
+        </li>
+        <?php endforeach; ?>
+    </ul>
+    <?php endif; ?>
+</div>
 
-    <footer class="footer">
-        <div class="container">
-            <p class="mb-0">&copy; <?php echo date('Y'); ?> <?php echo APP_NAME; ?> - <?php echo APP_FULL_NAME; ?></p>
+<!-- Leaderboard Preview -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h3 class="card-title">Top Participants</h3>
+    </div>
+    
+    <?php if (empty($leaderboard)): ?>
+    <p class="p-3 text-center">No data available for the leaderboard yet.</p>
+    <?php else: ?>
+    <div class="p-3">
+        <?php for ($i = 0; $i < min(5, count($leaderboard)); $i++): ?>
+        <div class="leaderboard-item">
+            <div class="leaderboard-rank"><?php echo $i + 1; ?></div>
+            <div class="leaderboard-name"><?php echo htmlspecialchars($leaderboard[$i]['baptism_name']); ?></div>
+            <div class="leaderboard-points"><?php echo $leaderboard[$i]['total_points']; ?> points</div>
         </div>
-    </footer>
-
-    <!-- Not Done Modal -->
-    <div class="modal" id="notDoneModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Why couldn't you complete this activity?</h3>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="notDoneForm">
-                    <input type="hidden" id="activity_id" name="activity_id">
-                    
-                    <div class="form-group mb-3">
-                        <label for="reason_id" class="form-label">Please select a reason:</label>
-                        <select class="form-control" id="reason_id" name="reason_id" required>
-                            <option value="">Select a reason</option>
-                            <?php foreach ($miss_reasons as $id => $reason): ?>
-                            <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($reason); ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-block">Submit</button>
-                    </div>
-                </form>
-            </div>
+        <?php endfor; ?>
+        
+        <div class="text-center mt-3">
+            <a href="leaderboard.php" class="btn btn-outline">View Full Leaderboard</a>
         </div>
     </div>
+    <?php endif; ?>
+</div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
-    <script>
-    $(document).ready(function() {
-        // Mark activity as done
-        $(".mark-done").click(function() {
-            const activityId = $(this).data("activity-id");
-            
-            $.ajax({
-                url: "submit_activity.php",
-                method: "POST",
-                data: {
-                    activity_id: activityId,
-                    status: 'done'
-                },
-                dataType: "json",
-                success: function(response) {
-                    if (response.success) {
-                        // Update UI
-                        $(`#activity-${activityId} .activity-actions`).html('<span class="badge bg-success">Completed</span>');
-                        
-                        // Optional: Update points display
-                        // You might want to refresh the page to show updated progress
-                        setTimeout(function() {
-                            location.reload();
-                        }, 1000);
-                    } else {
-                        alert("Error: " + response.message);
-                    }
-                },
-                error: function() {
-                    alert("An error occurred. Please try again.");
+<!-- Not Done Modal -->
+<div class="modal" id="notDoneModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Why couldn't you complete this activity?</h3>
+            <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="notDoneForm">
+                <input type="hidden" id="activity_id" name="activity_id">
+                
+                <div class="form-group mb-3">
+                    <label for="reason_id" class="form-label">Please select a reason:</label>
+                    <select class="form-control" id="reason_id" name="reason_id" required>
+                        <option value="">Select a reason</option>
+                        <?php foreach ($miss_reasons as $id => $reason): ?>
+                        <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($reason); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-block">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<?php
+// Page-specific scripts
+$page_scripts = <<<EOT
+<script>
+$(document).ready(function() {
+    // Mark activity as done
+    $(".mark-done").click(function() {
+        const activityId = $(this).data("activity-id");
+        
+        $.ajax({
+            url: "submit_activity.php",
+            method: "POST",
+            data: {
+                activity_id: activityId,
+                status: 'done'
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response.success) {
+                    // Update UI
+                    $(`#activity-\${activityId} .activity-actions`).html('<span class="badge bg-success">Completed</span>');
+                    
+                    // Optional: Update points display
+                    // You might want to refresh the page to show updated progress
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    alert("Error: " + response.message);
                 }
-            });
-        });
-        
-        // Open modal for not done
-        $(".mark-not-done").click(function() {
-            const activityId = $(this).data("activity-id");
-            $("#activity_id").val(activityId);
-            $("#notDoneModal").css("display", "flex");
-        });
-        
-        // Close modal
-        $(".close-modal").click(function() {
-            $("#notDoneModal").hide();
-        });
-        
-        // Submit not done form
-        $("#notDoneForm").submit(function(e) {
-            e.preventDefault();
-            
-            const activityId = $("#activity_id").val();
-            const reasonId = $("#reason_id").val();
-            
-            $.ajax({
-                url: "submit_activity.php",
-                method: "POST",
-                data: {
-                    activity_id: activityId,
-                    status: 'not_done',
-                    reason_id: reasonId
-                },
-                dataType: "json",
-                success: function(response) {
-                    if (response.success) {
-                        // Close modal
-                        $("#notDoneModal").hide();
-                        
-                        // Update UI
-                        $(`#activity-${activityId} .activity-actions`).html('<span class="badge bg-secondary">Not Completed</span>');
-                        
-                        // Optional: refresh the page
-                        setTimeout(function() {
-                            location.reload();
-                        }, 1000);
-                    } else {
-                        alert("Error: " + response.message);
-                    }
-                },
-                error: function() {
-                    alert("An error occurred. Please try again.");
-                }
-            });
-        });
-        
-        // Close modal when clicking outside
-        $(window).click(function(e) {
-            if ($(e.target).is("#notDoneModal")) {
-                $("#notDoneModal").hide();
+            },
+            error: function() {
+                alert("An error occurred. Please try again.");
             }
         });
     });
-    </script>
-</body>
-</html> 
+    
+    // Open modal for not done
+    $(".mark-not-done").click(function() {
+        const activityId = $(this).data("activity-id");
+        $("#activity_id").val(activityId);
+        $("#notDoneModal").css("display", "flex");
+    });
+    
+    // Close modal
+    $(".close-modal").click(function() {
+        $("#notDoneModal").hide();
+    });
+    
+    // Submit not done form
+    $("#notDoneForm").submit(function(e) {
+        e.preventDefault();
+        
+        const activityId = $("#activity_id").val();
+        const reasonId = $("#reason_id").val();
+        
+        $.ajax({
+            url: "submit_activity.php",
+            method: "POST",
+            data: {
+                activity_id: activityId,
+                status: 'not_done',
+                reason_id: reasonId
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response.success) {
+                    // Close modal
+                    $("#notDoneModal").hide();
+                    
+                    // Update UI
+                    $(`#activity-\${activityId} .activity-actions`).html('<span class="badge bg-secondary">Not Completed</span>');
+                    
+                    // Optional: refresh the page
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    alert("Error: " + response.message);
+                }
+            },
+            error: function() {
+                alert("An error occurred. Please try again.");
+            }
+        });
+    });
+    
+    // Close modal when clicking outside
+    $(window).click(function(e) {
+        if ($(e.target).is("#notDoneModal")) {
+            $("#notDoneModal").hide();
+        }
+    });
+});
+</script>
+EOT;
+
+// Include footer
+include_once '../includes/user_footer.php';
+?> 
