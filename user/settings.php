@@ -230,10 +230,10 @@ include_once '../includes/user_header.php';
                                 <input class="form-check-input" type="checkbox" id="show-on-leaderboard" 
                                        name="show_on_leaderboard" <?php echo $show_on_leaderboard ? 'checked' : ''; ?>>
                                 <label class="form-check-label" for="show-on-leaderboard">
-                                    <?php echo $language === 'am' ? 'በንግድ ሰሌዳ ላይ አሳይ' : 'Show on leaderboard'; ?>
+                                    <?php echo $language === 'am' ? 'ስሜን በምዕመናን ሰሌዳ ላይ አሳይ' : 'Show on leaderboard'; ?>
                                 </label>
                                 <div class="form-text">
-                                    <?php echo $language === 'am' ? 'ይህን ካጠፉት፣ በመሪ ሰሌዳ ላይ አይታዩም።' : 'If turned off, you will not appear on the leaderboard.'; ?>
+                                    <?php echo $language === 'am' ? 'ይህን ካጠፉት፣ በምዕመናን ሰሌዳ ላይ አይታዩም።' : 'If turned off, you will not appear on the leaderboard.'; ?>
                                 </div>
                             </div>
                         </div>
@@ -250,14 +250,14 @@ include_once '../includes/user_header.php';
                     <!-- Reset Progress -->
                     <div class="settings-section mb-4">
                         <h3 class="settings-heading danger-text">
-                            <?php echo $language === 'am' ? 'እድገት ዳግም ያስጀምሩ' : 'Reset Progress'; ?>
+                            <?php echo $language === 'am' ? 'የሙሉትን ዳታ እንደ አዲስ ያስጀምሩ' : 'Reset Progress'; ?>
                         </h3>
                         <p class="text-muted">
-                            <?php echo $language === 'am' ? 'ይህ የእርስዎን ሁሉንም ነጥቦች እና ሪኮርዶች ይሰርዛል። ይህ እርምጃ ተመልሶ ሊወሰድ አይችልም።' : 'This will delete all your points and activity records. This action cannot be undone.'; ?>
+                            <?php echo $language === 'am' ? 'ይህ የእርስዎን ሁሉንም ነጥቦች እና ሪኮርዶች ይሰርዛል። ይህንን አንዴ ከጠፋ መመለስ አይቻልም!' : 'This will delete all your points and activity records. This action cannot be undone.'; ?>
                         </p>
                         <form method="post" action="settings.php" onsubmit="return confirm('<?php echo $language === 'am' ? 'እርግጠኛ ነዎት? ይህ እርምጃ ሁሉንም ሪኮርዶችዎን ይሰርዛል።' : 'Are you sure? This will delete all your records.'; ?>');">
                             <button type="submit" name="reset_progress" class="btn btn-danger">
-                                <?php echo $language === 'am' ? 'እድገት ዳግም ያስጀምሩ' : 'Reset Progress'; ?>
+                                <?php echo $language === 'am' ? 'የሙሉትን ዳታ እንደ አዲስ ያስጀምሩ' : 'Reset Progress'; ?>
                             </button>
                         </form>
                     </div>
@@ -268,7 +268,7 @@ include_once '../includes/user_header.php';
                             <?php echo $language === 'am' ? 'መለያ ሰርዝ' : 'Delete Account'; ?>
                         </h3>
                         <p class="text-muted">
-                            <?php echo $language === 'am' ? 'መለያዎን መሰረዝ ሁሉንም ውሂብዎን እና መለያዎን በቋሚነት ይሰርዛል። ይህ እርምጃ ተመልሶ ሊወሰድ አይችልም።' : 'Deleting your account will permanently remove all your data and account. This action cannot be undone.'; ?>
+                            <?php echo $language === 'am' ? 'መለያዎን መሰረዝ ሁሉንም ዳታ እና መለያዎን በቋሚነት ይሰርዛል። ይህ እርምጃ ተመልሶ ሊወሰድ አይችልም።' : 'Deleting your account will permanently remove all your data and account. This action cannot be undone.'; ?>
                         </p>
                         <form method="post" action="settings.php" onsubmit="return confirm('<?php echo $language === 'am' ? 'እርግጠኛ ነዎት? ይህ እርምጃ መለያዎን በቋሚነት ይሰርዛል።' : 'Are you sure? This will permanently delete your account.'; ?>');">
                             <div class="input-group mb-3">
