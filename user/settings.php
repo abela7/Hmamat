@@ -250,14 +250,14 @@ include_once '../includes/user_header.php';
                     <!-- Reset Progress -->
                     <div class="settings-section mb-4">
                         <h3 class="settings-heading danger-text">
-                            <?php echo $language === 'am' ? 'የሙሉትን ዳታ እንደ አዲስ ያስጀምሩ' : 'Reset Progress'; ?>
+                            <?php echo $language === 'am' ? 'የሞሉትን መረጃ እንደ አዲስ ያስጀምሩ' : 'Reset Progress'; ?>
                         </h3>
                         <p class="text-muted">
                             <?php echo $language === 'am' ? 'ይህ የእርስዎን ሁሉንም ነጥቦች እና ሪኮርዶች ይሰርዛል። ይህንን አንዴ ከጠፋ መመለስ አይቻልም!' : 'This will delete all your points and activity records. This action cannot be undone.'; ?>
                         </p>
                         <form method="post" action="settings.php" onsubmit="return confirm('<?php echo $language === 'am' ? 'እርግጠኛ ነዎት? ይህ እርምጃ ሁሉንም ሪኮርዶችዎን ይሰርዛል።' : 'Are you sure? This will delete all your records.'; ?>');">
                             <button type="submit" name="reset_progress" class="btn btn-danger">
-                                <?php echo $language === 'am' ? 'የሙሉትን ዳታ እንደ አዲስ ያስጀምሩ' : 'Reset Progress'; ?>
+                                <?php echo $language === 'am' ? 'የሞሉትን መረጃ  እንደ አዲስ ያስጀምሩ' : 'Reset Progress'; ?>
                             </button>
                         </form>
                     </div>
@@ -265,16 +265,16 @@ include_once '../includes/user_header.php';
                     <!-- Delete Account -->
                     <div class="settings-section mb-4">
                         <h3 class="settings-heading danger-text">
-                            <?php echo $language === 'am' ? 'መለያ ሰርዝ' : 'Delete Account'; ?>
+                            <?php echo $language === 'am' ? 'አካዉንት ሰርዝ' : 'Delete Account'; ?>
                         </h3>
                         <p class="text-muted">
-                            <?php echo $language === 'am' ? 'መለያዎን መሰረዝ ሁሉንም ዳታ እና መለያዎን በቋሚነት ይሰርዛል። ይህ እርምጃ ተመልሶ ሊወሰድ አይችልም።' : 'Deleting your account will permanently remove all your data and account. This action cannot be undone.'; ?>
+                            <?php echo $language === 'am' ? 'አካዉንት መሰረዝ ሁሉንም መረጃ በቋሚነት ያጠፋል!' : 'Deleting your account will permanently remove all your data and account. This action cannot be undone.'; ?>
                         </p>
-                        <form method="post" action="settings.php" onsubmit="return confirm('<?php echo $language === 'am' ? 'እርግጠኛ ነዎት? ይህ እርምጃ መለያዎን በቋሚነት ይሰርዛል።' : 'Are you sure? This will permanently delete your account.'; ?>');">
+                        <form method="post" action="settings.php" onsubmit="return confirm('<?php echo $language === 'am' ? 'እርግጠኛ ነዎት? ይህ እርምጃ አካዉንትዎን በቋሚነት ይሰርዛል።' : 'Are you sure? This will permanently delete your account.'; ?>');">
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" name="confirm_delete" placeholder="<?php echo $language === 'am' ? 'ለማረጋገጥ DELETE ይጻፉ' : 'Type DELETE to confirm'; ?>">
                                 <button type="submit" name="delete_account" class="btn btn-danger">
-                                    <?php echo $language === 'am' ? 'መለያ ሰርዝ' : 'Delete Account'; ?>
+                                    <?php echo $language === 'am' ? 'አካዉንት ሰርዝ' : 'Delete Account'; ?>
                                 </button>
                             </div>
                         </form>
