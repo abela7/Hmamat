@@ -276,9 +276,9 @@ include_once '../includes/user_header.php';
 
 <!-- Daily Message -->
 <?php if (!empty($daily_message)): ?>
-<div class="daily-message mb-4 p-3 rounded" style="color: #301934;">
-    <p class="mb-0" style="white-space: pre-wrap;">
-<?php echo nl2br(htmlspecialchars($daily_message)); // Use nl2br to preserve line breaks and htmlspecialchars for safety ?>
+<div class="daily-message mb-4 p-3 rounded" style="color: #CDAF56;">
+    <p class="mb-0">
+<?php echo $daily_message; ?>
 </p>
 </div>
 <?php endif; ?>
@@ -308,6 +308,21 @@ include_once '../includes/user_header.php';
     <div id="countdown-message" class="mt-3 alert alert-success" style="display: none;"><?php echo $language === 'am' ? 'እንኳን ለብርሃነ ትንሣኤው በሰላም አደረሳችሁ! ' : 'Happy Fasika Celebration!'; ?></div>
 </div>
 <?php endif; ?>
+
+<!-- Holy Week Progress Bar -->
+<div class="mb-4 p-3 rounded shadow-sm" style="background-color: #f8f5f0;">
+    <h5 class="text-center mb-2" style="color: #301934;">
+<?php echo $language === 'am' ? 'የሰሙነ ሕማማት ጉዞ' : 'Holy Week Progress'; ?>
+</h5>
+    <div class="progress" style="height: 25px;">
+        <div class="progress-bar" role="progressbar" 
+             style="width: <?php echo $progress_percentage; ?>%; background-color: #5D4225;" 
+             aria-valuenow="<?php echo $progress_percentage; ?>" 
+             aria-valuemin="0" aria-valuemax="100">
+            <?php echo $progress_percentage; ?>%
+        </div>
+    </div>
+</div>
 
 <div class="simple-container">
     <!-- Date Navigation -->
