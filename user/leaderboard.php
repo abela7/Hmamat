@@ -74,7 +74,7 @@ include_once '../includes/user_header.php';
 
 <div class="simple-container">
     <div class="activity-title-section">
-        <h1 class="main-title"><?php echo $language === 'am' ? 'የአሸናፊዎች ሰሌዳ' : 'Leaderboard'; ?></h1>
+        <h1 class="main-title"><?php echo $language === 'am' ? 'የምዕመናንመናን ሰሌዳ' : 'Leaderboard'; ?></h1>
     </div>
     
     <div class="user-rank-card">
@@ -90,7 +90,7 @@ include_once '../includes/user_header.php';
     
     <?php if (empty($leaderboard)): ?>
     <div class="empty-state">
-        <p><?php echo $language === 'am' ? 'በአሁኑ ጊዜ ምንም የአሸናፊዎች ሰሌዳ ውሂብ አይገኝም።' : 'No data available for the leaderboard yet.'; ?></p>
+        <p><?php echo $language === 'am' ? 'ለጊዜውጊዜው ምንም የምዕመናንመናን መረጃ የለም።' : 'No data available for the leaderboard yet.'; ?></p>
     </div>
     <?php else: ?>
     <div class="leaderboard-container">
