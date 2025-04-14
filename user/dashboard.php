@@ -314,9 +314,9 @@ include_once '../includes/user_header.php';
     <h5 class="text-center mb-2" style="color: #000000;">
 <?php echo $language === 'am' ? 'የሰሙነ ሕማማት ጉዞ' : 'Holy Week Progress'; ?>
 </h5>
-    <div class="progress" style="height: 25px; background-color: #CDAF56;">
+    <div class="progress" style="height: 25px; background-color: #000000;">
         <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-             style="width: <?php echo $progress_percentage; ?>%; background-color: #000000; color: #FFFFFF; font-weight: bold;"
+             style="width: <?php echo $progress_percentage; ?>%; background-color: #CDAF56; color: #FFFFFF; font-weight: bold;"
              aria-valuenow="<?php echo $progress_percentage; ?>"
              aria-valuemin="0" aria-valuemax="100">
             <?php echo $progress_percentage; ?>%
@@ -764,7 +764,7 @@ body {
 .progress {
     /* Keep default Bootstrap styles or ensure height and background-color are set */
     height: 25px; 
-    background-color: #CDAF56; /* Ensure track color is set here if not in inline */
+    background-color: #000000; /* Track color black */
 }
 
 .progress-bar {
@@ -772,7 +772,7 @@ body {
     /* Inline styles will override these, but good to have defaults */
     color: #FFFFFF;
     font-weight: bold;
-    background-color: #000000; /* Default fill color */
+    background-color: #CDAF56; /* Fill color CDAF56, text white */
     /* Width is set dynamically via inline style */
 }
 </style>
