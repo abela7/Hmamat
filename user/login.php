@@ -13,18 +13,18 @@ if (isUserLoggedIn()) {
     exit;
 }
 
+// Try auto-login for returning visitors
+$returning_user = identifyReturningUser();
+if ($returning_user) {
+    // Auto-login the returning user and redirect
+    createUserSession($returning_user['id'], $returning_user['baptism_name'], $returning_user['unique_id'], $returning_user['role']);
+    header("Location: dashboard.php");
+    exit;
+}
+
 // Initialize variables
 $baptism_name = "";
 $error = "";
-$returning_user = null;
-
-// Check for returning user
-$returning_user = identifyReturningUser();
-if ($returning_user) {
-    $baptism_name = $returning_user['baptism_name'];
-}
-
-// Check if there's a redirect URL
 $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'dashboard.php';
 
 // Process form submission
@@ -110,7 +110,7 @@ include_once '../includes/user_header.php';
 ?>
 
 <div class="row justify-content-center">
-    <div class="col-md-6 col-lg-5">
+    <div class="col-md-8 col-lg-6">
         <?php if (!empty($daily_message)): ?>
         <div class="daily-message mb-4">
             <p class="mb-0"><?php echo htmlspecialchars($daily_message); ?></p>
@@ -119,37 +119,55 @@ include_once '../includes/user_header.php';
         
         <div class="card">
             <div class="card-body">
-                <h2 class="card-title text-center">Login</h2>
+                <h2 class="card-title text-center">Welcome to HIMAMAT</h2>
+                
+                <div class="text-center mb-4">
+                    <p>The Holy Week Spiritual Tracker for Ethiopian Orthodox faithful.</p>
+                </div>
                 
                 <?php if (!empty($error)): ?>
                     <div class="alert alert-danger"><?php echo $error; ?></div>
                 <?php endif; ?>
                 
-                <?php if ($returning_user): ?>
-                    <div class="alert alert-info">
-                        Welcome back! It looks like you've visited before.
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">First Time Visitor?</h5>
+                                <p class="card-text">Start your spiritual journey during HIMAMAT.</p>
+                                <a href="welcome.php?step=1" class="btn">Get Started</a>
+                            </div>
+                        </div>
                     </div>
-                <?php endif; ?>
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Returning User?</h5>
+                                <p class="card-text">Enter your baptism name and password.</p>
+                                <button type="button" class="btn" data-bs-toggle="collapse" data-bs-target="#loginForm">Login</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 
-                <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . ($redirect != 'dashboard.php' ? '?redirect=' . urlencode($redirect) : '')); ?>">
-                    <div class="form-group mb-3">
-                        <label for="baptism_name" class="form-label">Baptism Name</label>
-                        <input type="text" class="form-control" id="baptism_name" name="baptism_name" value="<?php echo htmlspecialchars($baptism_name); ?>" required>
-                    </div>
-                    
-                    <div class="form-group mb-4">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-block">Login</button>
-                    </div>
-                </form>
-                
-                <p class="text-center mt-3">
-                    Don't have an account? <a href="register.php">Register</a>
-                </p>
+                <div class="collapse mt-4" id="loginForm">
+                    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . ($redirect != 'dashboard.php' ? '?redirect=' . urlencode($redirect) : '')); ?>">
+                        <div class="form-group mb-3">
+                            <label for="baptism_name" class="form-label">Baptism Name</label>
+                            <input type="text" class="form-control" id="baptism_name" name="baptism_name" value="<?php echo htmlspecialchars($baptism_name); ?>" required>
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                            <small class="form-text text-muted">If you registered with just your baptism name, your password is 000000</small>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-block">Login</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

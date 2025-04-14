@@ -5,6 +5,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
 // Get user information if logged in
 $user_logged_in = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
 $baptism_name = $user_logged_in ? $_SESSION['baptism_name'] : '';
+
+// Get language preference
+$language = isset($_COOKIE['user_language']) ? $_COOKIE['user_language'] : 'en';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -42,28 +45,39 @@ $baptism_name = $user_logged_in ? $_SESSION['baptism_name'] : '';
                 <?php if ($user_logged_in): ?>
                 <li class="mobile-menu-item">
                     <a href="../user/dashboard.php" class="mobile-menu-link <?php echo $current_page == 'dashboard.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-tachometer-alt menu-icon"></i> Dashboard
+                        <i class="fas fa-tachometer-alt menu-icon"></i> 
+                        <?php echo $language === 'am' ? 'ዳሽቦርድ' : 'Dashboard'; ?>
                     </a>
                 </li>
                 <li class="mobile-menu-item">
                     <a href="../user/leaderboard.php" class="mobile-menu-link <?php echo $current_page == 'leaderboard.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-trophy menu-icon"></i> Leaderboard
+                        <i class="fas fa-trophy menu-icon"></i> 
+                        <?php echo $language === 'am' ? 'የአሸናፊዎች ሰሌዳ' : 'Leaderboard'; ?>
+                    </a>
+                </li>
+                <li class="mobile-menu-item">
+                    <a href="../user/settings.php" class="mobile-menu-link <?php echo $current_page == 'settings.php' ? 'active' : ''; ?>">
+                        <i class="fas fa-cog menu-icon"></i> 
+                        <?php echo $language === 'am' ? 'ቅንብሮች' : 'Settings'; ?>
                     </a>
                 </li>
                 <li class="mobile-menu-item">
                     <a href="../user/logout.php" class="mobile-menu-link">
-                        <i class="fas fa-sign-out-alt menu-icon"></i> Logout
+                        <i class="fas fa-sign-out-alt menu-icon"></i> 
+                        <?php echo $language === 'am' ? 'ውጣ' : 'Logout'; ?>
                     </a>
                 </li>
                 <?php else: ?>
                 <li class="mobile-menu-item">
                     <a href="../user/login.php" class="mobile-menu-link <?php echo $current_page == 'login.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-sign-in-alt menu-icon"></i> Login
+                        <i class="fas fa-sign-in-alt menu-icon"></i> 
+                        <?php echo $language === 'am' ? 'ግባ' : 'Login'; ?>
                     </a>
                 </li>
                 <li class="mobile-menu-item">
                     <a href="../user/register.php" class="mobile-menu-link <?php echo $current_page == 'register.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-user-plus menu-icon"></i> Register
+                        <i class="fas fa-user-plus menu-icon"></i> 
+                        <?php echo $language === 'am' ? 'ይመዝገቡ' : 'Register'; ?>
                     </a>
                 </li>
                 <?php endif; ?>
@@ -89,12 +103,25 @@ $baptism_name = $user_logged_in ? $_SESSION['baptism_name'] : '';
                 <!-- Desktop Navigation -->
                 <nav class="nav d-none d-md-flex">
                     <?php if ($user_logged_in): ?>
-                    <a href="../user/dashboard.php" class="nav-link <?php echo $current_page == 'dashboard.php' ? 'active' : ''; ?>">Dashboard</a>
-                    <a href="../user/leaderboard.php" class="nav-link <?php echo $current_page == 'leaderboard.php' ? 'active' : ''; ?>">Leaderboard</a>
-                    <a href="../user/logout.php" class="nav-link">Logout</a>
+                    <a href="../user/dashboard.php" class="nav-link <?php echo $current_page == 'dashboard.php' ? 'active' : ''; ?>">
+                        <?php echo $language === 'am' ? 'ዳሽቦርድ' : 'Dashboard'; ?>
+                    </a>
+                    <a href="../user/leaderboard.php" class="nav-link <?php echo $current_page == 'leaderboard.php' ? 'active' : ''; ?>">
+                        <?php echo $language === 'am' ? 'የአሸናፊዎች ሰሌዳ' : 'Leaderboard'; ?>
+                    </a>
+                    <a href="../user/settings.php" class="nav-link <?php echo $current_page == 'settings.php' ? 'active' : ''; ?>">
+                        <?php echo $language === 'am' ? 'ቅንብሮች' : 'Settings'; ?>
+                    </a>
+                    <a href="../user/logout.php" class="nav-link">
+                        <?php echo $language === 'am' ? 'ውጣ' : 'Logout'; ?>
+                    </a>
                     <?php else: ?>
-                    <a href="../user/login.php" class="nav-link <?php echo $current_page == 'login.php' ? 'active' : ''; ?>">Login</a>
-                    <a href="../user/register.php" class="nav-link <?php echo $current_page == 'register.php' ? 'active' : ''; ?>">Register</a>
+                    <a href="../user/login.php" class="nav-link <?php echo $current_page == 'login.php' ? 'active' : ''; ?>">
+                        <?php echo $language === 'am' ? 'ግባ' : 'Login'; ?>
+                    </a>
+                    <a href="../user/register.php" class="nav-link <?php echo $current_page == 'register.php' ? 'active' : ''; ?>">
+                        <?php echo $language === 'am' ? 'ይመዝገቡ' : 'Register'; ?>
+                    </a>
                     <?php endif; ?>
                 </nav>
             </div>

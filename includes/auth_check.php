@@ -92,10 +92,13 @@ function createUserSession($user_id, $baptism_name, $unique_id = '', $role = 'us
     $stmt->execute();
     $stmt->close();
     
-    // Set a cookie with the unique ID for persistent identification across sessions
+    // Set cookies for persistent identification
     if (!empty($unique_id)) {
-        setcookie('user_unique_id', $unique_id, time() + (86400 * 30), "/"); // 30 days
+        setcookie('user_unique_id', $unique_id, time() + (86400 * 90), "/", "", false, true); // 90 days
     }
+    
+    // Create or update device token
+    createDeviceToken($user_id, $ip, $device_info);
 }
 
 /**
@@ -106,14 +109,24 @@ function identifyReturningUser() {
     require_once 'db.php';
     global $conn;
     
+    // Check for our enhanced device fingerprint cookie first
+    $device_token = isset($_COOKIE['hmt_device_token']) ? $_COOKIE['hmt_device_token'] : null;
+    
+    // Legacy check for unique_id
     $unique_id = isset($_COOKIE['user_unique_id']) ? $_COOKIE['user_unique_id'] : null;
+    
+    // Get current device info
     $ip = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
     $device_info = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
     
-    if ($unique_id) {
-        // Try to find user by unique ID
-        $stmt = $conn->prepare("SELECT id, baptism_name, unique_id, role FROM users WHERE unique_id = ?");
-        $stmt->bind_param("s", $unique_id);
+    // First priority: Try to find by device token (most reliable)
+    if ($device_token) {
+        $stmt = $conn->prepare("SELECT u.id, u.baptism_name, u.unique_id, u.role 
+                               FROM users u 
+                               JOIN user_devices d ON u.id = d.user_id 
+                               WHERE d.device_token = ? 
+                               LIMIT 1");
+        $stmt->bind_param("s", $device_token);
         $stmt->execute();
         $result = $stmt->get_result();
         
@@ -123,17 +136,94 @@ function identifyReturningUser() {
         $stmt->close();
     }
     
-    // Try to find user by IP and user agent as fallback
-    $stmt = $conn->prepare("SELECT id, baptism_name, unique_id, role FROM users WHERE last_ip = ? AND user_agent = ? LIMIT 1");
+    // Second priority: Try to find by unique ID cookie
+    if ($unique_id) {
+        $stmt = $conn->prepare("SELECT id, baptism_name, unique_id, role FROM users WHERE unique_id = ?");
+        $stmt->bind_param("s", $unique_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows === 1) {
+            $user = $result->fetch_assoc();
+            
+            // If found by unique_id but we don't have a device token yet,
+            // create one for future use
+            if (!$device_token) {
+                createDeviceToken($user['id'], $ip, $device_info);
+            }
+            
+            return $user;
+        }
+        $stmt->close();
+    }
+    
+    // Third priority: Try to find by exact IP and user agent match as fallback
+    // This is least reliable but helps with legacy users
+    $stmt = $conn->prepare("SELECT id, baptism_name, unique_id, role FROM users 
+                           WHERE last_ip = ? AND user_agent = ? 
+                           ORDER BY last_login DESC LIMIT 1");
     $stmt->bind_param("ss", $ip, $device_info);
     $stmt->execute();
     $result = $stmt->get_result();
     
     if ($result->num_rows === 1) {
-        return $result->fetch_assoc();
+        $user = $result->fetch_assoc();
+        
+        // Create device token for future use
+        if (!$device_token) {
+            createDeviceToken($user['id'], $ip, $device_info);
+        }
+        
+        return $user;
     }
     
     return null;
+}
+
+/**
+ * Create a new device token for persistent recognition
+ * @param int $user_id User ID
+ * @param string $ip IP address
+ * @param string $device_info User agent string
+ * @return string The generated device token
+ */
+function createDeviceToken($user_id, $ip, $device_info) {
+    require_once 'db.php';
+    global $conn;
+    
+    // Generate a secure random token
+    $device_token = bin2hex(random_bytes(32));
+    
+    // Create a simple device fingerprint (can be enhanced with JavaScript)
+    $fingerprint = md5($ip . $device_info);
+    
+    // Check if we already have an entry for this device
+    $stmt = $conn->prepare("SELECT id FROM user_devices WHERE user_id = ? AND device_fingerprint = ?");
+    $stmt->bind_param("is", $user_id, $fingerprint);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows > 0) {
+        // Update existing device
+        $device = $result->fetch_assoc();
+        $stmt = $conn->prepare("UPDATE user_devices SET device_token = ?, last_used = NOW(), 
+                              ip_address = ?, user_agent = ? WHERE id = ?");
+        $stmt->bind_param("sssi", $device_token, $ip, $device_info, $device['id']);
+    } else {
+        // Insert new device
+        $stmt = $conn->prepare("INSERT INTO user_devices (user_id, device_token, device_fingerprint, 
+                              ip_address, user_agent, created_at, last_used) 
+                              VALUES (?, ?, ?, ?, ?, NOW(), NOW())");
+        $stmt->bind_param("issss", $user_id, $device_token, $fingerprint, $ip, $device_info);
+    }
+    
+    $stmt->execute();
+    $stmt->close();
+    
+    // Set long-lived cookie (90 days)
+    setcookie('hmt_device_token', $device_token, time() + (86400 * 90), "/", "", false, true);
+    
+    return $device_token;
 }
 
 /**
