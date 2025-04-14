@@ -124,8 +124,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             min-width: 100px;
         }
         .logo-img {
-            max-width: 100px;
+            max-width: 180px;
             margin-bottom: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .welcome-title {
             margin-bottom: 1.5rem;
@@ -136,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
 <body>
     <div class="container welcome-container">
         <div class="text-center mb-4">
-            <img src="../assets/images/logo.png" alt="HIMAMAT Logo" class="logo-img">
+            <img src="../assets/favicon_io/android-chrome-512x512.png" alt="HIMAMAT Logo" class="logo-img">
             <h1 class="welcome-title">እንኳን ደህና መጡ</h1>
         </div>
         
@@ -185,13 +187,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                             <input type="text" class="form-control" id="baptism_name" name="baptism_name" 
                                    value="<?php echo htmlspecialchars($baptism_name); ?>" required autofocus>
                             <small class="form-text text-muted">
-                                ስምዎን ለመመዝገብ የክርስትና ስምዎን ብቻ ያስገቡ።
+                               የክርስትና ስምዎትትን ወይም ደስ ያልዎትን ስም ያስገቡ ነገር ግን በአለማዊ ስምዎ ሚታወቁበትን ስም አይጠቀሙ።።
                             </small>
                         </div>
                         
                         <div class="text-center mt-4">
                             <a href="welcome.php?step=1" class="btn btn-nav btn-outline">
-                                ← ኋላ
+                                ← ተመለስ
                             </a>
                             <button type="submit" name="register" class="btn btn-nav">
                                 መዝግብ
