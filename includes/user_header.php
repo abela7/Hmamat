@@ -6,8 +6,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
 $user_logged_in = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
 $baptism_name = $user_logged_in ? $_SESSION['baptism_name'] : '';
 
-// Get language preference
-$language = isset($_COOKIE['user_language']) ? $_COOKIE['user_language'] : 'en';
+// Force Amharic language
+$language = 'am';
 ?>
 <!DOCTYPE html>
 <html lang="en">

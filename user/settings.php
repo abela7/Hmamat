@@ -140,7 +140,7 @@ $stmt->close();
 // Process preferences form submission
 if (isset($_POST['save_preferences'])) {
     // Get form data
-    $new_language = isset($_POST['language']) ? $_POST['language'] : 'en';
+    $new_language = 'am'; // Force Amharic
     $new_show_on_leaderboard = isset($_POST['show_on_leaderboard']) ? 1 : 0;
     $new_email_notifications = isset($_POST['email_notifications']) ? 1 : 0;
     
@@ -206,25 +206,6 @@ include_once '../includes/user_header.php';
                     
                     <!-- User Preferences -->
                     <form method="post" action="settings.php">
-                        <!-- Language Preference -->
-                        <div class="form-group mb-4">
-                            <label class="form-label">
-                                <?php echo $language === 'am' ? 'ቋንቋ' : 'Language'; ?>
-                            </label>
-                            <div class="d-flex">
-                                <div class="form-check me-4">
-                                    <input class="form-check-input" type="radio" name="language" id="lang-en" 
-                                           value="en" <?php echo $user_language === 'en' ? 'checked' : ''; ?>>
-                                    <label class="form-check-label" for="lang-en">English</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="language" id="lang-am" 
-                                           value="am" <?php echo $user_language === 'am' ? 'checked' : ''; ?>>
-                                    <label class="form-check-label" for="lang-am">አማርኛ</label>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <!-- Visibility Settings -->
                         <div class="form-group mb-4">
                             <label class="form-label">
