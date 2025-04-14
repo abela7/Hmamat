@@ -17,20 +17,25 @@ $baptism_name = $_SESSION['baptism_name'];
 // Get user's language preference
 $language = isset($_COOKIE['user_language']) ? $_COOKIE['user_language'] : 'en';
 
-// Set Easter date as April 20, 2024 at 3am
+// Set timezone to London
+date_default_timezone_set('Europe/London');
+
+// Set Easter date as April 20, 2024 at 3am (London time)
 $easter = strtotime('2024-04-20 03:00:00');
 $easter_date = date('Y-m-d', $easter);
 $current_timestamp = time();
-$remaining_seconds = $easter - $current_timestamp;
+$remaining_seconds = max(0, $easter - $current_timestamp);
 
-// Calculate full days and remaining hours
+// Calculate full days and remaining hours/minutes/seconds
 $remaining_days = floor($remaining_seconds / 86400);
 $remaining_hours = floor(($remaining_seconds % 86400) / 3600);
+$remaining_minutes = floor(($remaining_seconds % 3600) / 60);
+$remaining_seconds_final = $remaining_seconds % 60;
 
 // Calculate progress percentage for Holy Week (7 days before Easter)
 $holy_week_start = $easter - (7 * 86400);
 $total_holy_week_seconds = 7 * 86400;
-$elapsed_seconds = $current_timestamp - $holy_week_start;
+$elapsed_seconds = max(0, $current_timestamp - $holy_week_start);
 $progress_percentage = 0;
 
 if ($current_timestamp >= $holy_week_start) {
@@ -251,22 +256,22 @@ include_once '../includes/user_header.php';
         </div>
         <div class="countdown-timer">
             <div class="time-block">
-                <span id="countdown-days" class="time-value">--</span>
+                <span id="countdown-days" class="time-value"><?php echo $remaining_days; ?></span>
                 <span class="time-label"><?php echo $language === 'am' ? 'ቀናት' : 'Days'; ?></span>
             </div>
             <div class="time-separator">:</div>
             <div class="time-block">
-                <span id="countdown-hours" class="time-value">--</span>
+                <span id="countdown-hours" class="time-value"><?php echo str_pad($remaining_hours, 2, '0', STR_PAD_LEFT); ?></span>
                 <span class="time-label"><?php echo $language === 'am' ? 'ሰዓታት' : 'Hours'; ?></span>
             </div>
             <div class="time-separator">:</div>
             <div class="time-block">
-                <span id="countdown-minutes" class="time-value">--</span>
+                <span id="countdown-minutes" class="time-value"><?php echo str_pad($remaining_minutes, 2, '0', STR_PAD_LEFT); ?></span>
                 <span class="time-label"><?php echo $language === 'am' ? 'ደቂቃዎች' : 'Minutes'; ?></span>
             </div>
             <div class="time-separator">:</div>
             <div class="time-block">
-                <span id="countdown-seconds" class="time-value">--</span>
+                <span id="countdown-seconds" class="time-value"><?php echo str_pad($remaining_seconds_final, 2, '0', STR_PAD_LEFT); ?></span>
                 <span class="time-label"><?php echo $language === 'am' ? 'ሰከንዶች' : 'Seconds'; ?></span>
             </div>
         </div>
@@ -633,18 +638,37 @@ include_once '../includes/user_header.php';
 }
 
 .progress-container {
-    height: 10px;
+    height: 12px;
     background-color: #e0d7c5;
-    border-radius: 5px;
+    border-radius: 10px;
     margin-bottom: 20px;
     overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .progress-bar {
     height: 100%;
-    background-color: #DAA520;
-    border-radius: 5px;
+    background: linear-gradient(90deg, #DAA520 0%, #C17817 100%);
+    border-radius: 10px;
     transition: width 0.5s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        rgba(255, 255, 255, 0.2) 0%, 
+        rgba(255, 255, 255, 0) 50%, 
+        rgba(0, 0, 0, 0) 51%, 
+        rgba(0, 0, 0, 0.1) 100%
+    );
+    border-radius: 10px;
 }
 
 .countdown-timer {
@@ -832,8 +856,8 @@ $(document).ready(function() {
     
     // Easter countdown timer
     function updateEasterCountdown() {
-        // Easter date - April 20 at 3am
-        const easterDate = new Date('2024-04-20T03:00:00');
+        // Easter date - April 20 at 3am London time
+        const easterDate = new Date('2024-04-20T03:00:00+01:00'); // +01:00 is London timezone in April
         const now = new Date();
         
         // Calculate remaining time
@@ -842,9 +866,12 @@ $(document).ready(function() {
         // If Easter has passed, show zeros
         if (diff <= 0) {
             document.getElementById('countdown-days').textContent = '0';
-            document.getElementById('countdown-hours').textContent = '0';
-            document.getElementById('countdown-minutes').textContent = '0';
-            document.getElementById('countdown-seconds').textContent = '0';
+            document.getElementById('countdown-hours').textContent = '00';
+            document.getElementById('countdown-minutes').textContent = '00';
+            document.getElementById('countdown-seconds').textContent = '00';
+            
+            // Update progress bar to 100% if Easter has passed
+            document.querySelector('.progress-bar').style.width = '100%';
             return;
         }
         
@@ -865,6 +892,19 @@ $(document).ready(function() {
         document.getElementById('countdown-hours').textContent = hours < 10 ? '0' + hours : hours;
         document.getElementById('countdown-minutes').textContent = minutes < 10 ? '0' + minutes : minutes;
         document.getElementById('countdown-seconds').textContent = seconds < 10 ? '0' + seconds : seconds;
+        
+        // Also update progress bar
+        const holyWeekStart = new Date(easterDate);
+        holyWeekStart.setDate(holyWeekStart.getDate() - 7);
+        
+        // Calculate progress percentage for Holy Week
+        const totalHolyWeekMilliseconds = easterDate - holyWeekStart;
+        const elapsedMilliseconds = now - holyWeekStart;
+        
+        if (now >= holyWeekStart) {
+            const progressPercentage = Math.min(100, Math.round((elapsedMilliseconds / totalHolyWeekMilliseconds) * 100));
+            document.querySelector('.progress-bar').style.width = progressPercentage + '%';
+        }
     }
     
     // Update countdown immediately and then every second
