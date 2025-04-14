@@ -261,15 +261,16 @@ include_once '../includes/user_header.php';
 
 <!-- Daily Message -->
 <?php if (!empty($daily_message)): ?>
-<div class="daily-message">
+<div class="daily-message mb-4">
     <p class="mb-0"><?php echo htmlspecialchars($daily_message); ?></p>
 </div>
 <?php endif; ?>
 
-<!-- Date Selection -->
-<div class="card mb-4">
-    <div class="card-body">
-        <div class="day-navigation">
+<div class="dashboard-container">
+    <!-- Left Column: Main Activities -->
+    <div class="dashboard-main">
+        <!-- Date Navigation - Redesigned to be more professional -->
+        <div class="date-controller mb-4">
             <?php 
             // Get current day index
             $dates_array = array_keys($holy_week_dates);
@@ -282,25 +283,174 @@ include_once '../includes/user_header.php';
             $current_display_date = date('F j, Y', strtotime($selected_date));
             ?>
             
-            <div class="date-navigator">
-                <a href="?date=<?php echo $prev_date; ?>" class="nav-arrow <?php echo $prev_date ? '' : 'disabled'; ?>" <?php echo $prev_date ? '' : 'disabled'; ?>>
+            <div class="date-controls">
+                <a href="?date=<?php echo $prev_date; ?>" class="date-nav-btn <?php echo $prev_date ? '' : 'disabled'; ?>" <?php echo $prev_date ? '' : 'disabled'; ?>>
                     <i class="fas fa-chevron-left"></i>
                 </a>
                 
-                <div class="current-date">
-                    <?php echo $current_day; ?>, <?php echo $current_display_date; ?>
+                <div class="current-day">
+                    <span class="day-name"><?php echo $current_day; ?></span>
+                    <span class="day-date"><?php echo $current_display_date; ?></span>
                 </div>
                 
-                <a href="?date=<?php echo $next_date; ?>" class="nav-arrow <?php echo $next_date ? '' : 'disabled'; ?>" <?php echo $next_date ? '' : 'disabled'; ?>>
+                <a href="?date=<?php echo $next_date; ?>" class="date-nav-btn <?php echo $next_date ? '' : 'disabled'; ?>" <?php echo $next_date ? '' : 'disabled'; ?>>
                     <i class="fas fa-chevron-right"></i>
                 </a>
             </div>
             
             <?php if (!$is_today && array_key_exists($current_date, $holy_week_dates)): ?>
-            <div class="text-center mt-3">
-                <a href="dashboard.php" class="btn btn-sm">
-                    <i class="fas fa-calendar-day"></i> 
-                    <?php echo $language === 'am' ? 'ወደ ዛሬ ተመለስ' : 'Go to Today'; ?>
+            <a href="dashboard.php" class="today-btn">
+                <i class="fas fa-calendar-day"></i> 
+                <?php echo $language === 'am' ? 'ወደ ዛሬ ተመለስ' : 'Today'; ?>
+            </a>
+            <?php endif; ?>
+        </div>
+
+        <!-- Spiritual Activities - Redesigned for better mobile appearance -->
+        <div class="activities-container">
+            <h2 class="section-title">
+                <?php echo $language === 'am' ? 'የመንፈሳዊ እንቅስቃሴዎች' : 'Spiritual Activities'; ?>
+            </h2>
+            
+            <?php if (empty($activities)): ?>
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-tasks"></i></div>
+                <p><?php echo $language === 'am' ? 'ለዚህ ቀን የሚገኙ እንቅስቃሴዎች የሉም።' : 'No activities available for this day.'; ?></p>
+            </div>
+            <?php else: ?>
+            <div class="activities-list">
+                <?php foreach ($activities as $activity): ?>
+                <div class="activity-card" id="activity-<?php echo $activity['id']; ?>">
+                    <div class="activity-content">
+                        <div class="activity-header">
+                            <h3 class="activity-title"><?php echo htmlspecialchars($activity['name']); ?></h3>
+                            <div class="activity-points"><?php echo $activity['default_points']; ?></div>
+                        </div>
+                        
+                        <?php if (!empty($activity['description'])): ?>
+                        <div class="activity-details">
+                            <?php echo htmlspecialchars($activity['description']); ?>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div class="activity-actions">
+                        <?php if (!isset($completed_activities[$activity['id']])): ?>
+                            <?php if ($is_today): ?>
+                                <button class="action-btn success mark-done" data-activity-id="<?php echo $activity['id']; ?>">
+                                    <i class="fas fa-check"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Complete'; ?>
+                                </button>
+                                <button class="action-btn secondary mark-not-done" data-activity-id="<?php echo $activity['id']; ?>">
+                                    <i class="fas fa-times"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Done'; ?>
+                                </button>
+                            <?php else: ?>
+                                <div class="activity-status empty">
+                                    <i class="fas fa-minus-circle"></i> <?php echo $language === 'am' ? 'መዝገብ የለም' : 'No Record'; ?>
+                                </div>
+                            <?php endif; ?>
+                        <?php elseif ($completed_activities[$activity['id']] == 'done'): ?>
+                            <div class="activity-status completed">
+                                <i class="fas fa-check-circle"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Completed'; ?>
+                                <button class="action-btn reset reset-activity" data-activity-id="<?php echo $activity['id']; ?>" data-date="<?php echo $selected_date; ?>">
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                            </div>
+                        <?php else: ?>
+                            <div class="activity-status missed">
+                                <i class="fas fa-times-circle"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Completed'; ?>
+                                <button class="action-btn reset reset-activity" data-activity-id="<?php echo $activity['id']; ?>" data-date="<?php echo $selected_date; ?>">
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+        </div>
+    </div>
+    
+    <!-- Right Column: Stats and Leaderboard -->
+    <div class="dashboard-sidebar">
+        <!-- Easter Countdown - Simplified and more elegant -->
+        <div class="stats-card">
+            <h2 class="section-title">
+                <?php echo $language === 'am' ? 'ፋሲካ ቀን' : 'Easter Sunday'; ?>
+            </h2>
+            
+            <?php if (!$easter_passed): ?>
+                <div class="countdown-display">
+                    <div class="countdown-date">
+                        <?php echo date('F j, Y', $easter); ?>
+                    </div>
+                    
+                    <div class="time-remaining">
+                        <?php if ($remaining_days > 0): ?>
+                            <div class="time-block">
+                                <span class="time-value"><?php echo $remaining_days; ?></span>
+                                <span class="time-label"><?php echo $language === 'am' ? 'ቀን' : 'days'; ?></span>
+                            </div>
+                        <?php endif; ?>
+                        <div class="time-block">
+                            <span class="time-value"><?php echo $remaining_hours; ?></span>
+                            <span class="time-label"><?php echo $language === 'am' ? 'ሰዓት' : 'hours'; ?></span>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar" role="progressbar" style="width: <?php echo $progress_percentage; ?>%;" 
+                                aria-valuenow="<?php echo $progress_percentage; ?>" aria-valuemin="0" aria-valuemax="100">
+                            </div>
+                        </div>
+                        <div class="progress-label">
+                            <?php echo $progress_percentage; ?>% <?php echo $language === 'am' ? 'ተጠናቋል' : 'Complete'; ?>
+                        </div>
+                    </div>
+                </div>
+            <?php else: ?>
+                <div class="countdown-display completed">
+                    <div class="celebration-message">
+                        <i class="fas fa-church"></i>
+                        <div><?php echo $language === 'am' ? 'ክርስቶስ ተነሣ !' : 'Christ is Risen!'; ?></div>
+                        <div class="sub-text"><?php echo date('F j, Y', $easter); ?></div>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+        
+        <!-- Top Participants -->
+        <div class="stats-card">
+            <h2 class="section-title">
+                <?php echo $language === 'am' ? 'ከፍተኛ ተሳታፊዎች' : 'Top Participants'; ?>
+            </h2>
+            
+            <?php if (empty($leaderboard)): ?>
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-trophy"></i></div>
+                <p><?php echo $language === 'am' ? 'እስካሁን ምንም መረጃ የለም።' : 'No data available yet.'; ?></p>
+            </div>
+            <?php else: ?>
+            <div class="leaderboard">
+                <div class="your-rank">
+                    <div class="rank-label"><?php echo $language === 'am' ? 'የእርስዎ ደረጃ' : 'Your Rank'; ?></div>
+                    <div class="rank-value">#<?php echo $user_rank; ?></div>
+                    <div class="points-value"><?php echo $user_total_points; ?> <?php echo $language === 'am' ? 'ነጥብ' : 'points'; ?></div>
+                </div>
+                
+                <div class="top-users">
+                    <?php for ($i = 0; $i < min(5, count($leaderboard)); $i++): ?>
+                    <div class="leaderboard-row <?php echo ($leaderboard[$i]['baptism_name'] === $baptism_name) ? 'is-you' : ''; ?>">
+                        <div class="rank"><?php echo $i + 1; ?></div>
+                        <div class="name"><?php echo htmlspecialchars($leaderboard[$i]['baptism_name']); ?></div>
+                        <div class="points"><?php echo $leaderboard[$i]['total_points']; ?></div>
+                    </div>
+                    <?php endfor; ?>
+                </div>
+                
+                <a href="leaderboard.php" class="view-all-btn">
+                    <?php echo $language === 'am' ? 'ሙሉ ደረጃ ሰሌዳ ይመልከቱ' : 'View Complete Leaderboard'; ?>
                 </a>
             </div>
             <?php endif; ?>
@@ -308,162 +458,11 @@ include_once '../includes/user_header.php';
     </div>
 </div>
 
-<?php if (!$is_today): ?>
-<div class="alert alert-info mb-4">
-    <p class="mb-0 text-center">
-        <i class="fas fa-info-circle"></i> 
-        <?php echo $language === 'am' ? 'እየተመለከቱት ያሉት የ ' . $holy_week_dates[$selected_date]['label'] . ' እንቅስቃሴዎች ናቸው' : 'You are viewing activities for ' . $holy_week_dates[$selected_date]['label']; ?>
-    </p>
-</div>
-<?php endif; ?>
-
-<!-- Easter Countdown -->
-<div class="card mb-4">
-    <h3 class="card-title">
-        <?php if ($easter_passed): ?>
-            Easter Sunday has passed
-        <?php else: ?>
-            Countdown to Easter Sunday
-        <?php endif; ?>
-    </h3>
-    <div class="p-3">
-        <?php if (!$easter_passed): ?>
-            <div class="easter-countdown">
-                <div class="countdown-info mb-2">
-                    <div class="countdown-date">
-                        <strong>Easter Date:</strong> <?php echo date('F j, Y', $easter); ?>
-                    </div>
-                    <div class="countdown-remaining">
-                        <strong>Remaining:</strong> 
-                        <?php if ($remaining_days > 0): ?>
-                            <?php echo $remaining_days; ?> day<?php echo $remaining_days != 1 ? 's' : ''; ?> 
-                        <?php endif; ?>
-                        <?php echo $remaining_hours; ?> hour<?php echo $remaining_hours != 1 ? 's' : ''; ?>
-                    </div>
-                </div>
-                <div class="progress" style="height: 25px;">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: <?php echo $progress_percentage; ?>%;" 
-                         aria-valuenow="<?php echo $progress_percentage; ?>" aria-valuemin="0" aria-valuemax="100">
-                        <?php echo $progress_percentage; ?>%
-                    </div>
-                </div>
-                <div class="text-center mt-2">
-                    <small class="text-muted">Holy Week Progress</small>
-                </div>
-            </div>
-        <?php else: ?>
-            <div class="text-center py-2">
-                <p>Christ is Risen! Easter Sunday was on <?php echo date('F j, Y', $easter); ?></p>
-                <div class="progress" style="height: 25px;">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%;" 
-                         aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                        Completed 100%
-                    </div>
-                </div>
-            </div>
-        <?php endif; ?>
-    </div>
-</div>
-
-<!-- Progress Tracker -->
-<div class="card mb-4">
-    <h3 class="card-title">Your 7-Day Journey</h3>
-    <div class="progress-tracker">
-        <?php foreach ($progress as $date => $day): ?>
-        <div class="progress-day <?php echo $day['is_today'] ? 'active' : ''; ?> <?php echo $day['activities_done'] > 0 ? 'completed' : ''; ?>">
-            <div class="progress-day-name"><?php echo $day['day_name']; ?></div>
-            <div class="progress-day-points"><?php echo $day['points']; ?></div>
-        </div>
-        <?php endforeach; ?>
-    </div>
-    <div class="text-center">
-        <p>Your current rank: <strong><?php echo $user_rank; ?></strong> with <strong><?php echo $user_total_points; ?></strong> points</p>
-    </div>
-</div>
-
-<!-- Today's Activities -->
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">
-            <?php if ($is_today): ?>
-                <?php echo $language === 'am' ? 'የዛሬ መንፈሳዊ እንቅስቃሴዎች' : 'Today\'s Spiritual Activities'; ?>
-            <?php else: ?>
-                <?php echo $language === 'am' ? 'መንፈሳዊ እንቅስቃሴዎች - ' . date('d/m/Y', strtotime($selected_date)) : 'Spiritual Activities - ' . date('m/d/Y', strtotime($selected_date)); ?>
-            <?php endif; ?>
-        </h3>
-    </div>
-    
-    <?php if (empty($activities)): ?>
-    <p class="p-3 text-center">No activities available for this day.</p>
-    <?php else: ?>
-    <ul class="activity-list">
-        <?php foreach ($activities as $activity): ?>
-        <li class="activity-item" id="activity-<?php echo $activity['id']; ?>">
-            <div>
-                <div class="activity-name"><?php echo htmlspecialchars($activity['name']); ?></div>
-                <?php if (!empty($activity['description'])): ?>
-                <div class="activity-description"><?php echo htmlspecialchars($activity['description']); ?></div>
-                <?php endif; ?>
-            </div>
-            <div class="d-flex align-items-center">
-                <div class="activity-points me-3"><?php echo $activity['default_points']; ?></div>
-                <div class="activity-actions">
-                    <?php if (!isset($completed_activities[$activity['id']])): ?>
-                        <?php if ($is_today): ?>
-                            <button class="btn btn-sm btn-success mark-done" data-activity-id="<?php echo $activity['id']; ?>">Done</button>
-                            <button class="btn btn-sm btn-secondary mark-not-done" data-activity-id="<?php echo $activity['id']; ?>">Not Done</button>
-                        <?php else: ?>
-                            <span class="badge bg-light text-dark">No Record</span>
-                        <?php endif; ?>
-                    <?php elseif ($completed_activities[$activity['id']] == 'done'): ?>
-                        <span class="badge bg-success">Completed</span>
-                        <button class="btn btn-sm btn-danger reset-activity" data-activity-id="<?php echo $activity['id']; ?>" data-date="<?php echo $selected_date; ?>">
-                            <i class="fas fa-undo"></i> Reset
-                        </button>
-                    <?php else: ?>
-                        <span class="badge bg-secondary">Not Completed</span>
-                        <button class="btn btn-sm btn-danger reset-activity" data-activity-id="<?php echo $activity['id']; ?>" data-date="<?php echo $selected_date; ?>">
-                            <i class="fas fa-undo"></i> Reset
-                        </button>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </li>
-        <?php endforeach; ?>
-    </ul>
-    <?php endif; ?>
-</div>
-
-<!-- Leaderboard Preview -->
-<div class="card mt-4">
-    <div class="card-header">
-        <h3 class="card-title">Top Participants</h3>
-    </div>
-    
-    <?php if (empty($leaderboard)): ?>
-    <p class="p-3 text-center">No data available for the leaderboard yet.</p>
-    <?php else: ?>
-    <div class="p-3">
-        <?php for ($i = 0; $i < min(5, count($leaderboard)); $i++): ?>
-        <div class="leaderboard-item">
-            <div class="leaderboard-rank"><?php echo $i + 1; ?></div>
-            <div class="leaderboard-name"><?php echo htmlspecialchars($leaderboard[$i]['baptism_name']); ?></div>
-            <div class="leaderboard-points"><?php echo $leaderboard[$i]['total_points']; ?> points</div>
-        </div>
-        <?php endfor; ?>
-        
-        <div class="text-center mt-3">
-            <a href="leaderboard.php" class="btn btn-outline">View Full Leaderboard</a>
-        </div>
-    </div>
-    <?php endif; ?>
-</div>
-
-<!-- Not Done Modal -->
+<!-- Not Done Modal - More stylish modal -->
 <div class="modal" id="notDoneModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3 class="modal-title">Why couldn't you complete this activity?</h3>
+            <h3 class="modal-title"><?php echo $language === 'am' ? 'ይህን እንቅስቃሴ ማጠናቀቅ ያልቻሉበት ምክንያት ምንድን ነው?' : 'Why couldn\'t you complete this activity?'; ?></h3>
             <button class="close-modal">&times;</button>
         </div>
         <div class="modal-body">
@@ -471,17 +470,17 @@ include_once '../includes/user_header.php';
                 <input type="hidden" id="activity_id" name="activity_id">
                 
                 <div class="form-group mb-3">
-                    <label for="reason_id" class="form-label">Please select a reason:</label>
+                    <label for="reason_id" class="form-label"><?php echo $language === 'am' ? 'እባክዎ ምክንያት ይምረጡ:' : 'Please select a reason:'; ?></label>
                     <select class="form-control" id="reason_id" name="reason_id" required>
-                        <option value="">Select a reason</option>
+                        <option value=""><?php echo $language === 'am' ? 'ምክንያት ይምረጡ' : 'Select a reason'; ?></option>
                         <?php foreach ($miss_reasons as $id => $reason): ?>
                         <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($reason); ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-block">Submit</button>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary"><?php echo $language === 'am' ? 'አስገባ' : 'Submit'; ?></button>
                 </div>
             </form>
         </div>
