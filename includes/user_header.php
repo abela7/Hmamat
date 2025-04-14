@@ -110,14 +110,6 @@ if ($user_logged_in) {
                     </a>
                 </li>
                 <?php endif; ?>
-                
-                <!-- Language Switcher -->
-                <li class="mobile-menu-item">
-                    <a href="#" id="mobile-lang-toggle" class="mobile-menu-link">
-                        <i class="fas fa-globe menu-icon"></i> 
-                        <?php echo $language === 'am' ? 'English' : 'አማርኛ'; ?>
-                    </a>
-                </li>
             </ul>
             
             <div class="offcanvas-footer mt-auto p-3 text-center">
@@ -160,14 +152,6 @@ if ($user_logged_in) {
                         <?php echo $language === 'am' ? 'ይመዝገቡ' : 'Register'; ?>
                     </a>
                     <?php endif; ?>
-                    
-                    <!-- Language Switcher -->
-                    <div class="lang-switcher">
-                        <a href="#" id="lang-toggle" class="nav-link">
-                            <i class="fas fa-globe"></i> 
-                            <?php echo $language === 'am' ? 'English' : 'አማርኛ'; ?>
-                        </a>
-                    </div>
                 </nav>
             </div>
         </div>
@@ -192,23 +176,8 @@ $(document).ready(function() {
         document.cookie = name + "=" + (value || "") + expires + "; path=/";
     }
     
-    // Handle language toggle for desktop
-    $('#lang-toggle').on('click', function(e) {
-        e.preventDefault();
-        var currentLang = "<?php echo $language; ?>";
-        var newLang = currentLang === 'en' ? 'am' : 'en';
-        setCookie('user_language', newLang, 30);
-        location.reload();
-    });
-    
-    // Handle language toggle for mobile
-    $('#mobile-lang-toggle').on('click', function(e) {
-        e.preventDefault();
-        var currentLang = "<?php echo $language; ?>";
-        var newLang = currentLang === 'en' ? 'am' : 'en';
-        setCookie('user_language', newLang, 30);
-        location.reload();
-    });
+    // We've removed the language toggles from the interface
+    // but keeping the cookie function for potential future use
 });
 </script>
 </body>
