@@ -200,7 +200,7 @@ include_once '../includes/user_header.php';
                         <div class="card h-100">
                             <div class="card-body text-center">
                                 <h5 class="card-title">ለዚህ ድህረ ገጽ አዲስ ነዎት?</h5>
-                                <p class="card-text">ለመጀመር </p>
+                                 
                                 <a href="welcome.php?step=1" class="btn">እዚህ ላይ ይጫኑይጫኑ</a>
                             </div>
                         </div>
