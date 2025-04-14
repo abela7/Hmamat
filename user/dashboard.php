@@ -366,17 +366,35 @@ include_once '../includes/user_header.php';
 
 <!-- Progress Tracker -->
 <div class="card mb-4">
-    <h3 class="card-title">Your 7-Day Journey</h3>
-    <div class="progress-tracker">
-        <?php foreach ($progress as $date => $day): ?>
-        <div class="progress-day <?php echo $day['is_today'] ? 'active' : ''; ?> <?php echo $day['activities_done'] > 0 ? 'completed' : ''; ?>">
-            <div class="progress-day-name"><?php echo $day['day_name']; ?></div>
-            <div class="progress-day-points"><?php echo $day['points']; ?></div>
+    <h3 class="card-title text-center">Your 7-Day Journey</h3>
+    
+    <div class="journey-tracker">
+        <div class="day-tabs">
+            <?php 
+            // Sort progress by date
+            ksort($progress);
+            foreach ($progress as $date => $day): 
+                $isActive = $date === $current_date;
+                $classNames = $isActive ? 'active' : '';
+                $classNames .= $day['activities_done'] > 0 ? ' completed' : '';
+                $formattedDate = date('d/m', strtotime($date));
+            ?>
+            <a href="?date=<?php echo $date; ?>" class="day-tab <?php echo $classNames; ?>">
+                <div class="day-tab-inner">
+                    <div class="day-name"><?php echo $day['day_name']; ?></div>
+                    <div class="day-points"><?php echo $day['points']; ?></div>
+                    <div class="day-date"><?php echo $formattedDate; ?></div>
+                </div>
+            </a>
+            <?php endforeach; ?>
         </div>
-        <?php endforeach; ?>
     </div>
-    <div class="text-center">
-        <p>Your current rank: <strong><?php echo $user_rank; ?></strong> with <strong><?php echo $user_total_points; ?></strong> points</p>
+    
+    <div class="text-center mt-3">
+        <span class="selected-day-indicator">
+            <strong>Your rank:</strong> <span class="text-primary"><?php echo $user_rank; ?></span> 
+            with <span class="text-primary"><?php echo $user_total_points; ?></span> points
+        </span>
     </div>
 </div>
 
