@@ -15,7 +15,7 @@ ini_set('display_errors', 1);
 date_default_timezone_set('UTC');
 
 // Site URLs
-define("BASE_URL", "http://".$_SERVER['HTTP_HOST']."/Hmamat");
+define("BASE_URL", "http://".$_SERVER['HTTP_HOST']."/hemamat");
 define("USER_URL", BASE_URL."/user");
 define("ADMIN_URL", BASE_URL."/admin");
 
