@@ -208,7 +208,7 @@ include_once '../includes/user_header.php';
                     <!-- User Preferences -->
                     <form method="post" action="settings.php">
                         <!-- Language Preference -->
-                        <div class="form-group mb-4">
+                        <!-- <div class="form-group mb-4">
                             <label class="form-label">
                                 <?php echo $language === 'am' ? 'ቋንቋ' : 'Language'; ?>
                             </label>
@@ -219,12 +219,12 @@ include_once '../includes/user_header.php';
                             <div class="form-text">
                                 <?php echo $language === 'am' ? 'ይህ አማራጭ የውስጥ ቋንቋውን ይቀይራል።' : 'This option changes the interface language.'; ?>
                             </div>
-                        </div>
+                        </div> -->
                         
                         <!-- Visibility Settings -->
                         <div class="form-group mb-4">
                             <label class="form-label">
-                                <?php echo $language === 'am' ? 'ከሌሎች ጋር ይካፈሉ' : 'Share with others'; ?>
+                                <?php echo $language === 'am' ? 'ሌሎች ምዕመናን የርስዎን ደረጃ እንዲያዩ ፈቃደኛ ነዎት? የክርስትና ስም ብቻ ነው የሚታየውየሚታየው ' : 'Share with others'; ?>
                             </label>
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="show-on-leaderboard" 
