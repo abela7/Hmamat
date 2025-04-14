@@ -7,19 +7,24 @@ require_once '../includes/auth_check.php';
 // Set page title
 $page_title = "Login";
 
+// Check for logout flag
+$just_logged_out = isset($_GET['logout']) && $_GET['logout'] == 'success';
+
 // If already logged in, redirect to dashboard
 if (isUserLoggedIn()) {
     header("Location: dashboard.php");
     exit;
 }
 
-// Try auto-login for returning visitors
-$returning_user = identifyReturningUser();
-if ($returning_user) {
-    // Auto-login the returning user and redirect
-    createUserSession($returning_user['id'], $returning_user['baptism_name'], $returning_user['unique_id'], $returning_user['role']);
-    header("Location: dashboard.php");
-    exit;
+// Try auto-login for returning visitors, but skip if user just logged out
+if (!$just_logged_out) {
+    $returning_user = identifyReturningUser();
+    if ($returning_user) {
+        // Auto-login the returning user and redirect
+        createUserSession($returning_user['id'], $returning_user['baptism_name'], $returning_user['unique_id'], $returning_user['role']);
+        header("Location: dashboard.php");
+        exit;
+    }
 }
 
 // Initialize variables
@@ -111,6 +116,12 @@ include_once '../includes/user_header.php';
 
 <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6">
+        <?php if ($just_logged_out): ?>
+        <div class="alert alert-success mb-4">
+            <p class="mb-0">You have been successfully logged out.</p>
+        </div>
+        <?php endif; ?>
+        
         <?php if (!empty($daily_message)): ?>
         <div class="daily-message mb-4">
             <p class="mb-0"><?php echo htmlspecialchars($daily_message); ?></p>
