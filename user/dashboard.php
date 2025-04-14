@@ -312,7 +312,6 @@ include_once '../includes/user_header.php';
 <!-- Holy Week Progress Bar -->
 <div class="mb-4 p-3 rounded shadow-sm" style="background-color: #FFFFFF; border: 1px solid #CDAF56;">
     <h5 class="text-center mb-2" style="color: #000000;">
-<?php echo $language === 'am' ? 'ሰሙነ ሕማማት' : 'weekly'; ?>
 </h5>
     <div class="progress" style="height: 25px; background-color:rgb(35, 35, 35);">
         <div class="progress-bar" role="progressbar" 
