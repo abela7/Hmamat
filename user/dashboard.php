@@ -269,37 +269,38 @@ include_once '../includes/user_header.php';
 <!-- Date Selection -->
 <div class="card mb-4">
     <div class="card-body">
-        <h4 class="card-title text-center">
-            <?php echo $language === 'am' ? 'የቅዱስ ሳምንት ቀኖች' : 'Holy Week Days'; ?>
-        </h4>
-        
-        <div class="holy-week-selector">
-            <div class="day-tabs">
-                <?php foreach ($holy_week_dates as $date => $info): ?>
-                <a href="?date=<?php echo $date; ?>" class="day-tab <?php echo $selected_date === $date ? 'active' : ''; ?>">
-                    <div class="day-tab-inner">
-                        <div class="day-name"><?php echo $info['label']; ?></div>
-                        <div class="day-date"><?php echo $info['date_formatted']; ?></div>
-                    </div>
+        <div class="day-navigation">
+            <?php 
+            // Get current day index
+            $dates_array = array_keys($holy_week_dates);
+            $current_index = array_search($selected_date, $dates_array);
+            $prev_date = ($current_index > 0) ? $dates_array[$current_index - 1] : null;
+            $next_date = ($current_index < count($dates_array) - 1) ? $dates_array[$current_index + 1] : null;
+            
+            // Format the current day and date
+            $current_day = $holy_week_dates[$selected_date]['label'];
+            $current_display_date = date('F j, Y', strtotime($selected_date));
+            ?>
+            
+            <div class="date-navigator">
+                <a href="?date=<?php echo $prev_date; ?>" class="nav-arrow <?php echo $prev_date ? '' : 'disabled'; ?>" <?php echo $prev_date ? '' : 'disabled'; ?>>
+                    <i class="fas fa-chevron-left"></i>
                 </a>
-                <?php endforeach; ?>
+                
+                <div class="current-date">
+                    <?php echo $current_day; ?>, <?php echo $current_display_date; ?>
+                </div>
+                
+                <a href="?date=<?php echo $next_date; ?>" class="nav-arrow <?php echo $next_date ? '' : 'disabled'; ?>" <?php echo $next_date ? '' : 'disabled'; ?>>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
             </div>
-        </div>
-        
-        <div class="text-center mt-3">
-            <span class="selected-day-indicator">
-                <?php echo $language === 'am' ? 'አሁን እየተመለከቱት ያለው' : 'Viewing'; ?>: 
-                <strong class="text-primary">
-                    <?php echo $holy_week_dates[$selected_date]['label']; ?>, 
-                    <?php echo $holy_week_dates[$selected_date]['date_formatted']; ?>
-                </strong>
-            </span>
             
             <?php if (!$is_today && array_key_exists($current_date, $holy_week_dates)): ?>
-            <div class="mt-2">
+            <div class="text-center mt-3">
                 <a href="dashboard.php" class="btn btn-sm">
-                    <i class="fas fa-arrow-left"></i> 
-                    <?php echo $language === 'am' ? 'ወደ ዛሬ ተመለስ' : 'Return to Today'; ?>
+                    <i class="fas fa-calendar-day"></i> 
+                    <?php echo $language === 'am' ? 'ወደ ዛሬ ተመለስ' : 'Go to Today'; ?>
                 </a>
             </div>
             <?php endif; ?>

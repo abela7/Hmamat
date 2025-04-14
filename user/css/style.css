@@ -758,129 +758,63 @@ a:hover {
     font-weight: 600;
 }
 
-/* Holy Week Day Selector */
-.holy-week-selector {
-    margin: 1.5rem 0;
-    overflow: hidden;
+/* Date Navigation */
+.day-navigation {
+    padding: 0.5rem;
 }
 
-.day-tabs {
+.date-navigator {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #f8f9fa;
+    padding: 0.75rem;
+    background-color: #fff;
     border-radius: 10px;
-    overflow-x: auto;
-    padding: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     border: 1px solid #e9ecef;
 }
 
-.day-tab {
-    flex: 1;
-    text-align: center;
-    position: relative;
-    color: var(--text-color);
-    text-decoration: none;
-    margin: 0 0.1rem;
-    min-width: 80px;
-}
-
-.day-tab-inner {
-    padding: 1.2rem 0.5rem;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-    background-color: transparent;
-}
-
-.day-tab:hover .day-tab-inner {
-    background-color: rgba(218, 165, 32, 0.1);
+.nav-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: var(--bg-color);
+    border-radius: 50%;
     color: var(--dark-color);
+    transition: all 0.2s ease;
+    text-decoration: none;
 }
 
-.day-tab.active .day-tab-inner {
+.nav-arrow:hover:not(.disabled) {
     background-color: var(--primary-color);
     color: white;
+    transform: translateY(-2px);
     box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
-.day-tab.active::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 8px solid var(--primary-color);
+.nav-arrow.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
-.day-name {
+.current-date {
     font-weight: 600;
-    font-size: 1.1rem;
-    margin-bottom: 0.4rem;
-}
-
-.day-date {
-    font-size: 0.85rem;
-    opacity: 0.9;
-}
-
-.selected-day-indicator {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    border-radius: 30px;
-    background-color: #f8f9fa;
-    font-size: 1rem;
-}
-
-@media (max-width: 768px) {
-    .day-tabs {
-        flex-wrap: nowrap;
-        justify-content: flex-start;
-        overflow-x: auto;
-        padding: 0.75rem 0.5rem;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none; /* Firefox */
-    }
-    
-    .day-tabs::-webkit-scrollbar {
-        display: none; /* Chrome, Safari, Edge */
-    }
-    
-    .day-tab {
-        min-width: 110px;
-        flex: 0 0 auto;
-    }
-    
-    .day-tab-inner {
-        padding: 1rem 0.75rem;
-    }
-    
-    .day-name {
-        font-size: 1rem;
-    }
-    
-    .day-date {
-        font-size: 0.75rem;
-    }
+    font-size: 1.2rem;
+    color: var(--dark-color);
+    text-align: center;
+    padding: 0 1rem;
 }
 
 @media (max-width: 576px) {
-    .day-tab {
-        min-width: 90px;
+    .current-date {
+        font-size: 1rem;
     }
     
-    .day-tab-inner {
-        padding: 0.8rem 0.5rem;
-    }
-    
-    .day-name {
-        font-size: 0.9rem;
-    }
-    
-    .selected-day-indicator {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
+    .nav-arrow {
+        width: 36px;
+        height: 36px;
     }
 } 
