@@ -221,7 +221,7 @@ include_once '../includes/user_header.php';
                         <!-- Step 1: Enter Baptism Name -->
                         <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . ($redirect != 'dashboard.php' ? '?redirect=' . urlencode($redirect) : '')); ?>">
                             <div class="form-group mb-3">
-                                <label for="baptism_name" class="form-label"><?php echo $language === 'am' ? 'የጥምቀት ስም' : 'Baptism Name'; ?></label>
+                                <label for="baptism_name" class="form-label"><?php echo $language === 'am' ? 'የክርስትና ስም' : 'Baptism Name'; ?></label>
                                 <input type="text" class="form-control" id="baptism_name" name="baptism_name" value="<?php echo htmlspecialchars($baptism_name); ?>" required>
                             </div>
                             
