@@ -397,7 +397,7 @@ include_once '../includes/user_header.php';
                             </button>
                         <?php else: ?>
                             <div class="future-message">
-                                <?php echo $language === 'am' ? 'ገና የወደፊት ቀን ነው' : 'Future date - cannot mark yet'; ?>
+                                <?php echo $language === 'am' ? 'ጊዜው ሲደርስ ይመለሱ!' : 'Future date - cannot mark yet'; ?>
                             </div>
                         <?php endif; ?>
                     <?php endif; ?>
