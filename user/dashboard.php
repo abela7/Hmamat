@@ -312,11 +312,12 @@ include_once '../includes/user_header.php';
 <!-- Holy Week Progress Bar -->
 <div class="mb-4 p-3 rounded shadow-sm" style="background-color: #FFFFFF; border: 1px solid #CDAF56;">
     <h5 class="text-center mb-2" style="color: #000000;">
+<?php echo $language === 'am' ? 'የሰሙነ ሕማማት ጉዞ' : 'Holy Week Progress'; ?>
 </h5>
-    <div class="progress" style="height: 25px; background-color:rgb(35, 35, 35);">
-        <div class="progress-bar" role="progressbar" 
-             style="width: <?php echo $progress_percentage; ?>%; background-color: #CDAF56; color: #FFFFFF; font-weight: bold;"
-             aria-valuenow="<?php echo $progress_percentage; ?>" 
+    <div class="progress" style="height: 25px; background-color: #CDAF56;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+             style="width: <?php echo $progress_percentage; ?>%; background-color: #000000; color: #FFFFFF; font-weight: bold;"
+             aria-valuenow="<?php echo $progress_percentage; ?>"
              aria-valuemin="0" aria-valuemax="100">
             <?php echo $progress_percentage; ?>%
         </div>
@@ -411,7 +412,7 @@ include_once '../includes/user_header.php';
 <div class="modal" id="notDoneModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3 class="modal-title"><?php echo $language === 'am' ? 'ይህን እንቅስቃሴ ማጠናቀቅ ያልቻሉበት ምክንያት ምንድን ነው?' : 'Why couldn\'t you complete this activity?'; ?></h3>
+            <h3 class="modal-title"><?php echo $language === 'am' ? 'ይህን ተግባር ማጠናቀቅ ያልቻሉበት ምክንያት ምንድን ነው?' : 'Why couldn\'t you complete this activity?'; ?></h3>
             <button type="button" class="close-modal">&times;</button>
         </div>
         <div class="modal-body">
@@ -431,7 +432,7 @@ include_once '../includes/user_header.php';
                 </div>
                 
                 <div class="form-actions">
-                    <button type="submit" class="btn"><?php echo $language === 'am' ? 'አስገባ' : 'Submit'; ?></button>
+                    <button type="submit" class="btn"><?php echo $language === 'am' ? 'ላክ' : 'Submit'; ?></button>
                 </div>
             </form>
         </div>
