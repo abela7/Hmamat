@@ -276,7 +276,7 @@ include_once '../includes/user_header.php';
 
 <!-- Daily Message -->
 <?php if (!empty($daily_message)): ?>
-<div class="daily-message mb-4 p-3 rounded" style="background-color: #F1ECE2; color: #301934;">
+<div class="daily-message mb-4 p-3 rounded" style="color: #301934;">
     <p class="mb-0" style="white-space: pre-wrap;">
 <?php echo nl2br(htmlspecialchars($daily_message)); // Use nl2br to preserve line breaks and htmlspecialchars for safety ?>
 </p>
