@@ -24,7 +24,7 @@ $error = '';
 // Handle Reset Progress
 if (isset($_POST['reset_progress'])) {
     // Delete all activity records for this user
-    $stmt = $conn->prepare("DELETE FROM user_activities WHERE user_id = ?");
+    $stmt = $conn->prepare("DELETE FROM user_activity_log WHERE user_id = ?");
     $stmt->bind_param("i", $user_id);
     
     if ($stmt->execute()) {
