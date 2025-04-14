@@ -14,19 +14,6 @@ $page_title = "Dashboard";
 $user_id = $_SESSION['user_id'];
 $baptism_name = $_SESSION['baptism_name'];
 
-// Handle date selection
-$selected_date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
-
-// Validate selected date is not in the future
-if (strtotime($selected_date) > time()) {
-    $selected_date = date('Y-m-d');
-}
-
-// Get current date
-$current_date = date('Y-m-d');
-$is_today = ($selected_date === $current_date);
-$day_of_week = date('N', strtotime($selected_date)); // 1-7 (Monday-Sunday)
-
 // Calculate Easter date and remaining time
 function getEasterDate($year = null) {
     if ($year === null) {
@@ -73,6 +60,71 @@ if ($current_timestamp >= $holy_week_start) {
 
 // Has Easter already passed this year?
 $easter_passed = $current_timestamp > $easter;
+
+// Calculate Holy Week dates
+$easter_date_obj = new DateTime(date('Y-m-d', $easter));
+$holy_week_start_obj = clone $easter_date_obj;
+$holy_week_start_obj->modify('-6 days'); // Monday before Easter
+
+// Create array of Holy Week dates
+$holy_week_dates = [];
+$holy_week_labels = [
+    'Monday' => $language === 'am' ? 'ሰኞ' : 'Monday',
+    'Tuesday' => $language === 'am' ? 'ማክሰኞ' : 'Tuesday',
+    'Wednesday' => $language === 'am' ? 'ረቡዕ' : 'Wednesday',
+    'Thursday' => $language === 'am' ? 'ሐሙስ' : 'Thursday',
+    'Friday' => $language === 'am' ? 'አርብ' : 'Friday',
+    'Saturday' => $language === 'am' ? 'ቅዳሜ' : 'Saturday',
+    'Sunday' => $language === 'am' ? 'እሁድ' : 'Sunday'
+];
+
+for ($i = 0; $i < 7; $i++) {
+    $day_obj = clone $holy_week_start_obj;
+    $day_obj->modify("+$i days");
+    $day_date = $day_obj->format('Y-m-d');
+    $day_name = $day_obj->format('l');
+    $holy_week_dates[$day_date] = [
+        'date' => $day_date,
+        'day_name' => $day_name,
+        'label' => $holy_week_labels[$day_name],
+        'date_formatted' => $day_obj->format('d/m')
+    ];
+}
+
+// Handle date selection
+$selected_date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
+
+// Validate selected date is within Holy Week
+if (!array_key_exists($selected_date, $holy_week_dates)) {
+    // If selected date is not in Holy Week, default to current date or closest Holy Week date
+    $current_date = date('Y-m-d');
+    if (array_key_exists($current_date, $holy_week_dates)) {
+        $selected_date = $current_date;
+    } else {
+        // Find closest date in Holy Week
+        $current_timestamp = time();
+        $closest_date = null;
+        $closest_diff = PHP_INT_MAX;
+        
+        foreach ($holy_week_dates as $date => $info) {
+            $date_timestamp = strtotime($date);
+            $diff = abs($date_timestamp - $current_timestamp);
+            
+            if ($diff < $closest_diff) {
+                $closest_diff = $diff;
+                $closest_date = $date;
+            }
+        }
+        
+        $selected_date = $closest_date;
+    }
+}
+
+// Get current date and selected day info
+$current_date = date('Y-m-d');
+$is_today = ($selected_date === $current_date);
+$selected_day_name = $holy_week_dates[$selected_date]['day_name'];
+$day_of_week = date('N', strtotime($selected_date)); // 1-7 (Monday-Sunday)
 
 // Get daily message
 $daily_message = "";
@@ -214,23 +266,31 @@ include_once '../includes/user_header.php';
 <!-- Date Selection -->
 <div class="card mb-4">
     <div class="card-body">
-        <form id="dateForm" method="get" action="dashboard.php" class="row align-items-center">
-            <div class="col-md-6">
-                <h5><?php echo $language === 'am' ? 'ቀን ይምረጡ' : 'Select Date'; ?></h5>
-                <p class="mb-0 text-muted">
-                    <?php echo $language === 'am' ? 'ካለፉት ቀናት እንቅስቃሴዎችን ለማየት ቀን ይምረጡ' : 'Choose a date to view activities from previous days'; ?>
-                </p>
+        <h4 class="card-title">
+            <?php echo $language === 'am' ? 'የቅዱስ ሳምንት ቀኖች' : 'Holy Week Days'; ?>
+        </h4>
+        <div class="week-selector mb-3">
+            <div class="row">
+                <?php foreach ($holy_week_dates as $date => $info): ?>
+                <div class="col-md text-center">
+                    <a href="?date=<?php echo $date; ?>" class="day-link <?php echo $selected_date === $date ? 'active' : ''; ?>">
+                        <div class="day-name"><?php echo $info['label']; ?></div>
+                        <div class="day-date"><?php echo $info['date_formatted']; ?></div>
+                    </a>
+                </div>
+                <?php endforeach; ?>
             </div>
-            <div class="col-md-4">
-                <input type="date" class="form-control" name="date" id="dateSelector" 
-                       value="<?php echo $selected_date; ?>" max="<?php echo date('Y-m-d'); ?>">
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn w-100">
-                    <?php echo $language === 'am' ? 'ይመልከቱ' : 'View'; ?>
-                </button>
-            </div>
-        </form>
+        </div>
+        
+        <div class="text-center">
+            <strong>
+                <?php echo $language === 'am' ? 'አሁን እየተመለከቱት ያለው ' : 'Currently viewing '; ?>
+                <span class="text-primary">
+                    <?php echo $holy_week_dates[$selected_date]['label']; ?>, 
+                    <?php echo $holy_week_dates[$selected_date]['date_formatted']; ?>
+                </span>
+            </strong>
+        </div>
     </div>
 </div>
 
@@ -238,10 +298,12 @@ include_once '../includes/user_header.php';
 <div class="alert alert-info">
     <p class="mb-0">
         <i class="fas fa-info-circle"></i> 
-        <?php echo $language === 'am' ? 'እየተመለከቱ ያሉት የ' . date('d/m/Y', strtotime($selected_date)) . ' እንቅስቃሴዎች ናቸው' : 'You are viewing activities from ' . date('m/d/Y', strtotime($selected_date)); ?>
+        <?php echo $language === 'am' ? 'እየተመለከቱ ያሉት የ ' . $holy_week_dates[$selected_date]['label'] . ' እንቅስቃሴዎች ናቸው' : 'You are viewing activities for ' . $holy_week_dates[$selected_date]['label']; ?>
+        <?php if (array_key_exists($current_date, $holy_week_dates)): ?>
         <a href="dashboard.php" class="alert-link ms-2">
             <?php echo $language === 'am' ? 'ወደ ዛሬ ተመለስ' : 'Return to today'; ?>
         </a>
+        <?php endif; ?>
     </p>
 </div>
 <?php endif; ?>
@@ -573,11 +635,6 @@ $(document).ready(function() {
                 alert("An error occurred. Please try again.");
             }
         });
-    });
-    
-    // Date change handling
-    $("#dateSelector").change(function() {
-        $("#dateForm").submit();
     });
 });
 </script>
