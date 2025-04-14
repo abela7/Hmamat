@@ -259,6 +259,21 @@ $stmt->close();
 include_once '../includes/user_header.php';
 ?>
 
+<!-- Alert Messages -->
+<?php if (isset($_SESSION['success_message'])): ?>
+    <div class="alert alert-success">
+        <i class="fas fa-check-circle"></i> <?php echo $_SESSION['success_message']; ?>
+        <?php unset($_SESSION['success_message']); ?>
+    </div>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['error_message'])): ?>
+    <div class="alert alert-danger">
+        <i class="fas fa-exclamation-circle"></i> <?php echo $_SESSION['error_message']; ?>
+        <?php unset($_SESSION['error_message']); ?>
+    </div>
+<?php endif; ?>
+
 <!-- Daily Message -->
 <?php if (!empty($daily_message)): ?>
 <div class="daily-message mb-4">
@@ -317,27 +332,29 @@ include_once '../includes/user_header.php';
                             <i class="fas fa-check-circle"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Complete'; ?>
                         </div>
                         <?php if (strtotime($selected_date) <= strtotime(date('Y-m-d'))): ?>
-                        <button class="reset-btn" onclick="resetActivity(<?php echo $activity['id']; ?>, '<?php echo $selected_date; ?>')">
+                        <a href="process_activity.php?action=reset&activity_id=<?php echo $activity['id']; ?>&date=<?php echo $selected_date; ?>&redirect=dashboard.php" class="reset-btn">
                             <i class="fas fa-undo"></i> <?php echo $language === 'am' ? 'ዳግም አስጀምር' : 'Reset'; ?>
-                        </button>
+                        </a>
                         <?php endif; ?>
                     <?php elseif (isset($completed_activities[$activity['id']]) && $completed_activities[$activity['id']] == 'missed'): ?>
                         <div class="status-badge missed">
                             <i class="fas fa-times-circle"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Done'; ?>
                         </div>
                         <?php if (strtotime($selected_date) <= strtotime(date('Y-m-d'))): ?>
-                        <button class="reset-btn" onclick="resetActivity(<?php echo $activity['id']; ?>, '<?php echo $selected_date; ?>')">
+                        <a href="process_activity.php?action=reset&activity_id=<?php echo $activity['id']; ?>&date=<?php echo $selected_date; ?>&redirect=dashboard.php" class="reset-btn">
                             <i class="fas fa-undo"></i> <?php echo $language === 'am' ? 'ዳግም አስጀምር' : 'Reset'; ?>
-                        </button>
+                        </a>
                         <?php endif; ?>
                     <?php else: ?>
                         <?php if (strtotime($selected_date) <= strtotime(date('Y-m-d'))): ?>
-                            <button class="action-btn success" onclick="markComplete(<?php echo $activity['id']; ?>)">
+                            <a href="process_activity.php?action=complete&activity_id=<?php echo $activity['id']; ?>&date=<?php echo $selected_date; ?>&redirect=dashboard.php" class="action-btn success">
                                 <i class="fas fa-check"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Complete'; ?>
-                            </button>
-                            <button class="action-btn secondary" onclick="markMissed(<?php echo $activity['id']; ?>)">
+                            </a>
+                            <?php if (!isset($miss_reasons) || count($miss_reasons) > 0): ?>
+                            <a href="reason_form.php?activity_id=<?php echo $activity['id']; ?>&date=<?php echo $selected_date; ?>&redirect=dashboard.php" class="action-btn secondary">
                                 <i class="fas fa-times"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Done'; ?>
-                            </button>
+                            </a>
+                            <?php endif; ?>
                         <?php else: ?>
                             <div class="future-message">
                                 <?php echo $language === 'am' ? 'ምክንያት የወደፊት ቀን ነው' : 'Future date - cannot mark yet'; ?>
@@ -680,6 +697,28 @@ include_once '../includes/user_header.php';
 .btn:hover {
     background-color: #DAA520;
     transform: translateY(-2px);
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
 }
 </style>
 
