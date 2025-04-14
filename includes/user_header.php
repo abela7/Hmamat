@@ -148,13 +148,13 @@ if ($user_logged_in) {
                 <nav class="nav d-none d-md-flex">
                     <?php if ($user_logged_in): ?>
                     <a href="../user/dashboard.php" class="nav-link <?php echo $current_page == 'dashboard.php' ? 'active' : ''; ?>">
-                        <?php echo $language === 'am' ? 'ዋና ገጽገጽ' : 'Dashboard'; ?>
+                        <?php echo $language === 'am' ? 'ዋና ገጽ' : 'Dashboard'; ?>
                     </a>
                     <a href="../user/leaderboard.php" class="nav-link <?php echo $current_page == 'leaderboard.php' ? 'active' : ''; ?>">
-                        <?php echo $language === 'am' ? 'የምዕመናንመናን ሰሌዳ' : 'Leaderboard'; ?>
+                        <?php echo $language === 'am' ? 'የምዕመናን ሰሌዳ' : 'Leaderboard'; ?>
                     </a>
                     <a href="../user/settings.php" class="nav-link <?php echo $current_page == 'settings.php' ? 'active' : ''; ?>">
-                        <?php echo $language === 'am' ? 'ማስተካከያማስተካከያ' : 'Settings'; ?>
+                        <?php echo $language === 'am' ? 'ማስተካከያ' : 'Settings'; ?>
                     </a>
                     <a href="../user/logout.php" class="nav-link">
                         <?php echo $language === 'am' ? 'ውጣ' : 'Logout'; ?>
