@@ -14,6 +14,9 @@ $page_title = "Dashboard";
 $user_id = $_SESSION['user_id'];
 $baptism_name = $_SESSION['baptism_name'];
 
+// Get user's language preference
+$language = isset($_COOKIE['user_language']) ? $_COOKIE['user_language'] : 'en';
+
 // Calculate Easter date and remaining time
 function getEasterDate($year = null) {
     if ($year === null) {
@@ -266,44 +269,49 @@ include_once '../includes/user_header.php';
 <!-- Date Selection -->
 <div class="card mb-4">
     <div class="card-body">
-        <h4 class="card-title">
+        <h4 class="card-title text-center">
             <?php echo $language === 'am' ? 'የቅዱስ ሳምንት ቀኖች' : 'Holy Week Days'; ?>
         </h4>
-        <div class="week-selector mb-3">
-            <div class="row">
+        
+        <div class="holy-week-selector">
+            <div class="day-tabs">
                 <?php foreach ($holy_week_dates as $date => $info): ?>
-                <div class="col-md text-center">
-                    <a href="?date=<?php echo $date; ?>" class="day-link <?php echo $selected_date === $date ? 'active' : ''; ?>">
+                <a href="?date=<?php echo $date; ?>" class="day-tab <?php echo $selected_date === $date ? 'active' : ''; ?>">
+                    <div class="day-tab-inner">
                         <div class="day-name"><?php echo $info['label']; ?></div>
                         <div class="day-date"><?php echo $info['date_formatted']; ?></div>
-                    </a>
-                </div>
+                    </div>
+                </a>
                 <?php endforeach; ?>
             </div>
         </div>
         
-        <div class="text-center">
-            <strong>
-                <?php echo $language === 'am' ? 'አሁን እየተመለከቱት ያለው ' : 'Currently viewing '; ?>
-                <span class="text-primary">
+        <div class="text-center mt-3">
+            <span class="selected-day-indicator">
+                <?php echo $language === 'am' ? 'አሁን እየተመለከቱት ያለው' : 'Viewing'; ?>: 
+                <strong class="text-primary">
                     <?php echo $holy_week_dates[$selected_date]['label']; ?>, 
                     <?php echo $holy_week_dates[$selected_date]['date_formatted']; ?>
-                </span>
-            </strong>
+                </strong>
+            </span>
+            
+            <?php if (!$is_today && array_key_exists($current_date, $holy_week_dates)): ?>
+            <div class="mt-2">
+                <a href="dashboard.php" class="btn btn-sm">
+                    <i class="fas fa-arrow-left"></i> 
+                    <?php echo $language === 'am' ? 'ወደ ዛሬ ተመለስ' : 'Return to Today'; ?>
+                </a>
+            </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>
 
 <?php if (!$is_today): ?>
-<div class="alert alert-info">
-    <p class="mb-0">
+<div class="alert alert-info mb-4">
+    <p class="mb-0 text-center">
         <i class="fas fa-info-circle"></i> 
-        <?php echo $language === 'am' ? 'እየተመለከቱ ያሉት የ ' . $holy_week_dates[$selected_date]['label'] . ' እንቅስቃሴዎች ናቸው' : 'You are viewing activities for ' . $holy_week_dates[$selected_date]['label']; ?>
-        <?php if (array_key_exists($current_date, $holy_week_dates)): ?>
-        <a href="dashboard.php" class="alert-link ms-2">
-            <?php echo $language === 'am' ? 'ወደ ዛሬ ተመለስ' : 'Return to today'; ?>
-        </a>
-        <?php endif; ?>
+        <?php echo $language === 'am' ? 'እየተመለከቱት ያሉት የ ' . $holy_week_dates[$selected_date]['label'] . ' እንቅስቃሴዎች ናቸው' : 'You are viewing activities for ' . $holy_week_dates[$selected_date]['label']; ?>
     </p>
 </div>
 <?php endif; ?>
