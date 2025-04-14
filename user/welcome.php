@@ -5,7 +5,7 @@ require_once '../includes/db.php';
 require_once '../includes/auth_check.php';
 
 // Set page title
-$page_title = "እንኳን ወደ ሕማማት ደህና መጡ";
+$page_title = "የሰሙነ ሕማማት የመንፈሳዊ ምግባራት መከታተያ ፕሮግራም";
 
 // Initialize variables
 $step = isset($_GET['step']) ? intval($_GET['step']) : 1;

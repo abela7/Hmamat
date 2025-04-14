@@ -173,7 +173,7 @@ if ($user_logged_in) {
     </header>
 
     <main class="main">
-        <div class="container"> 
+        <div class="<?php echo isset($full_width_page) && $full_width_page ? 'full-width-container' : 'container'; ?>"> 
         </div>
     </main>
 

@@ -65,6 +65,9 @@ if ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
+// Set full width page flag
+$full_width_page = true;
+
 // Include header
 include_once '../includes/user_header.php';
 ?>
@@ -110,7 +113,8 @@ include_once '../includes/user_header.php';
 
 <style>
 .simple-container {
-    max-width: 800px;
+    width: 100%;
+    max-width: 100%;
     margin: 0 auto;
     padding: 20px;
     background-color: #f8f5f0;
@@ -136,6 +140,7 @@ include_once '../includes/user_header.php';
     display: flex;
     justify-content: space-around;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    width: 100%;
 }
 
 .user-rank-info, .user-points-info {
@@ -167,6 +172,7 @@ include_once '../includes/user_header.php';
     display: flex;
     flex-direction: column;
     gap: 12px;
+    width: 100%;
 }
 
 .leaderboard-item {
@@ -176,6 +182,7 @@ include_once '../includes/user_header.php';
     display: flex;
     align-items: center;
     transition: all 0.2s ease;
+    width: 100%;
 }
 
 .leaderboard-item:hover {
