@@ -184,9 +184,17 @@ $day_names = [
       // Function to sync TinyMCE content to the textarea before form submission
       function prepareSubmit() {
         if (editorInitialized && tinymce.get('message_text')) {
-          // Get content from TinyMCE and update textarea
+          // Get content from TinyMCE
           const content = tinymce.get('message_text').getContent();
-          document.getElementById('message_text').value = content;
+          
+          // Create a hidden input to send the content
+          const hiddenInput = document.createElement('input');
+          hiddenInput.type = 'hidden';
+          hiddenInput.name = 'message_text';
+          hiddenInput.value = content;
+          
+          // Add the hidden input to the form
+          document.getElementById('messageForm').appendChild(hiddenInput);
         }
         return true; // Continue with form submission
       }
@@ -206,6 +214,7 @@ $day_names = [
             'alignright alignjustify | bullist numlist outdent indent | ' +
             'removeformat | help',
           content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
+          hidden_input: false, // Prevent TinyMCE from creating a hidden textarea
           setup: function(editor) {
             editor.on('init', function() {
               editorInitialized = true;
@@ -294,7 +303,7 @@ $day_names = [
                         
                         <div class="form-group mb-3">
                             <label for="message_text" class="form-label">Message Text</label>
-                            <textarea class="form-control" id="message_text" name="message_text" rows="6" required><?php echo htmlspecialchars($message_text); ?></textarea>
+                            <textarea class="form-control" id="message_text" name="original_message_text" rows="6"><?php echo htmlspecialchars($message_text); ?></textarea>
                             <small class="form-text text-muted">Enter the daily message to display on the login page. You can use HTML formatting.</small>
                         </div>
                         
