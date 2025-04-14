@@ -69,7 +69,7 @@ include_once '../includes/user_header.php';
         <p class="activity-info"><?php echo $language === 'am' ? 'እንቅስቃሴ' : 'Activity'; ?>: <strong><?php echo htmlspecialchars($activity_name); ?></strong></p>
         <p class="date-info"><?php echo $language === 'am' ? 'ቀን' : 'Date'; ?>: <strong><?php echo date('F j, Y', strtotime($date)); ?></strong></p>
         
-        <form action="process_activity.php" method="get" class="reason-form">
+        <form method="get" action="process_activity.php" class="reason-form">
             <input type="hidden" name="action" value="missed">
             <input type="hidden" name="activity_id" value="<?php echo $activity_id; ?>">
             <input type="hidden" name="date" value="<?php echo $date; ?>">

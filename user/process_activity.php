@@ -87,33 +87,29 @@ switch ($action) {
             exit;
         }
         
-        // Check if record already exists and update or insert
-        $stmt = $conn->prepare("SELECT id FROM user_activity_log WHERE user_id = ? AND activity_id = ? AND date_completed = ?");
-        $stmt->bind_param("iis", $user_id, $activity_id, $date);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        // Log the parameters we received
+        error_log("Marking activity as missed - User ID: $user_id, Activity ID: $activity_id, Date: $date, Reason ID: $reason_id");
         
-        if ($result->num_rows > 0) {
-            // Update existing record
-            $record = $result->fetch_assoc();
-            $record_id = $record['id'];
-            
-            $stmt = $conn->prepare("UPDATE user_activity_log SET status = 'missed', points_earned = 0, reason_id = ? WHERE id = ?");
-            $stmt->bind_param("ii", $reason_id, $record_id);
-        } else {
-            // Insert new record
-            $stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity_id, date_completed, status, points_earned, reason_id) VALUES (?, ?, ?, 'missed', 0, ?)");
-            $stmt->bind_param("iisi", $user_id, $activity_id, $date, $reason_id);
-        }
+        // First delete any existing record to avoid conflicts
+        $delete_stmt = $conn->prepare("DELETE FROM user_activity_log WHERE user_id = ? AND activity_id = ? AND date_completed = ?");
+        $delete_stmt->bind_param("iis", $user_id, $activity_id, $date);
+        $delete_stmt->execute();
+        $delete_stmt->close();
         
-        $result = $stmt->execute();
-        $stmt->close();
+        // Now insert a new record
+        $insert_stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity_id, date_completed, status, points_earned, reason_id) VALUES (?, ?, ?, 'missed', 0, ?)");
+        $insert_stmt->bind_param("iisi", $user_id, $activity_id, $date, $reason_id);
+        $result = $insert_stmt->execute();
         
-        if ($result) {
-            $_SESSION['success_message'] = 'Activity marked as not done.';
-        } else {
+        if (!$result) {
+            error_log("Database error when marking activity as missed: " . $conn->error);
             $_SESSION['error_message'] = 'Error updating activity status: ' . $conn->error;
+        } else {
+            error_log("Successfully marked activity as missed");
+            $_SESSION['success_message'] = 'Activity marked as not done.';
         }
+        
+        $insert_stmt->close();
         break;
         
     case 'reset':

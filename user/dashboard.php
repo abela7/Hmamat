@@ -328,18 +328,18 @@ include_once '../includes/user_header.php';
                 
                 <div class="activity-actions">
                     <?php if (isset($completed_activities[$activity['id']]) && $completed_activities[$activity['id']] == 'done'): ?>
-                        <div class="status-badge completed">
-                            <i class="fas fa-check-circle"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Complete'; ?>
-                        </div>
+                        <a href="#" class="status-badge completed">
+                            <i class="fas fa-check"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Complete'; ?>
+                        </a>
                         <?php if (strtotime($selected_date) <= strtotime(date('Y-m-d'))): ?>
                         <a href="process_activity.php?action=reset&activity_id=<?php echo $activity['id']; ?>&date=<?php echo $selected_date; ?>&redirect=dashboard.php" class="reset-btn">
                             <i class="fas fa-undo"></i> <?php echo $language === 'am' ? 'ዳግም አስጀምር' : 'Reset'; ?>
                         </a>
                         <?php endif; ?>
                     <?php elseif (isset($completed_activities[$activity['id']]) && $completed_activities[$activity['id']] == 'missed'): ?>
-                        <div class="status-badge missed">
-                            <i class="fas fa-times-circle"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Done'; ?>
-                        </div>
+                        <a href="#" class="status-badge missed">
+                            <i class="fas fa-times"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Done'; ?>
+                        </a>
                         <?php if (strtotime($selected_date) <= strtotime(date('Y-m-d'))): ?>
                         <a href="process_activity.php?action=reset&activity_id=<?php echo $activity['id']; ?>&date=<?php echo $selected_date; ?>&redirect=dashboard.php" class="reset-btn">
                             <i class="fas fa-undo"></i> <?php echo $language === 'am' ? 'ዳግም አስጀምር' : 'Reset'; ?>
@@ -465,11 +465,11 @@ include_once '../includes/user_header.php';
     background: #F1ECE2;
     border-radius: 10px;
     padding: 20px;
+    margin-bottom: 15px;
 }
 
 .activity-info {
     display: flex;
-    gap: 15px;
     margin-bottom: 15px;
 }
 
@@ -479,7 +479,7 @@ include_once '../includes/user_header.php';
 
 .activity-name {
     font-size: 1.3rem;
-    font-weight: 600;
+    font-weight: 700;
     color: #301934;
     margin: 0 0 10px;
 }
@@ -492,14 +492,12 @@ include_once '../includes/user_header.php';
 
 .activity-actions {
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
     gap: 10px;
-    border-top: 1px solid rgba(0,0,0,0.1);
-    padding-top: 15px;
 }
 
 .action-btn {
-    padding: 12px 24px;
+    padding: 15px;
     border-radius: 5px;
     border: none;
     font-weight: 600;
@@ -507,9 +505,11 @@ include_once '../includes/user_header.php';
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
-    width: 100%;
     justify-content: center;
+    gap: 10px;
+    width: 100%;
+    text-decoration: none;
+    text-align: center;
 }
 
 .action-btn.success {
@@ -523,15 +523,16 @@ include_once '../includes/user_header.php';
 }
 
 .status-badge {
-    padding: 10px 15px;
+    padding: 15px;
     border-radius: 5px;
     font-weight: 600;
     font-size: 1.1rem;
     display: flex;
     align-items: center;
-    gap: 8px;
-    width: 100%;
     justify-content: center;
+    gap: 10px;
+    width: 100%;
+    text-decoration: none;
 }
 
 .status-badge.completed {
