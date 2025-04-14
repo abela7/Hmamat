@@ -14,6 +14,9 @@ $page_title = "Leaderboard";
 $user_id = $_SESSION['user_id'];
 $baptism_name = $_SESSION['baptism_name'];
 
+// Get user's language preference
+$language = isset($_COOKIE['user_language']) ? $_COOKIE['user_language'] : 'en';
+
 // Get leaderboard data
 $leaderboard = array();
 $stmt = $conn->prepare("SELECT u.baptism_name, SUM(ual.points_earned) as total_points
@@ -66,46 +69,197 @@ $stmt->close();
 include_once '../includes/user_header.php';
 ?>
 
-<div class="card">
-    <div class="card-header">
-        <h2 class="card-title">Leaderboard</h2>
+<div class="simple-container">
+    <div class="activity-title-section">
+        <h1 class="main-title"><?php echo $language === 'am' ? 'የአሸናፊዎች ሰሌዳ' : 'Leaderboard'; ?></h1>
     </div>
     
-    <div class="card-body">
-        <div class="alert alert-primary">
-            Your rank: <strong><?php echo $user_rank; ?></strong> with <strong><?php echo $user_total_points; ?></strong> points
+    <div class="user-rank-card">
+        <div class="user-rank-info">
+            <div class="rank-label"><?php echo $language === 'am' ? 'የእርስዎ ደረጃ:' : 'Your Rank:'; ?></div>
+            <div class="rank-number"><?php echo $user_rank; ?></div>
         </div>
-        
-        <?php if (empty($leaderboard)): ?>
-        <p class="text-center">No data available for the leaderboard yet.</p>
-        <?php else: ?>
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>Baptism Name</th>
-                        <th>Points</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($leaderboard as $index => $user): ?>
-                    <tr <?php echo ($user['baptism_name'] === $baptism_name) ? 'class="table-primary"' : ''; ?>>
-                        <td><?php echo $index + 1; ?></td>
-                        <td><?php echo htmlspecialchars($user['baptism_name']); ?></td>
-                        <td><?php echo $user['total_points']; ?></td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+        <div class="user-points-info">
+            <div class="points-label"><?php echo $language === 'am' ? 'ነጥቦች:' : 'Points:'; ?></div>
+            <div class="points-number"><?php echo $user_total_points; ?></div>
         </div>
-        <?php endif; ?>
+    </div>
+    
+    <?php if (empty($leaderboard)): ?>
+    <div class="empty-state">
+        <p><?php echo $language === 'am' ? 'በአሁኑ ጊዜ ምንም የአሸናፊዎች ሰሌዳ ውሂብ አይገኝም።' : 'No data available for the leaderboard yet.'; ?></p>
+    </div>
+    <?php else: ?>
+    <div class="leaderboard-container">
+        <?php foreach ($leaderboard as $index => $user): ?>
+        <div class="leaderboard-item <?php echo ($user['baptism_name'] === $baptism_name) ? 'current-user' : ''; ?>">
+            <div class="rank-badge"><?php echo $index + 1; ?></div>
+            <div class="user-name"><?php echo htmlspecialchars($user['baptism_name']); ?></div>
+            <div class="user-points"><?php echo $user['total_points']; ?> <?php echo $language === 'am' ? 'ነጥቦች' : 'points'; ?></div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+    
+    <div class="back-link">
+        <a href="dashboard.php" class="back-button">
+            <i class="fas fa-arrow-left"></i> <?php echo $language === 'am' ? 'ወደ ዳሽቦርድ ተመለስ' : 'Back to Dashboard'; ?>
+        </a>
     </div>
 </div>
 
-<div class="text-center mt-4">
-    <a href="dashboard.php" class="btn btn-secondary">Back to Dashboard</a>
-</div>
+<style>
+.simple-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f8f5f0;
+}
+
+.activity-title-section {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.main-title {
+    font-size: 2.2rem;
+    color: #301934;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.user-rank-card {
+    background-color: #F1ECE2;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-around;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.user-rank-info, .user-points-info {
+    text-align: center;
+}
+
+.rank-label, .points-label {
+    font-size: 1.1rem;
+    color: #5D4225;
+    margin-bottom: 5px;
+}
+
+.rank-number, .points-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #301934;
+}
+
+.empty-state {
+    background-color: #F1ECE2;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+    font-size: 1.1rem;
+    color: #5D4225;
+}
+
+.leaderboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.leaderboard-item {
+    background-color: #F1ECE2;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.leaderboard-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.leaderboard-item.current-user {
+    background-color: #e0d7c5;
+    border-left: 5px solid #301934;
+}
+
+.rank-badge {
+    width: 40px;
+    height: 40px;
+    background-color: #301934;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin-right: 15px;
+}
+
+.user-name {
+    flex-grow: 1;
+    font-weight: 600;
+    color: #301934;
+}
+
+.user-points {
+    background-color: #DAA520;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.back-link {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #301934;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.back-button:hover {
+    background-color: #421c54;
+    transform: translateY(-2px);
+    color: white;
+}
+
+@media (max-width: 576px) {
+    .rank-number, .points-number {
+        font-size: 2rem;
+    }
+    
+    .leaderboard-item {
+        padding: 12px;
+    }
+    
+    .rank-badge {
+        width: 32px;
+        height: 32px;
+        margin-right: 10px;
+    }
+    
+    .user-points {
+        font-size: 0.8rem;
+    }
+}
+</style>
 
 <?php
 // Include footer

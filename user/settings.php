@@ -242,25 +242,8 @@ include_once '../includes/user_header.php';
                             </div>
                         </div>
                         
-                        <!-- Notification Settings -->
-                        <div class="form-group mb-4">
-                            <label class="form-label">
-                                <?php echo $language === 'am' ? 'ማሳወቂያዎች' : 'Notifications'; ?>
-                            </label>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="email-notifications" 
-                                       name="email_notifications" <?php echo $email_notifications ? 'checked' : ''; ?>>
-                                <label class="form-check-label" for="email-notifications">
-                                    <?php echo $language === 'am' ? 'የኢሜይል ማሳወቂያዎችን ተቀበል' : 'Receive email notifications'; ?>
-                                </label>
-                                <div class="form-text">
-                                    <?php echo $language === 'am' ? 'ስለ ቀጣይ ክንዋኔዎች እና ማሳሰቢያዎች ኢሜይሎችን ይቀበሉ።' : 'Receive emails about upcoming events and reminders.'; ?>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="d-grid mt-4">
-                            <button type="submit" name="save_preferences" class="btn">
+                        <div class="text-end">
+                            <button type="submit" name="save_preferences" class="btn btn-primary">
                                 <?php echo $language === 'am' ? 'ማስተካከያዎችን አስቀምጥ' : 'Save Settings'; ?>
                             </button>
                         </div>
@@ -268,127 +251,59 @@ include_once '../includes/user_header.php';
                     
                     <hr class="my-4">
                     
-                    <!-- Account Settings -->
-                    <h3>
-                        <?php echo $language === 'am' ? 'የመለያ ቅንብሮች' : 'Account Settings'; ?>
-                    </h3>
-                    
-                    <div class="row mt-4">
-                        <div class="col-md-6 mb-3">
-                            <div class="card h-100">
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                        <?php echo $language === 'am' ? 'የይለፍ ቃል ይቀይሩ' : 'Change Password'; ?>
-                                    </h5>
-                                    <p class="card-text">
-                                        <?php echo $language === 'am' ? 'የመለያዎን የይለፍ ቃል ለመቀየር እዚህ ጠቅ ያድርጉ።' : 'Click here to change your account password.'; ?>
-                                    </p>
-                                    <a href="change_password.php" class="btn btn-outline">
-                                        <?php echo $language === 'am' ? 'የይለፍ ቃል ይቀይሩ' : 'Change Password'; ?>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <div class="card h-100">
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                        <?php echo $language === 'am' ? 'የመለያ መረጃ' : 'Account Information'; ?>
-                                    </h5>
-                                    <p class="card-text">
-                                        <?php echo $language === 'am' ? 'የመለያዎን ዝርዝሮች ይመልከቱ እና ማደስ ይችላሉ።' : 'View and update your account details.'; ?>
-                                    </p>
-                                    <a href="profile.php" class="btn btn-outline">
-                                        <?php echo $language === 'am' ? 'መግለጫ ይመልከቱ' : 'View Profile'; ?>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <hr class="my-4">
-                    
-                    <!-- Change Baptism Name -->
-                    <h3>
-                        <?php echo $language === 'am' ? 'የጥምቀት ስምዎን ይቀይሩ' : 'Change Baptism Name'; ?>
-                    </h3>
-                    
-                    <form method="post" action="settings.php" class="mt-3">
-                        <div class="form-group mb-3">
-                            <label for="current_name" class="form-label">
-                                <?php echo $language === 'am' ? 'የአሁኑ የጥምቀት ስም' : 'Current Baptism Name'; ?>
-                            </label>
-                            <input type="text" class="form-control" id="current_name" value="<?php echo htmlspecialchars($baptism_name); ?>" disabled>
-                        </div>
-                        
-                        <div class="form-group mb-3">
-                            <label for="new_baptism_name" class="form-label">
-                                <?php echo $language === 'am' ? 'አዲስ የጥምቀት ስም' : 'New Baptism Name'; ?>
-                            </label>
-                            <input type="text" class="form-control" id="new_baptism_name" name="new_baptism_name" required>
-                        </div>
-                        
-                        <div class="d-grid">
-                            <button type="submit" name="change_name" class="btn">
-                                <?php echo $language === 'am' ? 'የጥምቀት ስም ይቀይሩ' : 'Change Baptism Name'; ?>
-                            </button>
-                        </div>
-                    </form>
-                    
-                    <hr class="my-4">
-                    
                     <!-- Reset Progress -->
-                    <h3>
-                        <?php echo $language === 'am' ? 'እድገትን ዳግም ያስጀምሩ' : 'Reset Progress'; ?>
-                    </h3>
-                    
-                    <div class="alert alert-warning my-3">
-                        <p>
-                            <?php echo $language === 'am' ? 'ማስጠንቀቂያ፡ እድገትዎን ዳግም ማስጀመር ሁሉንም የተመዘገቡ እንቅስቃሴዎችዎን ይሰርዛል። ይህ እርምጃ የማይቀለበስ ነው።' : 'Warning: Resetting your progress will delete all your recorded activities. This action cannot be undone.'; ?>
+                    <div class="settings-section mb-4">
+                        <h3 class="settings-heading danger-text">
+                            <?php echo $language === 'am' ? 'እድገት ዳግም ያስጀምሩ' : 'Reset Progress'; ?>
+                        </h3>
+                        <p class="text-muted">
+                            <?php echo $language === 'am' ? 'ይህ የእርስዎን ሁሉንም ነጥቦች እና ሪኮርዶች ይሰርዛል። ይህ እርምጃ ተመልሶ ሊወሰድ አይችልም።' : 'This will delete all your points and activity records. This action cannot be undone.'; ?>
                         </p>
-                    </div>
-                    
-                    <form method="post" action="settings.php" class="mt-3">
-                        <div class="d-grid">
-                            <button type="submit" name="reset_progress" class="btn btn-warning">
-                                <?php echo $language === 'am' ? 'እድገቴን ዳግም አስጀምር' : 'Reset My Progress'; ?>
+                        <form method="post" action="settings.php" onsubmit="return confirm('<?php echo $language === 'am' ? 'እርግጠኛ ነዎት? ይህ እርምጃ ሁሉንም ሪኮርዶችዎን ይሰርዛል።' : 'Are you sure? This will delete all your records.'; ?>');">
+                            <button type="submit" name="reset_progress" class="btn btn-danger">
+                                <?php echo $language === 'am' ? 'እድገት ዳግም ያስጀምሩ' : 'Reset Progress'; ?>
                             </button>
-                        </div>
-                    </form>
-                    
-                    <hr class="my-4">
+                        </form>
+                    </div>
                     
                     <!-- Delete Account -->
-                    <h3 class="text-danger">
-                        <?php echo $language === 'am' ? 'መለያን ሰርዝ' : 'Delete Account'; ?>
-                    </h3>
-                    
-                    <div class="alert alert-danger my-3">
-                        <p>
-                            <?php echo $language === 'am' ? 'ማስጠንቀቂያ፡ መለያዎን መሰረዝ ሁሉንም መረጃዎችዎን ይሰርዛል፤ ይህም መተግበሪያውን ለመጠቀም እንደገና መመዝገብ ያስፈልግዎታል። ይህ እርምጃ የማይቀለበስ ነው።' : 'Warning: Deleting your account will remove all your data and you will need to register again to use the application. This action cannot be undone.'; ?>
+                    <div class="settings-section mb-4">
+                        <h3 class="settings-heading danger-text">
+                            <?php echo $language === 'am' ? 'መለያ ሰርዝ' : 'Delete Account'; ?>
+                        </h3>
+                        <p class="text-muted">
+                            <?php echo $language === 'am' ? 'መለያዎን መሰረዝ ሁሉንም ውሂብዎን እና መለያዎን በቋሚነት ይሰርዛል። ይህ እርምጃ ተመልሶ ሊወሰድ አይችልም።' : 'Deleting your account will permanently remove all your data and account. This action cannot be undone.'; ?>
                         </p>
+                        <form method="post" action="settings.php" onsubmit="return confirm('<?php echo $language === 'am' ? 'እርግጠኛ ነዎት? ይህ እርምጃ መለያዎን በቋሚነት ይሰርዛል።' : 'Are you sure? This will permanently delete your account.'; ?>');">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" name="confirm_delete" placeholder="<?php echo $language === 'am' ? 'ለማረጋገጥ DELETE ይጻፉ' : 'Type DELETE to confirm'; ?>">
+                                <button type="submit" name="delete_account" class="btn btn-danger">
+                                    <?php echo $language === 'am' ? 'መለያ ሰርዝ' : 'Delete Account'; ?>
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                    
-                    <form method="post" action="settings.php" class="mt-3">
-                        <div class="form-group mb-3">
-                            <label for="confirm_delete" class="form-label">
-                                <?php echo $language === 'am' ? 'ለማረጋገጥ "DELETE" ይጻፉ' : 'Type "DELETE" to confirm'; ?>
-                            </label>
-                            <input type="text" class="form-control" id="confirm_delete" name="confirm_delete" required>
-                        </div>
-                        
-                        <div class="d-grid">
-                            <button type="submit" name="delete_account" class="btn btn-danger">
-                                <?php echo $language === 'am' ? 'መለያዬን በማግባት ሰርዝ' : 'Permanently Delete My Account'; ?>
-                            </button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+.settings-heading {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.danger-text {
+    color: #dc3545;
+}
+
+.settings-section {
+    padding-top: 15px;
+}
+</style>
 
 <?php
 // Include footer

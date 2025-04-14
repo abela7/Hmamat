@@ -463,6 +463,7 @@ include_once '../includes/user_header.php';
 
 .activity-details {
     flex: 1;
+    text-align: center;
 }
 
 .activity-name {
@@ -593,6 +594,7 @@ include_once '../includes/user_header.php';
     margin: 0;
     font-size: 1.3rem;
     font-weight: 600;
+    color: white;
 }
 
 .close-modal {
