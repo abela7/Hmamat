@@ -188,7 +188,7 @@ include_once '../includes/user_header.php';
                 <h2 class="card-title text-center">ሰሙነ ሕማማት</h2>
                 
                 <div class="text-center mb-4">
-                    <p>The Holy Week Spiritual Tracker for Ethiopian Orthodox faithful.</p>
+                    <p>የዐቢይ ጾም የመጨረሻ ሳምንት</p>
                 </div>
                 
                 <?php if (!empty($error)): ?>
