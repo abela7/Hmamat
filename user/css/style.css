@@ -566,6 +566,40 @@ a:hover {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.daily-message p {
+    margin-bottom: 0;
+}
+
+/* Enhanced styling for rich content in daily messages */
+.daily-message ul, .daily-message ol {
+    text-align: left;
+    margin-left: 1.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.daily-message h1, .daily-message h2, .daily-message h3, 
+.daily-message h4, .daily-message h5, .daily-message h6 {
+    color: white;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.daily-message a {
+    color: white;
+    text-decoration: underline;
+}
+
+.daily-message a:hover {
+    color: var(--bg-color);
+}
+
+.daily-message img {
+    max-width: 100%;
+    height: auto;
+    margin: 0.5rem 0;
+}
+
 /* Footer */
 .footer {
     background-color: white;

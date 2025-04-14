@@ -262,7 +262,7 @@ include_once '../includes/user_header.php';
 <!-- Daily Message -->
 <?php if (!empty($daily_message)): ?>
 <div class="daily-message mb-4">
-    <p class="mb-0"><?php echo htmlspecialchars($daily_message); ?></p>
+    <p class="mb-0"><?php echo $daily_message; ?></p>
 </div>
 <?php endif; ?>
 

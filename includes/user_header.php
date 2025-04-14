@@ -175,6 +175,8 @@ if ($user_logged_in) {
 
     <main class="main">
         <div class="container"> 
+        </div>
+    </main>
 
 <!-- Script for language switching -->
 <script>
@@ -209,7 +211,5 @@ $(document).ready(function() {
     });
 });
 </script>
-        </div>
-    </main>
 </body>
 </html> 

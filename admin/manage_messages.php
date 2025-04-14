@@ -166,6 +166,36 @@ $day_names = [
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
+    <!-- TinyMCE -->
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+      let editorInitialized = false;
+      
+      document.addEventListener('DOMContentLoaded', function() {
+        tinymce.init({
+          selector: '#message_text',
+          height: 300,
+          menubar: true,
+          plugins: [
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+            'insertdatetime', 'media', 'table', 'help', 'wordcount'
+          ],
+          toolbar: 'undo redo | blocks | ' +
+            'bold italic backcolor | alignleft aligncenter ' +
+            'alignright alignjustify | bullist numlist outdent indent | ' +
+            'removeformat | help',
+          content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
+          setup: function(editor) {
+            editor.on('init', function() {
+              editorInitialized = true;
+              // Initialize preview when editor is ready
+              initPreview();
+            });
+          }
+        });
+      });
+    </script>
 </head>
 <body>
     <div class="admin-container">
@@ -244,8 +274,8 @@ $day_names = [
                         
                         <div class="form-group mb-3">
                             <label for="message_text" class="form-label">Message Text</label>
-                            <textarea class="form-control" id="message_text" name="message_text" rows="4" required><?php echo htmlspecialchars($message_text); ?></textarea>
-                            <small class="form-text text-muted">Enter the daily message to display on the login page.</small>
+                            <textarea class="form-control" id="message_text" name="message_text" rows="6" required><?php echo htmlspecialchars($message_text); ?></textarea>
+                            <small class="form-text text-muted">Enter the daily message to display on the login page. You can use HTML formatting.</small>
                         </div>
                         
                         <div class="form-group mb-3">
@@ -257,6 +287,19 @@ $day_names = [
                                 <?php endforeach; ?>
                             </select>
                             <small class="form-text text-muted">Select a specific day to display this message, or leave blank for a general message.</small>
+                        </div>
+                        
+                        <div class="language-tabs mb-3">
+                            <div class="language-selector">
+                                <button type="button" class="btn btn-sm btn-outline-primary active" data-lang="en">English</button>
+                                <button type="button" class="btn btn-sm btn-outline-primary" data-lang="am">አማርኛ</button>
+                            </div>
+                            <div class="form-text text-muted">Click to preview how your message will look in different languages.</div>
+                        </div>
+                        
+                        <div class="message-preview mb-4">
+                            <h5 class="preview-title">Preview:</h5>
+                            <div class="preview-content p-3 bg-light rounded"></div>
                         </div>
                         
                         <div class="form-actions">
@@ -309,5 +352,89 @@ $day_names = [
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Preview Functionality -->
+    <script>
+    function initPreview() {
+        const languageButtons = document.querySelectorAll('.language-selector button');
+        const previewContent = document.querySelector('.preview-content');
+        let currentLang = 'en';
+        
+        // Update preview with TinyMCE content
+        function updatePreview() {
+            if (editorInitialized && tinymce.get('message_text')) {
+                const content = tinymce.get('message_text').getContent();
+                previewContent.innerHTML = content;
+                
+                // Add language-specific styling for preview
+                if (currentLang === 'am') {
+                    previewContent.style.fontFamily = '"Noto Sans Ethiopic", sans-serif';
+                    previewContent.style.direction = 'ltr';
+                    previewContent.classList.add('amharic-text');
+                } else {
+                    previewContent.style.fontFamily = 'Helvetica, Arial, sans-serif';
+                    previewContent.style.direction = 'ltr';
+                    previewContent.classList.remove('amharic-text');
+                }
+            }
+        }
+        
+        // Initial preview update
+        updatePreview();
+        
+        // Update preview when editor content changes
+        if (tinymce.get('message_text')) {
+            tinymce.get('message_text').on('change', updatePreview);
+        }
+        
+        // Language selector buttons
+        languageButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                languageButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                currentLang = this.getAttribute('data-lang');
+                updatePreview();
+            });
+        });
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Preview will be initialized after TinyMCE is ready
+        if (editorInitialized) {
+            initPreview();
+        }
+    });
+    </script>
+    
+    <!-- Amharic Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+    .language-selector {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .message-preview {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+    
+    .preview-title {
+        font-size: 1rem;
+        margin-bottom: 10px;
+        color: #666;
+    }
+    
+    .preview-content {
+        min-height: 100px;
+    }
+    
+    .amharic-text {
+        font-size: 1.1em;
+        line-height: 1.6;
+    }
+    </style>
 </body>
 </html> 
