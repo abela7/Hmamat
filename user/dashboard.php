@@ -350,11 +350,9 @@ include_once '../includes/user_header.php';
                             <a href="process_activity.php?action=complete&activity_id=<?php echo $activity['id']; ?>&date=<?php echo $selected_date; ?>&redirect=dashboard.php" class="action-btn success">
                                 <i class="fas fa-check"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Complete'; ?>
                             </a>
-                            <?php if (!isset($miss_reasons) || count($miss_reasons) > 0): ?>
                             <a href="reason_form.php?activity_id=<?php echo $activity['id']; ?>&date=<?php echo $selected_date; ?>&redirect=dashboard.php" class="action-btn secondary">
                                 <i class="fas fa-times"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Done'; ?>
                             </a>
-                            <?php endif; ?>
                         <?php else: ?>
                             <div class="future-message">
                                 <?php echo $language === 'am' ? 'ምክንያት የወደፊት ቀን ነው' : 'Future date - cannot mark yet'; ?>

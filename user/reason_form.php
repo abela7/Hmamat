@@ -87,7 +87,7 @@ include_once '../includes/user_header.php';
             
             <div class="form-actions">
                 <a href="<?php echo $redirect; ?>?date=<?php echo $date; ?>" class="back-btn"><?php echo $language === 'am' ? 'ተመለስ' : 'Cancel'; ?></a>
-                <button type="submit" class="submit-btn"><?php echo $language === 'am' ? 'አስገባ' : 'Submit'; ?></button>
+                <button type="submit" class="submit-btn"><?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Mark as Not Done'; ?></button>
             </div>
         </form>
     </div>
