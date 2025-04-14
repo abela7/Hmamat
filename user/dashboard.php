@@ -276,7 +276,7 @@ include_once '../includes/user_header.php';
 
 <!-- Daily Message -->
 <?php if (!empty($daily_message)): ?>
-<div class="daily-message mb-4 p-3 rounded" style="color: #CDAF56;">
+<div class="daily-message mb-4 p-3 rounded">
     <p class="mb-0">
 <?php echo $daily_message; ?>
 </p>
@@ -285,38 +285,38 @@ include_once '../includes/user_header.php';
 
 <!-- Fasika Countdown Timer -->
 <?php if ($fasika_timestamp_utc !== null): ?>
-<div id="fasika-countdown" class="mb-4 p-3 rounded shadow-sm text-center" style="background-color: #e8e1d9;" data-target-timestamp="<?php echo $fasika_timestamp_utc; ?>">
-    <h4 class="countdown-title mb-3" style="color: #301934; font-weight: 600;"><?php echo $language === 'am' ? 'እስከ ፋሲካ የቀረው ጊዜ' : 'Time Until Fasika Celebration'; ?></h4>
+<div id="fasika-countdown" class="mb-4 p-3 rounded shadow-sm text-center" style="background-color: #FFFFFF; border: 1px solid #DAA520;" data-target-timestamp="<?php echo $fasika_timestamp_utc; ?>">
+    <h4 class="countdown-title mb-3" style="color: #000000; font-weight: 600;"><?php echo $language === 'am' ? 'እስከ ፋሲካ የቀረው ጊዜ' : 'Time Until Fasika Celebration'; ?></h4>
     <div class="d-flex justify-content-around align-items-center flex-wrap">
         <div class="countdown-segment mx-2 my-1">
-            <span id="countdown-days" class="display-6 fw-bold" style="color: #5D4225;">00</span><br>
+            <span id="countdown-days" class="display-6 fw-bold" style="color: #DAA520;">00</span><br>
             <span class="countdown-label small text-muted text-uppercase"><?php echo $language === 'am' ? 'ቀናት' : 'Days'; ?></span>
         </div>
         <div class="countdown-segment mx-2 my-1">
-            <span id="countdown-hours" class="display-6 fw-bold" style="color: #5D4225;">00</span><br>
+            <span id="countdown-hours" class="display-6 fw-bold" style="color: #DAA520;">00</span><br>
             <span class="countdown-label small text-muted text-uppercase"><?php echo $language === 'am' ? 'ሰዓታት' : 'Hours'; ?></span>
         </div>
         <div class="countdown-segment mx-2 my-1">
-            <span id="countdown-minutes" class="display-6 fw-bold" style="color: #5D4225;">00</span><br>
+            <span id="countdown-minutes" class="display-6 fw-bold" style="color: #DAA520;">00</span><br>
             <span class="countdown-label small text-muted text-uppercase"><?php echo $language === 'am' ? 'ደቂቃዎች' : 'Minutes'; ?></span>
         </div>
         <div class="countdown-segment mx-2 my-1">
-            <span id="countdown-seconds" class="display-6 fw-bold" style="color: #5D4225;">00</span><br>
+            <span id="countdown-seconds" class="display-6 fw-bold" style="color: #DAA520;">00</span><br>
             <span class="countdown-label small text-muted text-uppercase"><?php echo $language === 'am' ? 'ሰከንዶች' : 'Seconds'; ?></span>
         </div>
     </div>
-    <div id="countdown-message" class="mt-3 alert alert-success" style="display: none;"><?php echo $language === 'am' ? 'እንኳን ለብርሃነ ትንሣኤው በሰላም አደረሳችሁ! ' : 'Happy Fasika Celebration!'; ?></div>
+    <div id="countdown-message" class="mt-3 alert alert-success" style="display: none; background-color: #DAA520; color: #FFFFFF; border-color: #DAA520;"><?php echo $language === 'am' ? 'እንኳን ለብርሃነ ትንሣኤው በሰላም አደረሳችሁ! ' : 'Happy Fasika Celebration!'; ?></div>
 </div>
 <?php endif; ?>
 
 <!-- Holy Week Progress Bar -->
-<div class="mb-4 p-3 rounded shadow-sm" style="background-color: #f8f5f0;">
-    <h5 class="text-center mb-2" style="color: #301934;">
+<div class="mb-4 p-3 rounded shadow-sm" style="background-color: #FFFFFF; border: 1px solid #CDAF56;">
+    <h5 class="text-center mb-2" style="color: #000000;">
 <?php echo $language === 'am' ? 'የሰሙነ ሕማማት ጉዞ' : 'Holy Week Progress'; ?>
 </h5>
-    <div class="progress" style="height: 25px;">
+    <div class="progress" style="height: 25px; background-color: #CDAF56;">
         <div class="progress-bar" role="progressbar" 
-             style="width: <?php echo $progress_percentage; ?>%; background-color: #5D4225;" 
+             style="width: <?php echo $progress_percentage; ?>%; background-color: #DAA520; color: #FFFFFF;" 
              aria-valuenow="<?php echo $progress_percentage; ?>" 
              aria-valuemin="0" aria-valuemax="100">
             <?php echo $progress_percentage; ?>%
@@ -441,11 +441,24 @@ include_once '../includes/user_header.php';
 
 <style>
 /* Main Dashboard Styles */
+body {
+    background-color: #FFFFFF; /* Ensure body background is white */
+}
+
+.daily-message p, .daily-message div, .daily-message span, .daily-message h1, .daily-message h2, .daily-message h3, .daily-message h4, .daily-message h5, .daily-message h6 {
+    color: inherit !important; /* Force TinyMCE content to inherit the container color if possible */
+    background-color: transparent !important; /* Prevent internal backgrounds */
+}
+
+.daily-message a {
+    color: #DAA520; /* Style links within daily message */
+}
+
 .simple-container {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #f8f5f0;
+    background-color: #FFFFFF; /* White background */
 }
 
 .simple-date-nav {
@@ -453,16 +466,17 @@ include_once '../includes/user_header.php';
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
-    background: #F1ECE2;
+    background: #FFFFFF; /* White background */
     padding: 10px;
     border-radius: 8px;
+    border: 1px solid #DAA520; /* Primary accent border */
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .current-date {
     font-size: 1.2rem;
     margin: 0;
-    color: #301934;
+    color: #000000; /* Black text */
     font-weight: 600;
 }
 
@@ -472,15 +486,18 @@ include_once '../includes/user_header.php';
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fff;
+    background: #FFFFFF; /* White background */
     border-radius: 50%;
-    color: #301934;
+    color: #DAA520; /* Primary accent color */
+    border: 1px solid #DAA520; /* Primary accent border */
     text-decoration: none;
 }
 
 .nav-arrow.disabled {
     opacity: 0.5;
     pointer-events: none;
+    border-color: #CDAF56; /* Secondary accent for disabled */
+    color: #CDAF56;
 }
 
 .activity-title-section {
@@ -489,14 +506,15 @@ include_once '../includes/user_header.php';
 
 .main-title {
     font-size: 2.2rem;
-    color: #301934;
+    color: #000000; /* Black text */
     margin-bottom: 5px;
     font-weight: 700;
 }
 
+/* Remove .amharic-title if not used or style with black */
 .amharic-title {
     font-size: 1.6rem;
-    color: #5D4225;
+    color: #000000; /* Black text */
     margin-top: 5px;
     font-weight: 500;
 }
@@ -508,9 +526,10 @@ include_once '../includes/user_header.php';
 }
 
 .activity-simple-item {
-    background: #F1ECE2;
+    background: #FFFFFF; /* White background */
     border-radius: 10px;
     padding: 20px;
+    border: 1px solid #CDAF56; /* Secondary accent border */
 }
 
 .activity-info {
@@ -527,13 +546,13 @@ include_once '../includes/user_header.php';
 .activity-name {
     font-size: 1.3rem;
     font-weight: 600;
-    color: #301934;
+    color: #000000; /* Black text */
     margin: 0 0 10px;
 }
 
 .activity-description {
     margin: 0;
-    color: #5D4225;
+    color: #000000; /* Black text for readability */
     font-size: 1rem;
 }
 
@@ -560,13 +579,13 @@ include_once '../includes/user_header.php';
 }
 
 .action-btn.success {
-    background-color: #316B3A;
-    color: white;
+    background-color: #DAA520; /* Primary accent */
+    color: #FFFFFF; /* White text */
 }
 
 .action-btn.secondary {
-    background-color: #301934;
-    color: white;
+    background-color: #CDAF56; /* Secondary accent */
+    color: #000000; /* Black text */
 }
 
 .status-badge {
@@ -582,19 +601,19 @@ include_once '../includes/user_header.php';
 }
 
 .status-badge.completed {
-    background-color: #316B3A;
-    color: white;
+    background-color: #DAA520; /* Primary accent */
+    color: #FFFFFF; /* White text */
 }
 
 .status-badge.missed {
-    background-color: #301934;
-    color: white;
+    background-color: #CDAF56; /* Secondary accent */
+    color: #000000; /* Black text */
 }
 
 .reset-btn {
     background: none;
     border: none;
-    color: #301934;
+    color: #000000; /* Black text */
     font-weight: 600;
     cursor: pointer;
     padding: 5px 10px;
@@ -610,7 +629,7 @@ include_once '../includes/user_header.php';
 }
 
 .future-message {
-    color: #6c757d;
+    color: #6c757d; /* Keep muted color for this */
     font-style: italic;
     text-align: center;
     width: 100%;
@@ -624,24 +643,25 @@ include_once '../includes/user_header.php';
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.6); /* Slightly darker overlay */
     z-index: 1000;
     align-items: center;
     justify-content: center;
 }
 
 .modal-content {
-    background-color: #F1ECE2;
+    background-color: #FFFFFF; /* White background */
     width: 90%;
     max-width: 500px;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    border: 1px solid #DAA520;
 }
 
 .modal-header {
-    background-color: #301934;
-    color: white;
+    background-color: #DAA520; /* Primary accent */
+    color: #FFFFFF; /* White text */
     padding: 15px 20px;
     display: flex;
     justify-content: space-between;
@@ -652,11 +672,11 @@ include_once '../includes/user_header.php';
     margin: 0;
     font-size: 1.3rem;
     font-weight: 600;
-    color: white;
+    color: #FFFFFF; /* White text */
 }
 
 .close-modal {
-    color: white;
+    color: #FFFFFF; /* White text */
     font-size: 1.5rem;
     font-weight: bold;
     background: none;
@@ -672,16 +692,16 @@ include_once '../includes/user_header.php';
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
-    color: #301934;
+    color: #000000; /* Black text */
 }
 
 .form-control {
     width: 100%;
     padding: 12px;
-    border: 1px solid #301934;
+    border: 1px solid #CDAF56; /* Secondary accent border */
     border-radius: 5px;
     background-color: white;
-    color: #301934;
+    color: #000000; /* Black text */
     font-size: 1rem;
 }
 
@@ -691,8 +711,8 @@ include_once '../includes/user_header.php';
 }
 
 .btn {
-    background-color: #301934;
-    color: white;
+    background-color: #DAA520; /* Primary accent */
+    color: #FFFFFF; /* White text */
     border: none;
     border-radius: 5px;
     padding: 10px 20px;
