@@ -90,7 +90,7 @@ include_once '../includes/user_header.php';
     
     <?php if (empty($leaderboard)): ?>
     <div class="empty-state">
-        <p><?php echo $language === 'am' ? 'ለጊዜውጊዜው ምንም የምዕመናንመናን መረጃ የለም።' : 'No data available for the leaderboard yet.'; ?></p>
+        <p><?php echo $language === 'am' ? 'ለጊዜው ምንም የምዕመናን መረጃ የለም።' : 'No data available for the leaderboard yet.'; ?></p>
     </div>
     <?php else: ?>
     <div class="leaderboard-container">
