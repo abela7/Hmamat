@@ -292,9 +292,9 @@ include_once '../includes/user_header.php';
 
     <!-- Spiritual Activities Title -->
     <div class="activity-title-section">
-        <h1 class="main-title">Spiritual Activities</h1>
+        <h3 class="main-title">መንፈሳዊ ምግባራት</h3>
         <?php if ($language === 'am'): ?>
-        <h2 class="amharic-title">መጽሐፍ ቅዱስ ማንበብ</h2>
+         
         <?php endif; ?>
     </div>
     
