@@ -214,47 +214,23 @@ include_once '../includes/user_header.php';
 <!-- Date Selection -->
 <div class="card mb-4">
     <div class="card-body">
-        <h5><?php echo $language === 'am' ? 'ቀን ይምረጡ' : 'Select Day'; ?></h5>
-        <p class="mb-2 text-muted">
-            <?php echo $language === 'am' ? 'ከሳምንቱ ቀናት ይምረጡ' : 'Choose a day of the week'; ?>
-        </p>
-        
-        <div class="day-selector">
-            <?php 
-            // Generate the last 7 days as buttons
-            $days = array();
-            for ($i = 6; $i >= 0; $i--) {
-                $day_date = date('Y-m-d', strtotime("-$i days"));
-                $day_name = date('l', strtotime("-$i days"));
-                $day_short = date('D', strtotime("-$i days"));
-                $is_today = ($i == 0);
-                
-                $active_class = ($selected_date == $day_date) ? 'active' : '';
-                $today_class = $is_today ? 'today' : '';
-                
-                echo '<a href="dashboard.php?date=' . $day_date . '" class="day-button ' . $active_class . ' ' . $today_class . '">';
-                echo '<div class="day-name">' . $day_name . '</div>';
-                echo '<div class="day-date">' . date('M j', strtotime($day_date)) . '</div>';
-                if ($is_today) {
-                    echo '<div class="today-marker">' . ($language === 'am' ? 'ዛሬ' : 'Today') . '</div>';
-                }
-                echo '</a>';
-            }
-            ?>
-        </div>
-        
-        <div class="mt-3">
-            <small class="text-muted">
-                <?php echo $language === 'am' ? 'ከላይ ያለውን ቀን ይጫኑ ወይም የተወሰነ ቀን ለመምረጥ:' : 'Select a day from above or pick a specific date:'; ?>
-            </small>
-            <form id="dateForm" method="get" action="dashboard.php" class="d-flex mt-2">
+        <form id="dateForm" method="get" action="dashboard.php" class="row align-items-center">
+            <div class="col-md-6">
+                <h5><?php echo $language === 'am' ? 'ቀን ይምረጡ' : 'Select Date'; ?></h5>
+                <p class="mb-0 text-muted">
+                    <?php echo $language === 'am' ? 'ካለፉት ቀናት እንቅስቃሴዎችን ለማየት ቀን ይምረጡ' : 'Choose a date to view activities from previous days'; ?>
+                </p>
+            </div>
+            <div class="col-md-4">
                 <input type="date" class="form-control" name="date" id="dateSelector" 
                        value="<?php echo $selected_date; ?>" max="<?php echo date('Y-m-d'); ?>">
-                <button type="submit" class="btn ms-2">
-                    <?php echo $language === 'am' ? 'ይሂዱ' : 'Go'; ?>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn w-100">
+                    <?php echo $language === 'am' ? 'ይመልከቱ' : 'View'; ?>
                 </button>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -262,12 +238,7 @@ include_once '../includes/user_header.php';
 <div class="alert alert-info">
     <p class="mb-0">
         <i class="fas fa-info-circle"></i> 
-        <?php 
-        $selected_day_name = date('l', strtotime($selected_date)); 
-        echo $language === 'am' ? 
-            'እየተመለከቱ ያሉት የ' . date('d/m/Y', strtotime($selected_date)) . ' (' . $selected_day_name . ') እንቅስቃሴዎች ናቸው' : 
-            'You are viewing activities from ' . $selected_day_name . ', ' . date('M j, Y', strtotime($selected_date)); 
-        ?>
+        <?php echo $language === 'am' ? 'እየተመለከቱ ያሉት የ' . date('d/m/Y', strtotime($selected_date)) . ' እንቅስቃሴዎች ናቸው' : 'You are viewing activities from ' . date('m/d/Y', strtotime($selected_date)); ?>
         <a href="dashboard.php" class="alert-link ms-2">
             <?php echo $language === 'am' ? 'ወደ ዛሬ ተመለስ' : 'Return to today'; ?>
         </a>
