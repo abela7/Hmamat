@@ -120,7 +120,7 @@ if (isset($_POST['delete_account']) && isset($_POST['confirm_delete'])) {
 }
 
 // Get user preferences
-$show_on_leaderboard = true;
+$show_on_leaderboard = true; // Default to true
 $email_notifications = true;
 $user_language = $language;
 
@@ -132,7 +132,8 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $preferences = $result->fetch_assoc();
     $user_language = $preferences['language'];
-    $show_on_leaderboard = (bool)$preferences['show_on_leaderboard'];
+    // Only set to false if explicitly set to 0 in database
+    $show_on_leaderboard = $preferences['show_on_leaderboard'] !== '0' && $preferences['show_on_leaderboard'] !== 0;
     $email_notifications = (bool)$preferences['email_notifications'];
 }
 $stmt->close();
