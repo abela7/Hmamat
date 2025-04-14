@@ -269,7 +269,15 @@ include_once '../includes/user_header.php';
 <div class="simple-container">
     <!-- Date Navigation -->
     <div class="simple-date-nav">
-        <a href="?date=<?php echo $prev_date; ?>" class="nav-arrow <?php echo $prev_date ? '' : 'disabled'; ?>">
+        <?php
+        // Get prev/next dates from the holy_week_dates array
+        $dates_array = array_keys($holy_week_dates);
+        $current_index = array_search($selected_date, $dates_array);
+        $prev_date = ($current_index > 0) ? $dates_array[$current_index - 1] : null;
+        $next_date = ($current_index < count($dates_array) - 1) ? $dates_array[$current_index + 1] : null;
+        ?>
+        
+        <a href="<?php echo $prev_date ? '?date='.$prev_date : 'javascript:void(0)'; ?>" class="nav-arrow <?php echo $prev_date ? '' : 'disabled'; ?>">
             <i class="fas fa-chevron-left"></i>
         </a>
         
@@ -277,7 +285,7 @@ include_once '../includes/user_header.php';
             <?php echo $holy_week_dates[$selected_date]['label']; ?>, <?php echo date('F j, Y', strtotime($selected_date)); ?>
         </h2>
         
-        <a href="?date=<?php echo $next_date; ?>" class="nav-arrow <?php echo $next_date ? '' : 'disabled'; ?>">
+        <a href="<?php echo $next_date ? '?date='.$next_date : 'javascript:void(0)'; ?>" class="nav-arrow <?php echo $next_date ? '' : 'disabled'; ?>">
             <i class="fas fa-chevron-right"></i>
         </a>
     </div>
@@ -295,7 +303,6 @@ include_once '../includes/user_header.php';
         <?php foreach ($activities as $activity): ?>
             <div class="activity-simple-item" id="activity-<?php echo $activity['id']; ?>">
                 <div class="activity-info">
-                    <div class="points-circle"><?php echo $activity['default_points']; ?></div>
                     <div class="activity-details">
                         <h3 class="activity-name"><?php echo htmlspecialchars($activity['name']); ?></h3>
                         <?php if (!empty($activity['description'])): ?>
@@ -304,40 +311,28 @@ include_once '../includes/user_header.php';
                     </div>
                 </div>
                 
-                <div class="activity-checkbox-actions">
+                <div class="activity-actions">
                     <?php if (isset($completed_activities[$activity['id']]) && $completed_activities[$activity['id']] == 'done'): ?>
-                        <label class="checkbox-container">
-                            <span class="checkbox-label">Complete</span>
-                            <input type="checkbox" checked disabled>
-                            <span class="checkmark checked"></span>
-                        </label>
-                        <label class="checkbox-container">
-                            <span class="checkbox-label">Not Done</span>
-                            <input type="checkbox" disabled>
-                            <span class="checkmark"></span>
-                        </label>
+                        <div class="status-badge completed">
+                            <i class="fas fa-check-circle"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Completed'; ?>
+                        </div>
+                        <button class="reset-btn" onclick="resetActivity(<?php echo $activity['id']; ?>, '<?php echo $selected_date; ?>')">
+                            <i class="fas fa-undo"></i> <?php echo $language === 'am' ? 'ዳግም አስጀምር' : 'Reset'; ?>
+                        </button>
                     <?php elseif (isset($completed_activities[$activity['id']]) && $completed_activities[$activity['id']] == 'missed'): ?>
-                        <label class="checkbox-container">
-                            <span class="checkbox-label">Complete</span>
-                            <input type="checkbox" disabled>
-                            <span class="checkmark"></span>
-                        </label>
-                        <label class="checkbox-container">
-                            <span class="checkbox-label">Not Done</span>
-                            <input type="checkbox" checked disabled>
-                            <span class="checkmark checked"></span>
-                        </label>
+                        <div class="status-badge missed">
+                            <i class="fas fa-times-circle"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Done'; ?>
+                        </div>
+                        <button class="reset-btn" onclick="resetActivity(<?php echo $activity['id']; ?>, '<?php echo $selected_date; ?>')">
+                            <i class="fas fa-undo"></i> <?php echo $language === 'am' ? 'ዳግም አስጀምር' : 'Reset'; ?>
+                        </button>
                     <?php else: ?>
-                        <label class="checkbox-container" onclick="markComplete(<?php echo $activity['id']; ?>)">
-                            <span class="checkbox-label">Complete</span>
-                            <input type="checkbox" class="complete-checkbox">
-                            <span class="checkmark"></span>
-                        </label>
-                        <label class="checkbox-container" onclick="markMissed(<?php echo $activity['id']; ?>)">
-                            <span class="checkbox-label">Not Done</span>
-                            <input type="checkbox" class="missed-checkbox">
-                            <span class="checkmark"></span>
-                        </label>
+                        <button class="action-btn success" onclick="markComplete(<?php echo $activity['id']; ?>)">
+                            <i class="fas fa-check"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Complete'; ?>
+                        </button>
+                        <button class="action-btn secondary" onclick="markMissed(<?php echo $activity['id']; ?>)">
+                            <i class="fas fa-times"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Done'; ?>
+                        </button>
                     <?php endif; ?>
                 </div>
             </div>
@@ -452,17 +447,8 @@ include_once '../includes/user_header.php';
     margin-bottom: 15px;
 }
 
-.points-circle {
-    background: #DAA520;
-    color: white;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    flex-shrink: 0;
+.activity-details {
+    flex: 1;
 }
 
 .activity-name {
@@ -478,76 +464,74 @@ include_once '../includes/user_header.php';
     font-size: 0.9rem;
 }
 
-.activity-checkbox-actions {
+.activity-actions {
     display: flex;
-    gap: 20px;
+    justify-content: flex-end;
+    gap: 10px;
     border-top: 1px solid rgba(0,0,0,0.1);
     padding-top: 10px;
 }
 
-.checkbox-container {
+.action-btn {
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    position: relative;
-    padding-left: 30px;
-    user-select: none;
+    gap: 5px;
 }
 
-.checkbox-container input {
-    position: absolute;
-    opacity: 0;
-    height: 0;
-    width: 0;
+.action-btn.success {
+    background-color: #316B3A;
+    color: white;
 }
 
-.checkmark {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 20px;
-    width: 20px;
-    background-color: #fff;
-    border: 2px solid #301934;
-    border-radius: 3px;
-}
-
-.checkbox-container:hover input ~ .checkmark {
-    background-color: #f1f1f1;
-}
-
-.checkbox-container input:checked ~ .checkmark {
+.action-btn.secondary {
     background-color: #301934;
+    color: white;
 }
 
-.checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
-.checkbox-container input:checked ~ .checkmark:after {
-    display: block;
+.status-badge.completed {
+    background-color: #316B3A;
+    color: white;
 }
 
-.checkbox-container .checkmark:after {
-    left: 6px;
-    top: 2px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
+.status-badge.missed {
+    background-color: #301934;
+    color: white;
 }
 
-.checkbox-label {
-    font-size: 0.9rem;
+.reset-btn {
+    background: none;
+    border: none;
     color: #301934;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s ease;
+}
+
+.reset-btn:hover {
+    background-color: rgba(0,0,0,0.05);
+    border-radius: 5px;
 }
 
 @media (max-width: 576px) {
-    .activity-checkbox-actions {
+    .activity-actions {
         flex-direction: column;
         gap: 10px;
     }
@@ -557,16 +541,19 @@ include_once '../includes/user_header.php';
 <script>
 function markComplete(activityId) {
     $.ajax({
-        url: "submit_activity.php",
+        url: "ajax/update_activity.php",
         method: "POST",
         data: {
             activity_id: activityId,
-            status: 'done'
+            status: 'done',
+            date: '<?php echo $selected_date; ?>'
         },
         dataType: "json",
         success: function(response) {
             if (response.success) {
-                location.reload();
+                // Reload page and maintain scroll position
+                const scrollPosition = window.pageYOffset;
+                window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPosition;
             } else {
                 alert("Error: " + response.message);
             }
@@ -582,6 +569,30 @@ function markMissed(activityId) {
     $("#notDoneModal").css("display", "flex");
 }
 
+function resetActivity(activityId, date) {
+    $.ajax({
+        url: "ajax/reset_activity.php",
+        method: "POST",
+        data: {
+            activity_id: activityId,
+            date: date
+        },
+        dataType: "json",
+        success: function(response) {
+            if (response.success) {
+                // Reload page and maintain scroll position
+                const scrollPosition = window.pageYOffset;
+                window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPosition;
+            } else {
+                alert("Error: " + response.message);
+            }
+        },
+        error: function() {
+            alert("An error occurred. Please try again.");
+        }
+    });
+}
+
 // Close modal
 $(".close-modal").click(function() {
     $("#notDoneModal").css("display", "none");
@@ -595,18 +606,22 @@ $("#notDoneForm").submit(function(e) {
     const reasonId = $("#reason_id").val();
     
     $.ajax({
-        url: "submit_activity.php",
+        url: "ajax/update_activity.php",
         method: "POST",
         data: {
             activity_id: activityId,
             status: 'missed',
-            reason_id: reasonId
+            reason_id: reasonId,
+            date: '<?php echo $selected_date; ?>'
         },
         dataType: "json",
         success: function(response) {
             if (response.success) {
                 $("#notDoneModal").css("display", "none");
-                location.reload();
+                
+                // Reload page and maintain scroll position
+                const scrollPosition = window.pageYOffset;
+                window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPosition;
             } else {
                 alert("Error: " + response.message);
             }
@@ -624,6 +639,18 @@ window.onclick = function(event) {
         $("#notDoneModal").css("display", "none");
     }
 }
+
+// Restore scroll position after page reload
+$(document).ready(function() {
+    if (window.location.href.includes('scroll=')) {
+        const scrollParam = window.location.href.split('scroll=')[1];
+        const scrollPosition = parseInt(scrollParam.split('&')[0]);
+        
+        if (!isNaN(scrollPosition)) {
+            window.scrollTo(0, scrollPosition);
+        }
+    }
+});
 </script>
 
 <?php
