@@ -154,9 +154,9 @@ $stmt->close();
 
 // Get all available activities
 $activities = array();
-$sql = "SELECT id, name, description, default_points, day_of_week FROM activities";
+$sql = "SELECT id, name, description, default_points, day_of_week, `rank` FROM activities";
 $sql .= " WHERE day_of_week IS NULL OR day_of_week = ?";
-$sql .= " ORDER BY day_of_week DESC, name ASC";
+$sql .= " ORDER BY `rank` ASC";
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $day_of_week);
