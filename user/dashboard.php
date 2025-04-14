@@ -14,9 +14,18 @@ $page_title = "Dashboard";
 $user_id = $_SESSION['user_id'];
 $baptism_name = $_SESSION['baptism_name'];
 
+// Handle date selection
+$selected_date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
+
+// Validate selected date is not in the future
+if (strtotime($selected_date) > time()) {
+    $selected_date = date('Y-m-d');
+}
+
 // Get current date
 $current_date = date('Y-m-d');
-$day_of_week = date('N'); // 1-7 (Monday-Sunday)
+$is_today = ($selected_date === $current_date);
+$day_of_week = date('N', strtotime($selected_date)); // 1-7 (Monday-Sunday)
 
 // Calculate Easter date and remaining time
 function getEasterDate($year = null) {
@@ -77,10 +86,10 @@ if ($result->num_rows > 0) {
 }
 $stmt->close();
 
-// Get user's activities for today
+// Get user's activities for selected date
 $completed_activities = array();
 $stmt = $conn->prepare("SELECT activity_id, status FROM user_activity_log WHERE user_id = ? AND date_completed = ?");
-$stmt->bind_param("is", $user_id, $current_date);
+$stmt->bind_param("is", $user_id, $selected_date);
 $stmt->execute();
 $result = $stmt->get_result();
 while ($row = $result->fetch_assoc()) {
@@ -202,6 +211,41 @@ include_once '../includes/user_header.php';
 </div>
 <?php endif; ?>
 
+<!-- Date Selection -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form id="dateForm" method="get" action="dashboard.php" class="row align-items-center">
+            <div class="col-md-6">
+                <h5><?php echo $language === 'am' ? 'ቀን ይምረጡ' : 'Select Date'; ?></h5>
+                <p class="mb-0 text-muted">
+                    <?php echo $language === 'am' ? 'ካለፉት ቀናት እንቅስቃሴዎችን ለማየት ቀን ይምረጡ' : 'Choose a date to view activities from previous days'; ?>
+                </p>
+            </div>
+            <div class="col-md-4">
+                <input type="date" class="form-control" name="date" id="dateSelector" 
+                       value="<?php echo $selected_date; ?>" max="<?php echo date('Y-m-d'); ?>">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn w-100">
+                    <?php echo $language === 'am' ? 'ይመልከቱ' : 'View'; ?>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<?php if (!$is_today): ?>
+<div class="alert alert-info">
+    <p class="mb-0">
+        <i class="fas fa-info-circle"></i> 
+        <?php echo $language === 'am' ? 'እየተመለከቱ ያሉት የ' . date('d/m/Y', strtotime($selected_date)) . ' እንቅስቃሴዎች ናቸው' : 'You are viewing activities from ' . date('m/d/Y', strtotime($selected_date)); ?>
+        <a href="dashboard.php" class="alert-link ms-2">
+            <?php echo $language === 'am' ? 'ወደ ዛሬ ተመለስ' : 'Return to today'; ?>
+        </a>
+    </p>
+</div>
+<?php endif; ?>
+
 <!-- Easter Countdown -->
 <div class="card mb-4">
     <h3 class="card-title">
@@ -269,11 +313,17 @@ include_once '../includes/user_header.php';
 <!-- Today's Activities -->
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Today's Spiritual Activities</h3>
+        <h3 class="card-title">
+            <?php if ($is_today): ?>
+                <?php echo $language === 'am' ? 'የዛሬ መንፈሳዊ እንቅስቃሴዎች' : 'Today\'s Spiritual Activities'; ?>
+            <?php else: ?>
+                <?php echo $language === 'am' ? 'መንፈሳዊ እንቅስቃሴዎች - ' . date('d/m/Y', strtotime($selected_date)) : 'Spiritual Activities - ' . date('m/d/Y', strtotime($selected_date)); ?>
+            <?php endif; ?>
+        </h3>
     </div>
     
     <?php if (empty($activities)): ?>
-    <p class="p-3 text-center">No activities available for today.</p>
+    <p class="p-3 text-center">No activities available for this day.</p>
     <?php else: ?>
     <ul class="activity-list">
         <?php foreach ($activities as $activity): ?>
@@ -288,12 +338,22 @@ include_once '../includes/user_header.php';
                 <div class="activity-points me-3"><?php echo $activity['default_points']; ?></div>
                 <div class="activity-actions">
                     <?php if (!isset($completed_activities[$activity['id']])): ?>
-                    <button class="btn btn-sm btn-success mark-done" data-activity-id="<?php echo $activity['id']; ?>">Done</button>
-                    <button class="btn btn-sm btn-secondary mark-not-done" data-activity-id="<?php echo $activity['id']; ?>">Not Done</button>
+                        <?php if ($is_today): ?>
+                            <button class="btn btn-sm btn-success mark-done" data-activity-id="<?php echo $activity['id']; ?>">Done</button>
+                            <button class="btn btn-sm btn-secondary mark-not-done" data-activity-id="<?php echo $activity['id']; ?>">Not Done</button>
+                        <?php else: ?>
+                            <span class="badge bg-light text-dark">No Record</span>
+                        <?php endif; ?>
                     <?php elseif ($completed_activities[$activity['id']] == 'done'): ?>
-                    <span class="badge bg-success">Completed</span>
+                        <span class="badge bg-success">Completed</span>
+                        <button class="btn btn-sm btn-danger reset-activity" data-activity-id="<?php echo $activity['id']; ?>" data-date="<?php echo $selected_date; ?>">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
                     <?php else: ?>
-                    <span class="badge bg-secondary">Not Completed</span>
+                        <span class="badge bg-secondary">Not Completed</span>
+                        <button class="btn btn-sm btn-danger reset-activity" data-activity-id="<?php echo $activity['id']; ?>" data-date="<?php echo $selected_date; ?>">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
                     <?php endif; ?>
                 </div>
             </div>
@@ -362,6 +422,32 @@ include_once '../includes/user_header.php';
 $page_scripts = <<<EOT
 <script>
 $(document).ready(function() {
+    // Check if it's a new day and reload page
+    function checkForNewDay() {
+        const currentDate = new Date().toISOString().split('T')[0];
+        const storedDate = localStorage.getItem('lastVisitDate');
+        
+        if (storedDate && storedDate !== currentDate) {
+            // It's a new day, reload to the current date
+            window.location.href = 'dashboard.php';
+        }
+        
+        // Store current date
+        localStorage.setItem('lastVisitDate', currentDate);
+    }
+    
+    // Run check for new day
+    checkForNewDay();
+    
+    // Set interval to check every minute if it's midnight
+    setInterval(function() {
+        const now = new Date();
+        if (now.getHours() === 0 && now.getMinutes() === 0) {
+            // It's midnight, reload the page
+            window.location.href = 'dashboard.php';
+        }
+    }, 60000); // Check every minute
+    
     // Mark activity as done
     $(".mark-done").click(function() {
         const activityId = $(this).data("activity-id");
@@ -377,7 +463,7 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     // Update UI
-                    $(`#activity-\${activityId} .activity-actions`).html('<span class="badge bg-success">Completed</span>');
+                    $(`#activity-\${activityId} .activity-actions`).html('<span class="badge bg-success">Completed</span> <button class="btn btn-sm btn-danger reset-activity" data-activity-id="' + activityId + '" data-date="<?php echo $selected_date; ?>"><i class="fas fa-undo"></i> Reset</button>');
                     
                     // Optional: Update points display
                     // You might want to refresh the page to show updated progress
@@ -394,6 +480,51 @@ $(document).ready(function() {
         });
     });
     
+    // Reset an activity
+    $(document).on("click", ".reset-activity", function() {
+        const activityId = $(this).data("activity-id");
+        const date = $(this).data("date");
+        
+        if (confirm("Are you sure you want to reset this activity? This will remove your record for this activity.")) {
+            $.ajax({
+                url: "ajax/reset_activity.php",
+                method: "POST",
+                data: {
+                    activity_id: activityId,
+                    date: date
+                },
+                dataType: "json",
+                success: function(response) {
+                    if (response.success) {
+                        // Update UI
+                        if (date === "<?php echo date('Y-m-d'); ?>") {
+                            // For today, show action buttons
+                            $(`#activity-\${activityId} .activity-actions`).html(
+                                '<button class="btn btn-sm btn-success mark-done" data-activity-id="' + activityId + '">Done</button> ' +
+                                '<button class="btn btn-sm btn-secondary mark-not-done" data-activity-id="' + activityId + '">Not Done</button>'
+                            );
+                        } else {
+                            // For past days, just show "No Record"
+                            $(`#activity-\${activityId} .activity-actions`).html(
+                                '<span class="badge bg-light text-dark">No Record</span>'
+                            );
+                        }
+                        
+                        // Refresh the page after a delay to update stats
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        alert("Error: " + response.message);
+                    }
+                },
+                error: function() {
+                    alert("An error occurred. Please try again.");
+                }
+            });
+        }
+    });
+    
     // Open modal for not done
     $(".mark-not-done").click(function() {
         const activityId = $(this).data("activity-id");
@@ -403,7 +534,7 @@ $(document).ready(function() {
     
     // Close modal
     $(".close-modal").click(function() {
-        $("#notDoneModal").hide();
+        $("#notDoneModal").css("display", "none");
     });
     
     // Submit not done form
@@ -418,19 +549,19 @@ $(document).ready(function() {
             method: "POST",
             data: {
                 activity_id: activityId,
-                status: 'not_done',
+                status: 'missed',
                 reason_id: reasonId
             },
             dataType: "json",
             success: function(response) {
                 if (response.success) {
                     // Close modal
-                    $("#notDoneModal").hide();
+                    $("#notDoneModal").css("display", "none");
                     
                     // Update UI
-                    $(`#activity-\${activityId} .activity-actions`).html('<span class="badge bg-secondary">Not Completed</span>');
+                    $(`#activity-\${activityId} .activity-actions`).html('<span class="badge bg-secondary">Not Completed</span> <button class="btn btn-sm btn-danger reset-activity" data-activity-id="' + activityId + '" data-date="<?php echo $selected_date; ?>"><i class="fas fa-undo"></i> Reset</button>');
                     
-                    // Optional: refresh the page
+                    // Optional: Update points display
                     setTimeout(function() {
                         location.reload();
                     }, 1000);
@@ -444,11 +575,9 @@ $(document).ready(function() {
         });
     });
     
-    // Close modal when clicking outside
-    $(window).click(function(e) {
-        if ($(e.target).is("#notDoneModal")) {
-            $("#notDoneModal").hide();
-        }
+    // Date change handling
+    $("#dateSelector").change(function() {
+        $("#dateForm").submit();
     });
 });
 </script>

@@ -66,7 +66,7 @@ if (isset($_POST['delete_account']) && isset($_POST['confirm_delete'])) {
         
         try {
             // Delete user's activities
-            $stmt = $conn->prepare("DELETE FROM user_activities WHERE user_id = ?");
+            $stmt = $conn->prepare("DELETE FROM user_activity_log WHERE user_id = ?");
             $stmt->bind_param("i", $user_id);
             $stmt->execute();
             $stmt->close();
@@ -112,7 +112,7 @@ if (isset($_POST['delete_account']) && isset($_POST['confirm_delete'])) {
         } catch (Exception $e) {
             // Rollback in case of error
             $conn->rollback();
-            $error = $language === 'am' ? 'መለያዎን በመሰረዝ ላይ ስህተት ተከስቷል።' : 'Error deleting your account.';
+            $error = $language === 'am' ? 'መለያዎን በመሰረዝ ላይ ስህተት ተከስቷል።' : 'Error deleting your account: ' . $e->getMessage();
         }
     } else {
         $error = $language === 'am' ? 'ለማረጋገጥ እባክዎን "DELETE" ይጻፉ።' : 'Please type "DELETE" to confirm.';

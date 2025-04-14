@@ -30,10 +30,83 @@ if (!$just_logged_out) {
 // Initialize variables
 $baptism_name = "";
 $error = "";
+$password_required = false;
+$matched_user = null;
 $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'dashboard.php';
 
-// Process form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+// Process baptism name form
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['check_baptism_name'])) {
+    $baptism_name = trim($_POST['baptism_name']);
+    
+    if (empty($baptism_name)) {
+        $error = "Baptism name is required.";
+    } else {
+        // Check if we have this user
+        $stmt = $conn->prepare("SELECT id, baptism_name, last_ip, user_agent FROM users WHERE baptism_name = ?");
+        $stmt->bind_param("s", $baptism_name);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $users_count = $result->num_rows;
+        
+        if ($users_count === 0) {
+            $error = "Baptism name not found.";
+        } elseif ($users_count === 1) {
+            // Single user with this baptism name
+            $matched_user = $result->fetch_assoc();
+            
+            // Check if device info matches for auto-login
+            $current_ip = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+            $current_device = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
+            
+            // Check device fingerprint first
+            $device_token = isset($_COOKIE['hmt_device_token']) ? $_COOKIE['hmt_device_token'] : null;
+            
+            if ($device_token) {
+                $device_stmt = $conn->prepare("SELECT user_id FROM user_devices WHERE device_token = ? AND user_id = ?");
+                $device_stmt->bind_param("si", $device_token, $matched_user['id']);
+                $device_stmt->execute();
+                $device_result = $device_stmt->get_result();
+                
+                if ($device_result->num_rows === 1) {
+                    // Found device match, auto-login
+                    $stmt = $conn->prepare("SELECT id, baptism_name, unique_id, role FROM users WHERE id = ?");
+                    $stmt->bind_param("i", $matched_user['id']);
+                    $stmt->execute();
+                    $user_result = $stmt->get_result();
+                    $user = $user_result->fetch_assoc();
+                    
+                    createUserSession($user['id'], $user['baptism_name'], $user['unique_id'], $user['role']);
+                    header("Location: " . $redirect);
+                    exit;
+                }
+            }
+            
+            // If IP and user agent match, allow auto-login
+            if ($matched_user['last_ip'] === $current_ip && $matched_user['user_agent'] === $current_device) {
+                $stmt = $conn->prepare("SELECT id, baptism_name, unique_id, role FROM users WHERE id = ?");
+                $stmt->bind_param("i", $matched_user['id']);
+                $stmt->execute();
+                $user_result = $stmt->get_result();
+                $user = $user_result->fetch_assoc();
+                
+                createUserSession($user['id'], $user['baptism_name'], $user['unique_id'], $user['role']);
+                header("Location: " . $redirect);
+                exit;
+            }
+            
+            // Otherwise, require password
+            $password_required = true;
+        } else {
+            // Multiple users, need password to disambiguate
+            $password_required = true;
+        }
+        $stmt->close();
+    }
+}
+
+// Process full login form
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login_with_password'])) {
     // Get form data
     $baptism_name = trim($_POST['baptism_name']);
     $password = trim($_POST['password']);
@@ -162,22 +235,44 @@ include_once '../includes/user_header.php';
                 </div>
                 
                 <div class="collapse mt-4" id="loginForm">
-                    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . ($redirect != 'dashboard.php' ? '?redirect=' . urlencode($redirect) : '')); ?>">
-                        <div class="form-group mb-3">
-                            <label for="baptism_name" class="form-label">Baptism Name</label>
-                            <input type="text" class="form-control" id="baptism_name" name="baptism_name" value="<?php echo htmlspecialchars($baptism_name); ?>" required>
+                    <?php if (!$password_required): ?>
+                        <!-- Step 1: Enter Baptism Name -->
+                        <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . ($redirect != 'dashboard.php' ? '?redirect=' . urlencode($redirect) : '')); ?>">
+                            <div class="form-group mb-3">
+                                <label for="baptism_name" class="form-label"><?php echo $language === 'am' ? 'የጥምቀት ስም' : 'Baptism Name'; ?></label>
+                                <input type="text" class="form-control" id="baptism_name" name="baptism_name" value="<?php echo htmlspecialchars($baptism_name); ?>" required>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" name="check_baptism_name" class="btn btn-block"><?php echo $language === 'am' ? 'ቀጥል' : 'Continue'; ?></button>
+                            </div>
+                        </form>
+                    <?php else: ?>
+                        <!-- Step 2: Enter Password (if needed) -->
+                        <div class="mb-3">
+                            <div class="alert alert-info">
+                                <?php echo $language === 'am' ? 'እባክዎ የ ' . htmlspecialchars($baptism_name) . ' መለያ የይለፍ ቃል ያረጋግጡ።' : 'Please confirm password for ' . htmlspecialchars($baptism_name); ?>
+                            </div>
                         </div>
                         
-                        <div class="form-group mb-4">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                            <small class="form-text text-muted">If you registered with just your baptism name, your password is 000000</small>
-                        </div>
-                        
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-block">Login</button>
-                        </div>
-                    </form>
+                        <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . ($redirect != 'dashboard.php' ? '?redirect=' . urlencode($redirect) : '')); ?>">
+                            <input type="hidden" name="baptism_name" value="<?php echo htmlspecialchars($baptism_name); ?>">
+                            
+                            <div class="form-group mb-4">
+                                <label for="password" class="form-label"><?php echo $language === 'am' ? 'የይለፍ ቃል' : 'Password'; ?></label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <small class="form-text text-muted"><?php echo $language === 'am' ? 'በጥምቀት ስምዎ ብቻ ከተመዘገቡ፣ የይለፍ ቃልዎ 000000 ነው' : 'If you registered with just your baptism name, your password is 000000'; ?></small>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" name="login_with_password" class="btn btn-block"><?php echo $language === 'am' ? 'ግባ' : 'Login'; ?></button>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <a href="login.php" class="btn btn-link btn-sm"><?php echo $language === 'am' ? 'መመለስ' : 'Go back'; ?></a>
+                            </div>
+                        </form>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
