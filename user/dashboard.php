@@ -740,6 +740,14 @@ $("#notDoneForm").submit(function(e) {
         return;
     }
     
+    // Log the data being sent (for debugging)
+    console.log("Sending data:", {
+        activity_id: activityId,
+        status: 'missed',
+        reason_id: reasonId,
+        date: "<?php echo $selected_date; ?>"
+    });
+    
     $.ajax({
         url: "ajax/update_activity.php",
         method: "POST",
@@ -747,16 +755,17 @@ $("#notDoneForm").submit(function(e) {
             activity_id: activityId,
             status: 'missed',
             reason_id: reasonId,
-            date: '<?php echo $selected_date; ?>'
+            date: "<?php echo $selected_date; ?>"
         },
         dataType: "json",
         success: function(response) {
+            console.log("Success response:", response); // Debug
             if (response.success) {
                 $("#notDoneModal").css("display", "none");
                 
                 // Reload page and maintain scroll position
                 const scrollPosition = window.pageYOffset;
-                window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPosition;
+                window.location.href = "dashboard.php?date=<?php echo $selected_date; ?>&scroll=" + scrollPosition;
             } else {
                 alert("Error: " + response.message);
                 console.log(response);
@@ -764,7 +773,8 @@ $("#notDoneForm").submit(function(e) {
         },
         error: function(xhr, status, error) {
             console.error("AJAX Error:", status, error);
-            console.log(xhr.responseText);
+            console.log("Response Text:", xhr.responseText);
+            console.log("Status Code:", xhr.status);
             alert("An error occurred. Please try again.");
         }
     });
@@ -814,6 +824,22 @@ $(document).ready(function() {
             window.location.href = 'dashboard.php';
         }
     }, 60000); // Check every minute
+
+    // Add test data to activity_miss_reasons table if empty
+    if (<?php echo count($miss_reasons) === 0 ? 'true' : 'false'; ?>) {
+        $.ajax({
+            url: "ajax/setup_miss_reasons.php",
+            method: "POST",
+            dataType: "json",
+            success: function(response) {
+                if (response.success) {
+                    console.log("Added default miss reasons");
+                    // Reload the page to show the new reasons
+                    location.reload();
+                }
+            }
+        });
+    }
 });
 </script>
 

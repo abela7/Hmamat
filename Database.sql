@@ -126,7 +126,7 @@ CREATE TABLE `user_activity_log` (
   `user_id` int(11) NOT NULL,
   `activity_id` int(11) NOT NULL,
   `date_completed` date NOT NULL,
-  `status` enum('done','not_done') NOT NULL DEFAULT 'done',
+  `status` enum('done','missed') NOT NULL DEFAULT 'done',
   `reason_id` int(11) DEFAULT NULL,
   `points_earned` int(11) NOT NULL DEFAULT 0,
   `created_at` datetime DEFAULT current_timestamp()
