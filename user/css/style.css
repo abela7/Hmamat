@@ -91,6 +91,7 @@ a:hover {
     align-items: center;
     justify-content: center;
     transition: color 0.3s;
+    margin-left: auto;
 }
 
 .navbar-toggle:hover {
@@ -134,6 +135,44 @@ a:hover {
     left: 0;
 }
 
+/* Offcanvas styling */
+.offcanvas {
+    max-width: 80%;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+}
+
+.offcanvas-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.offcanvas-title {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.offcanvas-body {
+    padding: 0;
+    background-color: white;
+}
+
+.user-info, .admin-info {
+    padding: 1.25rem;
+    background-color: rgba(218, 165, 32, 0.1);
+    border-bottom: 1px solid var(--bg-color);
+    margin-bottom: 0 !important;
+}
+
+.user-name, .admin-name {
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--dark-color);
+    margin-bottom: 0.25rem;
+}
+
 /* Mobile Menu */
 .mobile-menu {
     list-style: none;
@@ -142,7 +181,8 @@ a:hover {
 }
 
 .mobile-menu-item {
-    margin-bottom: 1rem;
+    margin: 0;
+    border-bottom: 1px solid var(--bg-color);
 }
 
 .mobile-menu-link {
@@ -150,38 +190,28 @@ a:hover {
     align-items: center;
     color: var(--text-color);
     font-weight: 500;
-    padding: 0.75rem 1rem;
-    border-radius: 4px;
+    padding: 0.9rem 1.25rem;
     transition: all 0.3s ease;
 }
 
 .mobile-menu-link:hover {
     background-color: rgba(218, 165, 32, 0.1);
     color: var(--primary-color);
+    text-decoration: none;
 }
 
 .mobile-menu-link.active {
     background-color: rgba(218, 165, 32, 0.2);
     color: var(--primary-color);
     font-weight: 600;
+    border-left: 4px solid var(--primary-color);
 }
 
 .menu-icon {
-    margin-right: 0.75rem;
+    margin-right: 0.9rem;
     width: 20px;
     text-align: center;
-}
-
-.user-info {
-    padding: 1rem;
-    border-bottom: 1px solid var(--bg-color);
-    margin-bottom: 1rem;
-}
-
-.user-name {
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: var(--dark-color);
+    color: var(--primary-color);
 }
 
 /* Main content */
@@ -194,16 +224,23 @@ a:hover {
 .card {
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.25rem;
     margin-bottom: 1.5rem;
+    border: none;
+}
+
+.card-header {
+    background-color: transparent;
+    border-bottom: 1px solid var(--bg-color);
+    padding: 0 0 0.75rem 0;
 }
 
 .card-title {
     font-size: 1.2rem;
     margin-bottom: 1rem;
     color: var(--dark-color);
-    border-bottom: 1px solid var(--bg-color);
+    font-weight: 600;
     padding-bottom: 0.5rem;
 }
 
@@ -242,12 +279,15 @@ a:hover {
     border-radius: 4px;
     cursor: pointer;
     font-weight: 500;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    text-decoration: none;
 }
 
 .btn:hover {
     background-color: var(--secondary-color);
     color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .btn-block {
@@ -263,9 +303,51 @@ a:hover {
     background-color: var(--dark-color);
 }
 
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.875rem;
+}
+
+/* Badge styling */
+.badge {
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.bg-success {
+    background-color: var(--success-color) !important;
+}
+
+.bg-secondary {
+    background-color: var(--border-color) !important;
+}
+
+.bg-primary {
+    background-color: var(--primary-color) !important;
+}
+
+.bg-danger {
+    background-color: var(--warning-color) !important;
+}
+
 /* Activity list */
 .activity-list {
     list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .activity-item {
@@ -281,24 +363,27 @@ a:hover {
 }
 
 .activity-name {
-    font-weight: 500;
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 0.25rem;
 }
 
 .activity-description {
+    color: var(--text-color);
     font-size: 0.9rem;
-    color: var(--border-color);
+    margin-bottom: 0;
 }
 
 .activity-points {
-    background-color: var(--secondary-color);
+    background-color: var(--primary-color);
     color: white;
-    border-radius: 50%;
-    width: 2rem;
-    height: 2rem;
+    font-weight: 600;
+    min-width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
+    border-radius: 50%;
 }
 
 .activity-actions {
@@ -320,82 +405,98 @@ a:hover {
 
 .countdown-date, .countdown-remaining {
     padding: 0.5rem 0;
+    font-size: 1.1rem;
+    color: var(--dark-color);
 }
 
-.progress {
-    height: 25px;
-    background-color: #e9ecef;
-    border-radius: 0.25rem;
-    overflow: hidden;
-}
-
-.progress-bar {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    color: #fff;
-    text-align: center;
-    white-space: nowrap;
-    background-color: var(--success-color);
-    transition: width 0.6s ease;
+.countdown-date strong, .countdown-remaining strong {
+    color: var(--primary-color);
+    margin-right: 0.25rem;
 }
 
 /* Progress tracker */
 .progress-tracker {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    margin: 1rem 0;
+    gap: 0.5rem;
 }
 
 .progress-day {
-    flex: 1;
+    background-color: var(--bg-color);
+    border-radius: 6px;
+    padding: 0.75rem;
     text-align: center;
-    padding: 0.5rem;
-    border-radius: 4px;
-    background-color: rgba(255, 255, 255, 0.5);
-    margin: 0 0.25rem;
+    flex: 1;
+    min-width: calc(14% - 0.5rem);
+    transition: all 0.3s ease;
 }
 
 .progress-day.active {
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 2px solid var(--primary-color);
+    background-color: rgba(218, 165, 32, 0.1);
 }
 
 .progress-day.completed {
-    background-color: var(--success-color);
-    color: white;
+    background-color: rgba(60, 135, 97, 0.2);
+}
+
+.progress-day-name {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.progress-day-points {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
 }
 
 /* Leaderboard */
 .leaderboard-item {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
     padding: 0.75rem 0;
     border-bottom: 1px solid var(--bg-color);
 }
 
+.leaderboard-item:last-child {
+    border-bottom: none;
+}
+
 .leaderboard-rank {
+    background-color: var(--primary-color);
+    color: white;
     font-weight: 600;
-    color: var(--primary-color);
-    width: 2rem;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-right: 1rem;
 }
 
 .leaderboard-name {
     flex: 1;
+    font-weight: 500;
 }
 
 .leaderboard-points {
-    font-weight: 500;
+    font-weight: 600;
+    color: var(--primary-color);
 }
 
 /* Daily message */
 .daily-message {
-    background-color: white;
-    border-left: 4px solid var(--primary-color);
+    background-color: var(--primary-color);
+    color: white;
     padding: 1rem;
-    margin-bottom: 2rem;
-    border-radius: 0 4px 4px 0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Footer */
@@ -499,22 +600,30 @@ a:hover {
     }
     
     .progress-day {
-        flex-basis: calc(25% - 0.5rem);
+        flex-basis: calc(33.333% - 0.5rem);
         margin-bottom: 0.5rem;
     }
     
     .main {
         padding-top: 1rem;
+        padding-bottom: 1rem;
     }
     
     .card {
         padding: 1rem;
     }
-}
-
-@media (max-width: 576px) {
-    .progress-day {
-        flex-basis: calc(33.333% - 0.5rem);
+    
+    .card-title {
+        font-size: 1.1rem;
+    }
+    
+    .countdown-info {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .countdown-date, .countdown-remaining {
+        padding: 0.25rem 0;
     }
     
     .activity-item {
@@ -522,22 +631,79 @@ a:hover {
         align-items: flex-start;
     }
     
-    .activity-actions {
-        margin-top: 1rem;
+    .activity-item > div:last-child {
+        display: flex;
         width: 100%;
         justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
     }
     
-    .modal-content {
-        width: 95%;
+    .mobile-menu-link {
+        padding: 0.75rem 1.25rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .progress-day {
+        flex-basis: calc(33.333% - 0.5rem);
+        padding: 0.5rem;
     }
     
-    .countdown-info {
-        flex-direction: column;
-        gap: 0.5rem;
+    .progress-day-name {
+        font-size: 0.9rem;
+    }
+    
+    .progress-day-points {
+        font-size: 1.1rem;
+    }
+    
+    .activity-points {
+        min-width: 32px;
+        height: 32px;
+    }
+    
+    .activity-actions .btn {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
     }
     
     .card-title {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
+    
+    .activity-name {
+        font-size: 0.9rem;
+    }
+    
+    .activity-description {
+        font-size: 0.8rem;
+    }
+    
+    .leaderboard-rank {
+        width: 24px;
+        height: 24px;
+        margin-right: 0.5rem;
+    }
+}
+
+/* Progress Bar */
+.progress {
+    height: 25px;
+    background-color: #e9ecef;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    background-color: var(--success-color);
+    transition: width 0.6s ease;
+    font-weight: 600;
 } 

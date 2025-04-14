@@ -18,8 +18,10 @@ $baptism_name = $user_logged_in ? $_SESSION['baptism_name'] : '';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../user/css/style.css">
+    <!-- Mobile specific meta -->
+    <meta name="theme-color" content="#DAA520">
 </head>
-<body>
+<body class="user-body">
     <!-- Off-canvas Sidebar -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
         <div class="offcanvas-header">
