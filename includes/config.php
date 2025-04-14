@@ -1,6 +1,6 @@
 <?php
 // Application settings
-define("APP_NAME", "HMAMAT");
+define("APP_NAME", "ሕማማትሕማማት");
 define("APP_FULL_NAME", "የሰሙነ ሕማማት የመንፈሳዊ ምግባራት መከታተያ ፕሮግራም ");
 define("APP_VERSION", "1.0.0");
 
