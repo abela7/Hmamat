@@ -266,199 +266,86 @@ include_once '../includes/user_header.php';
 </div>
 <?php endif; ?>
 
-<div class="dashboard-container">
-    <!-- Left Column: Main Activities -->
-    <div class="dashboard-main">
-        <!-- Date Navigation - Redesigned to be more professional -->
-        <div class="date-controller mb-4">
-            <?php 
-            // Get current day index
-            $dates_array = array_keys($holy_week_dates);
-            $current_index = array_search($selected_date, $dates_array);
-            $prev_date = ($current_index > 0) ? $dates_array[$current_index - 1] : null;
-            $next_date = ($current_index < count($dates_array) - 1) ? $dates_array[$current_index + 1] : null;
-            
-            // Format the current day and date
-            $current_day = $holy_week_dates[$selected_date]['label'];
-            $current_display_date = date('F j, Y', strtotime($selected_date));
-            ?>
-            
-            <div class="date-controls">
-                <a href="?date=<?php echo $prev_date; ?>" class="date-nav-btn <?php echo $prev_date ? '' : 'disabled'; ?>" <?php echo $prev_date ? '' : 'disabled'; ?>>
-                    <i class="fas fa-chevron-left"></i>
-                </a>
-                
-                <div class="current-day">
-                    <span class="day-name"><?php echo $current_day; ?></span>
-                    <span class="day-date"><?php echo $current_display_date; ?></span>
-                </div>
-                
-                <a href="?date=<?php echo $next_date; ?>" class="date-nav-btn <?php echo $next_date ? '' : 'disabled'; ?>" <?php echo $next_date ? '' : 'disabled'; ?>>
-                    <i class="fas fa-chevron-right"></i>
-                </a>
-            </div>
-            
-            <?php if (!$is_today && array_key_exists($current_date, $holy_week_dates)): ?>
-            <a href="dashboard.php" class="today-btn">
-                <i class="fas fa-calendar-day"></i> 
-                <?php echo $language === 'am' ? 'ወደ ዛሬ ተመለስ' : 'Today'; ?>
-            </a>
-            <?php endif; ?>
-        </div>
+<div class="simple-container">
+    <!-- Date Navigation -->
+    <div class="simple-date-nav">
+        <a href="?date=<?php echo $prev_date; ?>" class="nav-arrow <?php echo $prev_date ? '' : 'disabled'; ?>">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        
+        <h2 class="current-date">
+            <?php echo $holy_week_dates[$selected_date]['label']; ?>, <?php echo date('F j, Y', strtotime($selected_date)); ?>
+        </h2>
+        
+        <a href="?date=<?php echo $next_date; ?>" class="nav-arrow <?php echo $next_date ? '' : 'disabled'; ?>">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    </div>
 
-        <!-- Spiritual Activities - Redesigned for better mobile appearance -->
-        <div class="activities-container">
-            <h2 class="section-title">
-                <?php echo $language === 'am' ? 'የመንፈሳዊ እንቅስቃሴዎች' : 'Spiritual Activities'; ?>
-            </h2>
-            
-            <?php if (empty($activities)): ?>
-            <div class="empty-state">
-                <div class="empty-icon"><i class="fas fa-tasks"></i></div>
-                <p><?php echo $language === 'am' ? 'ለዚህ ቀን የሚገኙ እንቅስቃሴዎች የሉም።' : 'No activities available for this day.'; ?></p>
-            </div>
-            <?php else: ?>
-            <div class="activities-list">
-                <?php foreach ($activities as $activity): ?>
-                <div class="activity-card" id="activity-<?php echo $activity['id']; ?>">
-                    <div class="activity-content">
-                        <div class="activity-header">
-                            <h3 class="activity-title"><?php echo htmlspecialchars($activity['name']); ?></h3>
-                            <div class="activity-points"><?php echo $activity['default_points']; ?></div>
-                        </div>
-                        
-                        <?php if (!empty($activity['description'])): ?>
-                        <div class="activity-details">
-                            <?php echo htmlspecialchars($activity['description']); ?>
-                        </div>
-                        <?php endif; ?>
-                    </div>
-                    
-                    <div class="activity-actions">
-                        <?php if (!isset($completed_activities[$activity['id']])): ?>
-                            <?php if ($is_today): ?>
-                                <button class="action-btn success mark-done" data-activity-id="<?php echo $activity['id']; ?>">
-                                    <i class="fas fa-check"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Complete'; ?>
-                                </button>
-                                <button class="action-btn secondary mark-not-done" data-activity-id="<?php echo $activity['id']; ?>">
-                                    <i class="fas fa-times"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Done'; ?>
-                                </button>
-                            <?php else: ?>
-                                <div class="activity-status empty">
-                                    <i class="fas fa-minus-circle"></i> <?php echo $language === 'am' ? 'መዝገብ የለም' : 'No Record'; ?>
-                                </div>
-                            <?php endif; ?>
-                        <?php elseif ($completed_activities[$activity['id']] == 'done'): ?>
-                            <div class="activity-status completed">
-                                <i class="fas fa-check-circle"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Completed'; ?>
-                                <button class="action-btn reset reset-activity" data-activity-id="<?php echo $activity['id']; ?>" data-date="<?php echo $selected_date; ?>">
-                                    <i class="fas fa-undo"></i>
-                                </button>
-                            </div>
-                        <?php else: ?>
-                            <div class="activity-status missed">
-                                <i class="fas fa-times-circle"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Completed'; ?>
-                                <button class="action-btn reset reset-activity" data-activity-id="<?php echo $activity['id']; ?>" data-date="<?php echo $selected_date; ?>">
-                                    <i class="fas fa-undo"></i>
-                                </button>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            </div>
-            <?php endif; ?>
-        </div>
+    <!-- Spiritual Activities Title -->
+    <div class="activity-title-section">
+        <h1 class="main-title">Spiritual Activities</h1>
+        <?php if ($language === 'am'): ?>
+        <h2 class="amharic-title">መጽሐፍ ቅዱስ ማንበብ</h2>
+        <?php endif; ?>
     </div>
     
-    <!-- Right Column: Stats and Leaderboard -->
-    <div class="dashboard-sidebar">
-        <!-- Easter Countdown - Simplified and more elegant -->
-        <div class="stats-card">
-            <h2 class="section-title">
-                <?php echo $language === 'am' ? 'ፋሲካ ቀን' : 'Easter Sunday'; ?>
-            </h2>
-            
-            <?php if (!$easter_passed): ?>
-                <div class="countdown-display">
-                    <div class="countdown-date">
-                        <?php echo date('F j, Y', $easter); ?>
-                    </div>
-                    
-                    <div class="time-remaining">
-                        <?php if ($remaining_days > 0): ?>
-                            <div class="time-block">
-                                <span class="time-value"><?php echo $remaining_days; ?></span>
-                                <span class="time-label"><?php echo $language === 'am' ? 'ቀን' : 'days'; ?></span>
-                            </div>
+    <!-- Activities List -->
+    <div class="activities-simple-list">
+        <?php foreach ($activities as $activity): ?>
+            <div class="activity-simple-item" id="activity-<?php echo $activity['id']; ?>">
+                <div class="activity-info">
+                    <div class="points-circle"><?php echo $activity['default_points']; ?></div>
+                    <div class="activity-details">
+                        <h3 class="activity-name"><?php echo htmlspecialchars($activity['name']); ?></h3>
+                        <?php if (!empty($activity['description'])): ?>
+                            <p class="activity-description"><?php echo htmlspecialchars($activity['description']); ?></p>
                         <?php endif; ?>
-                        <div class="time-block">
-                            <span class="time-value"><?php echo $remaining_hours; ?></span>
-                            <span class="time-label"><?php echo $language === 'am' ? 'ሰዓት' : 'hours'; ?></span>
-                        </div>
                     </div>
-                    
-                    <div class="progress-container">
-                        <div class="progress" style="height: 8px;">
-                            <div class="progress-bar" role="progressbar" style="width: <?php echo $progress_percentage; ?>%;" 
-                                aria-valuenow="<?php echo $progress_percentage; ?>" aria-valuemin="0" aria-valuemax="100">
-                            </div>
-                        </div>
-                        <div class="progress-label">
-                            <?php echo $progress_percentage; ?>% <?php echo $language === 'am' ? 'ተጠናቋል' : 'Complete'; ?>
-                        </div>
-                    </div>
-                </div>
-            <?php else: ?>
-                <div class="countdown-display completed">
-                    <div class="celebration-message">
-                        <i class="fas fa-church"></i>
-                        <div><?php echo $language === 'am' ? 'ክርስቶስ ተነሣ !' : 'Christ is Risen!'; ?></div>
-                        <div class="sub-text"><?php echo date('F j, Y', $easter); ?></div>
-                    </div>
-                </div>
-            <?php endif; ?>
-        </div>
-        
-        <!-- Top Participants -->
-        <div class="stats-card">
-            <h2 class="section-title">
-                <?php echo $language === 'am' ? 'ከፍተኛ ተሳታፊዎች' : 'Top Participants'; ?>
-            </h2>
-            
-            <?php if (empty($leaderboard)): ?>
-            <div class="empty-state">
-                <div class="empty-icon"><i class="fas fa-trophy"></i></div>
-                <p><?php echo $language === 'am' ? 'እስካሁን ምንም መረጃ የለም።' : 'No data available yet.'; ?></p>
-            </div>
-            <?php else: ?>
-            <div class="leaderboard">
-                <div class="your-rank">
-                    <div class="rank-label"><?php echo $language === 'am' ? 'የእርስዎ ደረጃ' : 'Your Rank'; ?></div>
-                    <div class="rank-value">#<?php echo $user_rank; ?></div>
-                    <div class="points-value"><?php echo $user_total_points; ?> <?php echo $language === 'am' ? 'ነጥብ' : 'points'; ?></div>
                 </div>
                 
-                <div class="top-users">
-                    <?php for ($i = 0; $i < min(5, count($leaderboard)); $i++): ?>
-                    <div class="leaderboard-row <?php echo ($leaderboard[$i]['baptism_name'] === $baptism_name) ? 'is-you' : ''; ?>">
-                        <div class="rank"><?php echo $i + 1; ?></div>
-                        <div class="name"><?php echo htmlspecialchars($leaderboard[$i]['baptism_name']); ?></div>
-                        <div class="points"><?php echo $leaderboard[$i]['total_points']; ?></div>
-                    </div>
-                    <?php endfor; ?>
+                <div class="activity-checkbox-actions">
+                    <?php if (isset($completed_activities[$activity['id']]) && $completed_activities[$activity['id']] == 'done'): ?>
+                        <label class="checkbox-container">
+                            <span class="checkbox-label">Complete</span>
+                            <input type="checkbox" checked disabled>
+                            <span class="checkmark checked"></span>
+                        </label>
+                        <label class="checkbox-container">
+                            <span class="checkbox-label">Not Done</span>
+                            <input type="checkbox" disabled>
+                            <span class="checkmark"></span>
+                        </label>
+                    <?php elseif (isset($completed_activities[$activity['id']]) && $completed_activities[$activity['id']] == 'missed'): ?>
+                        <label class="checkbox-container">
+                            <span class="checkbox-label">Complete</span>
+                            <input type="checkbox" disabled>
+                            <span class="checkmark"></span>
+                        </label>
+                        <label class="checkbox-container">
+                            <span class="checkbox-label">Not Done</span>
+                            <input type="checkbox" checked disabled>
+                            <span class="checkmark checked"></span>
+                        </label>
+                    <?php else: ?>
+                        <label class="checkbox-container" onclick="markComplete(<?php echo $activity['id']; ?>)">
+                            <span class="checkbox-label">Complete</span>
+                            <input type="checkbox" class="complete-checkbox">
+                            <span class="checkmark"></span>
+                        </label>
+                        <label class="checkbox-container" onclick="markMissed(<?php echo $activity['id']; ?>)">
+                            <span class="checkbox-label">Not Done</span>
+                            <input type="checkbox" class="missed-checkbox">
+                            <span class="checkmark"></span>
+                        </label>
+                    <?php endif; ?>
                 </div>
-                
-                <a href="leaderboard.php" class="view-all-btn">
-                    <?php echo $language === 'am' ? 'ሙሉ ደረጃ ሰሌዳ ይመልከቱ' : 'View Complete Leaderboard'; ?>
-                </a>
             </div>
-            <?php endif; ?>
-        </div>
+        <?php endforeach; ?>
     </div>
 </div>
 
-<!-- Not Done Modal - More stylish modal -->
+<!-- Not Done Modal -->
 <div class="modal" id="notDoneModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -480,12 +367,264 @@ include_once '../includes/user_header.php';
                 </div>
                 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary"><?php echo $language === 'am' ? 'አስገባ' : 'Submit'; ?></button>
+                    <button type="submit" class="btn"><?php echo $language === 'am' ? 'አስገባ' : 'Submit'; ?></button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<style>
+.simple-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.simple-date-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    background: #F1ECE2;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.current-date {
+    font-size: 1.2rem;
+    margin: 0;
+    color: #301934;
+    font-weight: 600;
+}
+
+.nav-arrow {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-radius: 50%;
+    color: #301934;
+    text-decoration: none;
+}
+
+.nav-arrow.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.activity-title-section {
+    margin-bottom: 20px;
+}
+
+.main-title {
+    font-size: 1.8rem;
+    color: #301934;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.amharic-title {
+    font-size: 1.4rem;
+    color: #5D4225;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+.activities-simple-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.activity-simple-item {
+    background: #F1ECE2;
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.activity-info {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.points-circle {
+    background: #DAA520;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.activity-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #301934;
+    margin: 0 0 5px;
+}
+
+.activity-description {
+    margin: 0;
+    color: #5D4225;
+    font-size: 0.9rem;
+}
+
+.activity-checkbox-actions {
+    display: flex;
+    gap: 20px;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    padding-top: 10px;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    position: relative;
+    padding-left: 30px;
+    user-select: none;
+}
+
+.checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #fff;
+    border: 2px solid #301934;
+    border-radius: 3px;
+}
+
+.checkbox-container:hover input ~ .checkmark {
+    background-color: #f1f1f1;
+}
+
+.checkbox-container input:checked ~ .checkmark {
+    background-color: #301934;
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.checkbox-container input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.checkbox-container .checkmark:after {
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-label {
+    font-size: 0.9rem;
+    color: #301934;
+}
+
+@media (max-width: 576px) {
+    .activity-checkbox-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+</style>
+
+<script>
+function markComplete(activityId) {
+    $.ajax({
+        url: "submit_activity.php",
+        method: "POST",
+        data: {
+            activity_id: activityId,
+            status: 'done'
+        },
+        dataType: "json",
+        success: function(response) {
+            if (response.success) {
+                location.reload();
+            } else {
+                alert("Error: " + response.message);
+            }
+        },
+        error: function() {
+            alert("An error occurred. Please try again.");
+        }
+    });
+}
+
+function markMissed(activityId) {
+    $("#activity_id").val(activityId);
+    $("#notDoneModal").css("display", "flex");
+}
+
+// Close modal
+$(".close-modal").click(function() {
+    $("#notDoneModal").css("display", "none");
+});
+
+// Submit not done form
+$("#notDoneForm").submit(function(e) {
+    e.preventDefault();
+    
+    const activityId = $("#activity_id").val();
+    const reasonId = $("#reason_id").val();
+    
+    $.ajax({
+        url: "submit_activity.php",
+        method: "POST",
+        data: {
+            activity_id: activityId,
+            status: 'missed',
+            reason_id: reasonId
+        },
+        dataType: "json",
+        success: function(response) {
+            if (response.success) {
+                $("#notDoneModal").css("display", "none");
+                location.reload();
+            } else {
+                alert("Error: " + response.message);
+            }
+        },
+        error: function() {
+            alert("An error occurred. Please try again.");
+        }
+    });
+});
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('notDoneModal');
+    if (event.target === modal) {
+        $("#notDoneModal").css("display", "none");
+    }
+}
+</script>
 
 <?php
 // Page-specific scripts

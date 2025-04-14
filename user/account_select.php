@@ -133,49 +133,200 @@ function getDeviceInfo($userAgent) {
 }
 ?>
 
-<div class="card">
-    <div class="card-header">
-        <h2 class="card-title">Select Your Account</h2>
-    </div>
-    <div class="card-body">
-        <p>Multiple accounts found with the baptism name: <strong><?php echo htmlspecialchars($baptism_name); ?></strong></p>
+<div class="simple-container">
+    <div class="account-select-container">
+        <h1 class="main-title">Select Your Account</h1>
+        
+        <p class="account-name-message">Multiple accounts found with the baptism name: <strong><?php echo htmlspecialchars($baptism_name); ?></strong></p>
         
         <?php if ($error): ?>
             <div class="alert alert-danger"><?php echo $error; ?></div>
         <?php endif; ?>
         
-        <div class="account-list mt-4">
+        <div class="account-list">
             <?php foreach ($users as $user): ?>
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <form method="POST" action="account_select.php">
-                            <input type="hidden" name="baptism_name" value="<?php echo htmlspecialchars($baptism_name); ?>">
-                            <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                            <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect); ?>">
-                            
-                            <div class="mb-3">
-                                <p><strong>Baptism Name:</strong> <?php echo htmlspecialchars($user['baptism_name']); ?></p>
-                                <p><strong>Last Login:</strong> <?php echo !empty($user['last_login']) ? $user['last_login'] : 'Never'; ?></p>
-                                <p><strong>Last Device:</strong> <?php echo getDeviceInfo($user['user_agent']); ?></p>
-                            </div>
-                            
-                            <div class="form-group mb-3">
-                                <label for="password_<?php echo $user['id']; ?>" class="form-label">Password:</label>
-                                <input type="password" class="form-control" id="password_<?php echo $user['id']; ?>" name="password" required>
-                            </div>
-                            
-                            <button type="submit" class="btn">Log In</button>
-                        </form>
+                <div class="account-item">
+                    <div class="account-info">
+                        <div class="info-row">
+                            <strong>Baptism Name:</strong> <?php echo htmlspecialchars($user['baptism_name']); ?>
+                        </div>
+                        <div class="info-row">
+                            <strong>Last Login:</strong> <?php echo !empty($user['last_login']) ? $user['last_login'] : 'Never'; ?>
+                        </div>
+                        <div class="info-row">
+                            <strong>Last Device:</strong> <?php echo getDeviceInfo($user['user_agent']); ?>
+                        </div>
                     </div>
+                    
+                    <form method="POST" action="account_select.php" class="account-form">
+                        <input type="hidden" name="baptism_name" value="<?php echo htmlspecialchars($baptism_name); ?>">
+                        <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                        <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect); ?>">
+                        
+                        <div class="form-group">
+                            <label for="password_<?php echo $user['id']; ?>" class="form-label">Password:</label>
+                            <input type="password" class="form-control" id="password_<?php echo $user['id']; ?>" name="password" required>
+                        </div>
+                        
+                        <button type="submit" class="login-btn">Log In</button>
+                    </form>
                 </div>
             <?php endforeach; ?>
         </div>
         
-        <div class="text-center mt-3">
-            <a href="login.php" class="btn btn-outline">Back to Login</a>
+        <div class="back-link">
+            <a href="login.php">Back to Login</a>
         </div>
     </div>
 </div>
+
+<style>
+.simple-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.account-select-container {
+    background-color: #F1ECE2;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.main-title {
+    font-size: 1.8rem;
+    color: #301934;
+    margin-bottom: 20px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.account-name-message {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #5D4225;
+}
+
+.account-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.account-item {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.account-info {
+    margin-bottom: 15px;
+}
+
+.info-row {
+    margin-bottom: 8px;
+    color: #5D4225;
+}
+
+.info-row strong {
+    color: #301934;
+    margin-right: 5px;
+}
+
+.account-form {
+    border-top: 1px solid rgba(0,0,0,0.1);
+    padding-top: 15px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #301934;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #301934;
+    border-radius: 4px;
+    background-color: white;
+    color: #301934;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #DAA520;
+    box-shadow: 0 0 0 2px rgba(218, 165, 32, 0.2);
+}
+
+.login-btn {
+    background-color: #DAA520;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.login-btn:hover {
+    background-color: #301934;
+    transform: translateY(-2px);
+}
+
+.back-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.back-link a {
+    color: #301934;
+    text-decoration: none;
+    padding: 10px 20px;
+    border: 1px solid #301934;
+    border-radius: 5px;
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.back-link a:hover {
+    background-color: #301934;
+    color: white;
+}
+
+.alert {
+    padding: 12px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+@media (max-width: 576px) {
+    .account-select-container {
+        padding: 15px;
+    }
+    
+    .main-title {
+        font-size: 1.5rem;
+    }
+}
+</style>
 
 <?php
 // Include footer
