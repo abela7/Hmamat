@@ -286,7 +286,7 @@ include_once '../includes/user_header.php';
 <!-- Fasika Countdown Timer -->
 <?php if ($fasika_timestamp_utc !== null): ?>
 <div id="fasika-countdown" class="mb-4 p-3 rounded shadow-sm text-center" style="background-color: #FFFFFF; border: 1px solid #DAA520;" data-target-timestamp="<?php echo $fasika_timestamp_utc; ?>">
-    <h4 class="countdown-title mb-3" style="color: #000000; font-weight: 600;"><?php echo $language === 'am' ? 'እስከ ፋሲካ የቀረው ጊዜ' : 'Time Until Fasika Celebration'; ?></h4>
+    <h4 class="countdown-title mb-3" style="color: #000000; font-weight: 600;"><?php echo $language === 'am' ? 'የሰሙነ ሕማማት ጉዞ' : 'Time Until Fasika Celebration'; ?></h4>
     <div class="d-flex justify-content-around align-items-center flex-wrap">
         <div class="countdown-segment mx-2 my-1">
             <span id="countdown-days" class="display-6 fw-bold" style="color: #DAA520;">00</span><br>
@@ -312,11 +312,11 @@ include_once '../includes/user_header.php';
 <!-- Holy Week Progress Bar -->
 <div class="mb-4 p-3 rounded shadow-sm" style="background-color: #FFFFFF; border: 1px solid #CDAF56;">
     <h5 class="text-center mb-2" style="color: #000000;">
-<?php echo $language === 'am' ? 'የሰሙነ ሕማማት ጉዞ' : 'Holy Week Progress'; ?>
+<?php echo $language === 'am' ? 'ሰሙነ ሕማማት' : 'weekly'; ?>
 </h5>
-    <div class="progress" style="height: 25px; background-color: #CDAF56;">
+    <div class="progress" style="height: 25px; background-color:rgb(35, 35, 35);">
         <div class="progress-bar" role="progressbar" 
-             style="width: <?php echo $progress_percentage; ?>%; background-color: #000000; color: #FFFFFF; font-weight: bold;"
+             style="width: <?php echo $progress_percentage; ?>%; background-color: #CDAF56; color: #FFFFFF; font-weight: bold;"
              aria-valuenow="<?php echo $progress_percentage; ?>" 
              aria-valuemin="0" aria-valuemax="100">
             <?php echo $progress_percentage; ?>%
