@@ -314,7 +314,7 @@ include_once '../includes/user_header.php';
                 <div class="activity-actions">
                     <?php if (isset($completed_activities[$activity['id']]) && $completed_activities[$activity['id']] == 'done'): ?>
                         <div class="status-badge completed">
-                            <i class="fas fa-check-circle"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Complete'; ?>
+                            <i class="fas fa-check-circle"></i> <?php echo $language === 'am' ? 'አድርጌአለሁ' : 'Complete'; ?>
                         </div>
                         <?php if (strtotime($selected_date) <= strtotime(date('Y-m-d'))): ?>
                         <button class="reset-btn" onclick="resetActivity(<?php echo $activity['id']; ?>, '<?php echo $selected_date; ?>')">
@@ -323,24 +323,24 @@ include_once '../includes/user_header.php';
                         <?php endif; ?>
                     <?php elseif (isset($completed_activities[$activity['id']]) && $completed_activities[$activity['id']] == 'missed'): ?>
                         <div class="status-badge missed">
-                            <i class="fas fa-times-circle"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Done'; ?>
+                            <i class="fas fa-times-circle"></i> <?php echo $language === 'am' ? 'አላደረኩም' : 'Not Done'; ?>
                         </div>
                         <?php if (strtotime($selected_date) <= strtotime(date('Y-m-d'))): ?>
                         <button class="reset-btn" onclick="resetActivity(<?php echo $activity['id']; ?>, '<?php echo $selected_date; ?>')">
-                            <i class="fas fa-undo"></i> <?php echo $language === 'am' ? 'ዳግም አስጀምር' : 'Reset'; ?>
+                            <i class="fas fa-undo"></i> <?php echo $language === 'am' ? 'እንደ አዲስ አስጀምር' : 'Reset'; ?>
                         </button>
                         <?php endif; ?>
                     <?php else: ?>
                         <?php if (strtotime($selected_date) <= strtotime(date('Y-m-d'))): ?>
                             <button class="action-btn success" onclick="markComplete(<?php echo $activity['id']; ?>)">
-                                <i class="fas fa-check"></i> <?php echo $language === 'am' ? 'ተጠናቋል' : 'Complete'; ?>
+                                <i class="fas fa-check"></i> <?php echo $language === 'am' ? 'አድርጌአለሁ' : 'Complete'; ?>
                             </button>
                             <button class="action-btn secondary" onclick="markMissed(<?php echo $activity['id']; ?>)">
-                                <i class="fas fa-times"></i> <?php echo $language === 'am' ? 'አልተጠናቀቀም' : 'Not Done'; ?>
+                                <i class="fas fa-times"></i> <?php echo $language === 'am' ? 'አላደረኩም' : 'Not Done'; ?>
                             </button>
                         <?php else: ?>
                             <div class="future-message">
-                                <?php echo $language === 'am' ? 'ምክንያት የወደፊት ቀን ነው' : 'Future date - cannot mark yet'; ?>
+                                <?php echo $language === 'am' ? 'ገና የወደፊት ቀን ነው' : 'Future date - cannot mark yet'; ?>
                             </div>
                         <?php endif; ?>
                     <?php endif; ?>
