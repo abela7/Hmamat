@@ -171,18 +171,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login_with_password'])
 // Get day of the week (1-7, Monday is 1)
 $day_of_week = date('N');
 
-// Get daily message if available
-$daily_message = "Welcome to Holy Week Spiritual Tracker. Login to begin your spiritual journey.";
-$stmt = $conn->prepare("SELECT message_text FROM daily_messages WHERE day_of_week = ? OR day_of_week IS NULL ORDER BY day_of_week DESC LIMIT 1");
-$stmt->bind_param("i", $day_of_week);
-$stmt->execute();
-$result = $stmt->get_result();
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $daily_message = $row['message_text'];
-}
-$stmt->close();
-
 // Include header (without the user login check)
 include_once '../includes/user_header.php';
 ?>
@@ -195,15 +183,9 @@ include_once '../includes/user_header.php';
         </div>
         <?php endif; ?>
         
-        <?php if (!empty($daily_message)): ?>
-        <div class="daily-message mb-4">
-            <p class="mb-0"><?php echo $daily_message; ?></p>
-        </div>
-        <?php endif; ?>
-        
         <div class="card">
             <div class="card-body">
-                <h2 class="card-title text-center">Welcome to HIMAMAT</h2>
+                <h2 class="card-title text-center">ሰሙነ ሕማማት</h2>
                 
                 <div class="text-center mb-4">
                     <p>The Holy Week Spiritual Tracker for Ethiopian Orthodox faithful.</p>
@@ -217,17 +199,17 @@ include_once '../includes/user_header.php';
                     <div class="col-md-6 mb-3">
                         <div class="card h-100">
                             <div class="card-body text-center">
-                                <h5 class="card-title">First Time Visitor?</h5>
-                                <p class="card-text">Start your spiritual journey during HIMAMAT.</p>
-                                <a href="welcome.php?step=1" class="btn">Get Started</a>
+                                <h5 class="card-title">ለዚህ ድህረ ገጽ አዲስ ነዎት?</h5>
+                                <p class="card-text">ለመጀመር </p>
+                                <a href="welcome.php?step=1" class="btn">እዚህ ላይ ይጫኑይጫኑ</a>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6 mb-3">
                         <div class="card h-100">
                             <div class="card-body text-center">
-                                <h5 class="card-title">Returning User?</h5>
-                                <p class="card-text">Enter your baptism name and password.</p>
+                                <h5 class="card-title">ካሁን በፊት ተመዝግበዋል?</h5>
+                                <p class="card-text">የተመዘገቡበትን ስም ያስገቡ</p>
                                 <button type="button" class="btn" data-bs-toggle="collapse" data-bs-target="#loginForm">Login</button>
                             </div>
                         </div>

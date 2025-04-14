@@ -140,6 +140,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
         <div class="text-center mb-4">
             <img src="../assets/favicon_io/android-chrome-512x512.png" alt="HIMAMAT Logo" class="logo-img">
             <h1 class="welcome-title">እንኳን ደህና መጡ</h1>
+            <a href="login.php" class="btn btn-outline-secondary btn-sm mb-3">
+                <i class="fas fa-arrow-left"></i> ወደ መግቢያ ገጽ ተመለስ
+            </a>
         </div>
         
         <div class="progress-indicator">
