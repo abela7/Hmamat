@@ -161,10 +161,7 @@ if ($user_logged_in) {
                     </a>
                     <?php else: ?>
                     <a href="../user/login.php" class="nav-link <?php echo $current_page == 'login.php' ? 'active' : ''; ?>">
-                        <?php echo $language === 'am' ? 'ግባ' : 'Login'; ?>
-                    </a>
-                    <a href="../user/register.php" class="nav-link <?php echo $current_page == 'register.php' ? 'active' : ''; ?>">
-                        <?php echo $language === 'am' ? 'ይመዝገቡ' : 'Register'; ?>
+                        <?php echo $language === 'am' ? 'ግባ' : 'ግባ'; ?>
                     </a>
                     <?php endif; ?>
                 </nav>
