@@ -159,6 +159,28 @@ a:hover {
     left: 0;
 }
 
+/* Language Switcher */
+.lang-switcher {
+    margin-left: 1rem;
+}
+
+.lang-switcher a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.lang-switcher a:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
 /* Offcanvas styling */
 .offcanvas {
     max-width: 85%;

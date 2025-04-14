@@ -140,7 +140,7 @@ $stmt->close();
 // Process preferences form submission
 if (isset($_POST['save_preferences'])) {
     // Get form data
-    $new_language = 'am'; // Force Amharic
+    $new_language = $_POST['language'] ?? 'en';
     $new_show_on_leaderboard = isset($_POST['show_on_leaderboard']) ? 1 : 0;
     $new_email_notifications = isset($_POST['email_notifications']) ? 1 : 0;
     
@@ -206,6 +206,20 @@ include_once '../includes/user_header.php';
                     
                     <!-- User Preferences -->
                     <form method="post" action="settings.php">
+                        <!-- Language Preference -->
+                        <div class="form-group mb-4">
+                            <label class="form-label">
+                                <?php echo $language === 'am' ? 'ቋንቋ' : 'Language'; ?>
+                            </label>
+                            <select class="form-select" name="language">
+                                <option value="en" <?php echo $user_language === 'en' ? 'selected' : ''; ?>>English</option>
+                                <option value="am" <?php echo $user_language === 'am' ? 'selected' : ''; ?>>አማርኛ (Amharic)</option>
+                            </select>
+                            <div class="form-text">
+                                <?php echo $language === 'am' ? 'ይህ አማራጭ የውስጥ ቋንቋውን ይቀይራል።' : 'This option changes the interface language.'; ?>
+                            </div>
+                        </div>
+                        
                         <!-- Visibility Settings -->
                         <div class="form-group mb-4">
                             <label class="form-label">

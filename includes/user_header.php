@@ -6,8 +6,27 @@ $current_page = basename($_SERVER['PHP_SELF']);
 $user_logged_in = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
 $baptism_name = $user_logged_in ? $_SESSION['baptism_name'] : '';
 
-// Force Amharic language
-$language = 'am';
+// Get language preference from cookie or database
+$language = isset($_COOKIE['user_language']) ? $_COOKIE['user_language'] : 'en';
+
+// If user is logged in, try to get language preference from database
+if ($user_logged_in) {
+    $user_id = $_SESSION['user_id'];
+    $stmt = $conn->prepare("SELECT language FROM user_preferences WHERE user_id = ?");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        // Update cookie to match database preference
+        if (isset($row['language']) && $row['language'] !== $language) {
+            $language = $row['language'];
+            setcookie('user_language', $language, time() + (86400 * 90), "/");
+        }
+    }
+    $stmt->close();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -91,6 +110,14 @@ $language = 'am';
                     </a>
                 </li>
                 <?php endif; ?>
+                
+                <!-- Language Switcher -->
+                <li class="mobile-menu-item">
+                    <a href="#" id="mobile-lang-toggle" class="mobile-menu-link">
+                        <i class="fas fa-globe menu-icon"></i> 
+                        <?php echo $language === 'am' ? 'English' : 'አማርኛ'; ?>
+                    </a>
+                </li>
             </ul>
             
             <div class="offcanvas-footer mt-auto p-3 text-center">
@@ -133,6 +160,14 @@ $language = 'am';
                         <?php echo $language === 'am' ? 'ይመዝገቡ' : 'Register'; ?>
                     </a>
                     <?php endif; ?>
+                    
+                    <!-- Language Switcher -->
+                    <div class="lang-switcher">
+                        <a href="#" id="lang-toggle" class="nav-link">
+                            <i class="fas fa-globe"></i> 
+                            <?php echo $language === 'am' ? 'English' : 'አማርኛ'; ?>
+                        </a>
+                    </div>
                 </nav>
             </div>
         </div>
@@ -140,3 +175,41 @@ $language = 'am';
 
     <main class="main">
         <div class="container"> 
+
+<!-- Script for language switching -->
+<script>
+$(document).ready(function() {
+    // Function to set cookie
+    function setCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+    
+    // Handle language toggle for desktop
+    $('#lang-toggle').on('click', function(e) {
+        e.preventDefault();
+        var currentLang = "<?php echo $language; ?>";
+        var newLang = currentLang === 'en' ? 'am' : 'en';
+        setCookie('user_language', newLang, 30);
+        location.reload();
+    });
+    
+    // Handle language toggle for mobile
+    $('#mobile-lang-toggle').on('click', function(e) {
+        e.preventDefault();
+        var currentLang = "<?php echo $language; ?>";
+        var newLang = currentLang === 'en' ? 'am' : 'en';
+        setCookie('user_language', newLang, 30);
+        location.reload();
+    });
+});
+</script>
+        </div>
+    </main>
+</body>
+</html> 
