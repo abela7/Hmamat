@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ሰሙነ ህማማትህማማት</title>
+    <title>ሰሙነ ሕማማት የመንፈሳዊ ምግባራት መከታተያ ፕሮግራም</title>
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
     <style>
