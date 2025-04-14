@@ -12,7 +12,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Time zone setting
-date_default_timezone_set('UTC');
+date_default_timezone_set('Europe/London');
 
 // Site URLs
 define("BASE_URL", "http://".$_SERVER['HTTP_HOST']);

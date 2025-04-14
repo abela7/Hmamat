@@ -109,24 +109,29 @@ for ($i = 0; $i < 7; $i++) {
     ];
 }
 
+// --- START LONDON TIMEZONE HANDLING ---
+$now_london = new DateTime('now', new DateTimeZone('Europe/London'));
+$current_date_london = $now_london->format('Y-m-d');
+// --- END LONDON TIMEZONE HANDLING ---
+
+// --- Update date selection logic ---
 // Handle date selection
-$selected_date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
+$selected_date = isset($_GET['date']) ? $_GET['date'] : $current_date_london; // Default to London date
 
 // Validate selected date is within Holy Week
 if (!array_key_exists($selected_date, $holy_week_dates)) {
-    // If selected date is not in Holy Week, default to current date or closest Holy Week date
-    $current_date = date('Y-m-d');
-    if (array_key_exists($current_date, $holy_week_dates)) {
-        $selected_date = $current_date;
+    // If selected date is not in Holy Week, default to current London date or closest Holy Week date
+    if (array_key_exists($current_date_london, $holy_week_dates)) {
+        $selected_date = $current_date_london;
     } else {
         // Find closest date in Holy Week
-        $current_timestamp = time();
+        $current_timestamp_london = $now_london->getTimestamp(); // Use London timestamp
         $closest_date = null;
         $closest_diff = PHP_INT_MAX;
         
         foreach ($holy_week_dates as $date => $info) {
-            $date_timestamp = strtotime($date);
-            $diff = abs($date_timestamp - $current_timestamp);
+            $date_timestamp = strtotime($date); // Keep as is, comparing against London time
+            $diff = abs($date_timestamp - $current_timestamp_london);
             
             if ($diff < $closest_diff) {
                 $closest_diff = $diff;
@@ -134,15 +139,15 @@ if (!array_key_exists($selected_date, $holy_week_dates)) {
             }
         }
         
-        $selected_date = $closest_date;
+        $selected_date = $closest_date ?? $current_date_london; // Fallback if no closest found
     }
 }
 
-// Get current date and selected day info
-$current_date = date('Y-m-d');
-$is_today = ($selected_date === $current_date);
+// Get selected day info
+$is_today = ($selected_date === $current_date_london); // Compare against London date
 $selected_day_name = $holy_week_dates[$selected_date]['day_name'];
-$day_of_week = date('N', strtotime($selected_date)); // 1-7 (Monday-Sunday)
+$day_of_week = date('N', strtotime($selected_date));
+// --- End date selection logic update ---
 
 // Get daily message
 $daily_message = "";
@@ -374,7 +379,7 @@ include_once '../includes/user_header.php';
                         <div class="status-badge completed">
                             <i class="fas fa-check-circle"></i> <?php echo $language === 'am' ? 'አድርጌአለሁ' : 'Complete'; ?>
                         </div>
-                        <?php if (strtotime($selected_date) <= strtotime(date('Y-m-d'))): ?>
+                        <?php if (strtotime($selected_date) <= strtotime($current_date_london)): ?>
                         <button class="reset-btn" onclick="resetActivity(<?php echo $activity['id']; ?>, '<?php echo $selected_date; ?>')">
                             <i class="fas fa-undo"></i> <?php echo $language === 'am' ? 'ዳግም አስጀምር' : 'Reset'; ?>
                         </button>
@@ -383,13 +388,13 @@ include_once '../includes/user_header.php';
                         <div class="status-badge missed">
                             <i class="fas fa-times-circle"></i> <?php echo $language === 'am' ? 'አላደረኩም' : 'Not Done'; ?>
                         </div>
-                        <?php if (strtotime($selected_date) <= strtotime(date('Y-m-d'))): ?>
+                        <?php if (strtotime($selected_date) <= strtotime($current_date_london)): ?>
                         <button class="reset-btn" onclick="resetActivity(<?php echo $activity['id']; ?>, '<?php echo $selected_date; ?>')">
                             <i class="fas fa-undo"></i> <?php echo $language === 'am' ? 'እንደ አዲስ አስጀምር' : 'Reset'; ?>
                         </button>
                         <?php endif; ?>
                     <?php else: ?>
-                        <?php if (strtotime($selected_date) <= strtotime(date('Y-m-d'))): ?>
+                        <?php if (strtotime($selected_date) <= strtotime($current_date_london)): ?>
                             <button class="action-btn success" onclick="markComplete(<?php echo $activity['id']; ?>)">
                                 <i class="fas fa-check"></i> <?php echo $language === 'am' ? 'አድርጌአለሁ' : 'Complete'; ?>
                             </button>
@@ -912,32 +917,6 @@ $(document).ready(function() {
             window.scrollTo(0, scrollPosition);
         }
     }
-    
-    // Check for new day
-    function checkForNewDay() {
-        const currentDate = new Date().toISOString().split('T')[0];
-        const storedDate = localStorage.getItem('lastVisitDate');
-        
-        if (storedDate && storedDate !== currentDate) {
-            // It's a new day, reload to the current date
-            window.location.href = 'dashboard.php';
-        }
-        
-        // Store current date
-        localStorage.setItem('lastVisitDate', currentDate);
-    }
-    
-    // Run check for new day
-    checkForNewDay();
-    
-    // Set interval to check every minute if it's midnight
-    setInterval(function() {
-        const now = new Date();
-        if (now.getHours() === 0 && now.getMinutes() === 0) {
-            // It's midnight, reload the page
-            window.location.href = 'dashboard.php';
-        }
-    }, 60000); // Check every minute
     
     // Add test data to activity_miss_reasons table if empty
     if (<?php echo count($miss_reasons) === 0 ? 'true' : 'false'; ?>) {
