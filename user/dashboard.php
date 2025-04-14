@@ -577,31 +577,135 @@ include_once '../includes/user_header.php';
         padding: 10px;
     }
 }
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #F1ECE2;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.modal-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #301934;
+    margin: 0;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #301934;
+    transition: color 0.2s ease;
+}
+
+.close-modal:hover {
+    color: #DAA520;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #301934;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #301934;
+    border-radius: 5px;
+    background-color: white;
+    color: #301934;
+    font-size: 1rem;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #DAA520;
+    box-shadow: 0 0 0 2px rgba(218, 165, 32, 0.2);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+.btn {
+    background-color: #301934;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    background-color: #DAA520;
+    transform: translateY(-2px);
+}
 </style>
 
 <script>
 function markComplete(activityId) {
-    $.ajax({
-        url: "ajax/update_activity.php",
-        method: "POST",
-        data: {
-            activity_id: activityId,
-            status: 'done',
-            date: '<?php echo $selected_date; ?>'
-        },
-        dataType: "json",
-        success: function(response) {
-            if (response.success) {
-                // Reload page and maintain scroll position
-                const scrollPosition = window.pageYOffset;
-                window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPosition;
-            } else {
-                alert("Error: " + response.message);
-            }
-        },
-        error: function() {
-            alert("An error occurred. Please try again.");
+    // Store current scroll position
+    const scrollPosition = window.pageYOffset;
+    
+    // Submit request directly
+    $.post("ajax/update_activity.php", {
+        activity_id: activityId,
+        status: "done",
+        date: "<?php echo $selected_date; ?>"
+    })
+    .done(function(response) {
+        if (response.success) {
+            window.location.href = "dashboard.php?date=<?php echo $selected_date; ?>&scroll=" + scrollPosition;
+        } else {
+            alert("Error: " + response.message);
+            console.log(response);
         }
+    })
+    .fail(function(xhr, status, error) {
+        console.error("AJAX Error:", status, error);
+        console.log(xhr.responseText);
+        alert("An error occurred. Please try again.");
     });
 }
 
@@ -611,26 +715,26 @@ function markMissed(activityId) {
 }
 
 function resetActivity(activityId, date) {
-    $.ajax({
-        url: "ajax/reset_activity.php",
-        method: "POST",
-        data: {
-            activity_id: activityId,
-            date: date
-        },
-        dataType: "json",
-        success: function(response) {
-            if (response.success) {
-                // Reload page and maintain scroll position
-                const scrollPosition = window.pageYOffset;
-                window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPosition;
-            } else {
-                alert("Error: " + response.message);
-            }
-        },
-        error: function() {
-            alert("An error occurred. Please try again.");
+    // Store current scroll position
+    const scrollPosition = window.pageYOffset;
+    
+    // Submit request directly
+    $.post("ajax/reset_activity.php", {
+        activity_id: activityId,
+        date: date
+    })
+    .done(function(response) {
+        if (response.success) {
+            window.location.href = "dashboard.php?date=<?php echo $selected_date; ?>&scroll=" + scrollPosition;
+        } else {
+            alert("Error: " + response.message);
+            console.log(response);
         }
+    })
+    .fail(function(xhr, status, error) {
+        console.error("AJAX Error:", status, error);
+        console.log(xhr.responseText);
+        alert("An error occurred. Please try again.");
     });
 }
 
@@ -639,7 +743,7 @@ $(".close-modal").click(function() {
     $("#notDoneModal").css("display", "none");
 });
 
-// Submit not done form
+// Directly handle the Not Done form submission with a cleaner approach
 $("#notDoneForm").submit(function(e) {
     e.preventDefault();
     
@@ -651,33 +755,31 @@ $("#notDoneForm").submit(function(e) {
         return;
     }
     
-    $.ajax({
-        url: "ajax/update_activity.php",
-        method: "POST",
-        data: {
-            activity_id: activityId,
-            status: 'missed',
-            reason_id: reasonId,
-            date: '<?php echo $selected_date; ?>'
-        },
-        dataType: "json",
-        success: function(response) {
-            if (response.success) {
-                $("#notDoneModal").css("display", "none");
-                
-                // Reload page and maintain scroll position
-                const scrollPosition = window.pageYOffset;
-                window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPosition;
-            } else {
-                alert("Error: " + response.message);
-                console.log(response);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error("AJAX Error:", status, error);
-            console.log(xhr.responseText);
-            alert("An error occurred. Please try again.");
+    // Close modal first
+    $("#notDoneModal").css("display", "none");
+    
+    // Store current scroll position
+    const scrollPosition = window.pageYOffset;
+    
+    // Submit the form directly
+    $.post("ajax/update_activity.php", {
+        activity_id: activityId,
+        status: "missed",
+        reason_id: reasonId,
+        date: "<?php echo $selected_date; ?>"
+    })
+    .done(function(response) {
+        if (response.success) {
+            window.location.href = "dashboard.php?date=<?php echo $selected_date; ?>&scroll=" + scrollPosition;
+        } else {
+            alert("Error: " + response.message);
+            console.log(response);
         }
+    })
+    .fail(function(xhr, status, error) {
+        console.error("AJAX Error:", status, error);
+        console.log(xhr.responseText);
+        alert("An error occurred. Please try again.");
     });
 });
 
