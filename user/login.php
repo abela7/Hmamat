@@ -209,8 +209,8 @@ include_once '../includes/user_header.php';
                         <div class="card h-100">
                             <div class="card-body text-center">
                                 <h5 class="card-title">ካሁን በፊት ተመዝግበዋል?</h5>
-                                <p class="card-text">የተመዘገቡበትን ስም ያስገቡ</p>
-                                <button type="button" class="btn" data-bs-toggle="collapse" data-bs-target="#loginForm">Login</button>
+                                
+                                <button type="button" class="btn" data-bs-toggle="collapse" data-bs-target="#loginForm">እዚህ ላይ ይጫኑይጫኑ</button>
                             </div>
                         </div>
                     </div>
