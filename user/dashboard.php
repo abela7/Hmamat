@@ -316,7 +316,7 @@ include_once '../includes/user_header.php';
 </h5>
     <div class="progress" style="height: 25px; background-color: #CDAF56;">
         <div class="progress-bar" role="progressbar" 
-             style="width: <?php echo $progress_percentage; ?>%; background-color: #DAA520; color: #FFFFFF;" 
+             style="width: <?php echo $progress_percentage; ?>%; background-color: #000000; color: #FFFFFF; font-weight: bold;"
              aria-valuenow="<?php echo $progress_percentage; ?>" 
              aria-valuemin="0" aria-valuemax="100">
             <?php echo $progress_percentage; ?>%
@@ -450,8 +450,10 @@ body {
     background-color: transparent !important; /* Prevent internal backgrounds */
 }
 
+/* Make links blue and underlined */
 .daily-message a {
-    color: #DAA520; /* Style links within daily message */
+    color: #007bff !important; /* Use blue for links, !important to override potential TinyMCE styles */
+    text-decoration: underline !important;
 }
 
 .simple-container {
@@ -757,6 +759,21 @@ body {
     .modal-title {
         font-size: 1.1rem;
     }
+}
+
+.progress {
+    /* Keep default Bootstrap styles or ensure height and background-color are set */
+    height: 25px; 
+    background-color: #CDAF56; /* Ensure track color is set here if not in inline */
+}
+
+.progress-bar {
+    /* Default Bootstrap progress-bar styles plus overrides */
+    /* Inline styles will override these, but good to have defaults */
+    color: #FFFFFF;
+    font-weight: bold;
+    background-color: #000000; /* Default fill color */
+    /* Width is set dynamically via inline style */
 }
 </style>
 
