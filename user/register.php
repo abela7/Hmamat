@@ -93,7 +93,7 @@ include_once '../includes/user_header.php';
                 
                 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
                     <div class="form-group mb-3">
-                        <label for="baptism_name" class="form-label">Baptism Name</label>
+                        <label for="baptism_name" class="form-label">የክርስትና ስም</label>
                         <input type="text" class="form-control" id="baptism_name" name="baptism_name" value="<?php echo htmlspecialchars($baptism_name); ?>" required>
                     </div>
                     

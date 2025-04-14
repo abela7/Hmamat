@@ -40,7 +40,7 @@ if (isset($_POST['change_name']) && isset($_POST['new_baptism_name'])) {
     $new_baptism_name = trim($_POST['new_baptism_name']);
     
     if (empty($new_baptism_name)) {
-        $error = $language === 'am' ? 'የጥምቀት ስም ባዶ መሆን አይችልም።' : 'Baptism name cannot be empty.';
+        $error = $language === 'am' ? 'የክርስትና ስም ባዶ መሆን አይችልም።' : 'Baptism name cannot be empty.';
     } else {
         // Update baptism name in database
         $stmt = $conn->prepare("UPDATE users SET baptism_name = ? WHERE id = ?");
