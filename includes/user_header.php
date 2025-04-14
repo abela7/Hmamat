@@ -29,74 +29,44 @@ if ($user_logged_in) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo isset($_COOKIE['user_language']) ? $_COOKIE['user_language'] : 'en'; ?>">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo isset($page_title) ? $page_title . ' - ' : ''; ?><?php echo APP_NAME; ?></title>
     
-    <?php 
-    // Determine current script name
-    $current_page_name = basename($_SERVER['PHP_SELF']);
-    
-    // Define specific meta details for welcome.php
-    $welcome_page_title = defined('APP_NAME') ? APP_NAME . ' - Welcome' : 'Welcome'; // You might set a more specific title in welcome.php itself
-    $welcome_meta_description = "በየቀኑ የሚደረጉ ምስባክ፣ ወንጌል እንዲሁም ምንባቦችን ይከታተሉ ፣\nየቤተክርስቲያን አገልግሎቶች ጊዜያት እና ቦታዎችን ይመልከቱ እንዲሁም\nበየቀኑ የተጠናቀቁ ተግባራትዎን ይመዝግቡ";
-    $welcome_page_url = defined('USER_URL') ? USER_URL . '/welcome.php' : '';
-    $app_name = defined('APP_NAME') ? APP_NAME : 'Hmamat Tracker';
-    $app_full_name = defined('APP_FULL_NAME') ? APP_FULL_NAME : 'Holy Week Spiritual Tracker';
-
-    // Default Title (can be overridden by $page_title in specific page files)
-    $display_title = isset($page_title) ? htmlspecialchars($page_title) . ' - ' . $app_name : $app_name;
-    
-    if ($current_page_name === 'welcome.php') {
-        // --- Meta Tags for welcome.php ---
-        echo '<title>' . htmlspecialchars($welcome_page_title) . '</title>' . "\n";
-        echo '    <meta name="description" content="' . htmlspecialchars($welcome_meta_description) . '">' . "\n";
-        echo '    <meta property="og:title" content="' . htmlspecialchars($welcome_page_title) . '">' . "\n";
-        echo '    <meta property="og:description" content="' . htmlspecialchars($welcome_meta_description) . '">' . "\n";
-        echo '    <meta property="og:url" content="' . htmlspecialchars($welcome_page_url) . '">' . "\n";
-        echo '    <meta property="og:type" content="website">' . "\n";
-        echo '    <meta property="og:site_name" content="' . htmlspecialchars($app_name) . '">' . "\n";
-        // echo '    <meta property="og:image" content="' . BASE_URL . '/assets/img/Eyesus Krstos.jpg">' . "\n"; // Image tag commented out - File not found
-        echo '    <link rel="canonical" href="' . htmlspecialchars($welcome_page_url) . '">' . "\n";
-    } else {
-        // --- Default Meta Tags for other user pages ---
-        $current_page_url = defined('USER_URL') ? USER_URL . '/' . $current_page_name : '';
-        echo '<title>' . $display_title . '</title>' . "\n";
-        echo '    <meta name="description" content="' . htmlspecialchars($app_full_name) . '">' . "\n";
-        echo '    <meta property="og:title" content="' . $display_title . '">' . "\n";
-        echo '    <meta property="og:description" content="' . htmlspecialchars($app_full_name) . '">' . "\n";
-        if ($current_page_url) {
-            echo '    <meta property="og:url" content="' . htmlspecialchars($current_page_url) . '">' . "\n";
-            echo '    <link rel="canonical" href="' . htmlspecialchars($current_page_url) . '">' . "\n";
-        }
-        echo '    <meta property="og:type" content="website">' . "\n";
-        echo '    <meta property="og:site_name" content="' . htmlspecialchars($app_name) . '">' . "\n";
-        // Add a default og:image here if you have one, e.g.:
-        // echo '    <meta property="og:image" content="' . BASE_URL . '/assets/img/default-logo.png">' . "\n"; 
-    }
-    ?>
+    <!-- Social Media Meta Tags -->
+    <meta name="description" content="የሰሙነ ሕማማት የመንፈሳዊ ምግባራት መከታተያ ፕሮግራም">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"; ?>">
+    <meta property="og:title" content="<?php echo isset($page_title) ? $page_title . ' - ' : ''; ?><?php echo APP_NAME; ?>">
+    <meta property="og:description" content="የሰሙነ ሕማማት የመንፈሳዊ ምግባራት መከታተያ ፕሮግራም">
+    <meta property="og:image" content="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]"; ?>/assets/favicon_io/android-chrome-512x512.png">
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"; ?>">
+    <meta property="twitter:title" content="<?php echo isset($page_title) ? $page_title . ' - ' : ''; ?><?php echo APP_NAME; ?>">
+    <meta property="twitter:description" content="የሰሙነ ሕማማት የመንፈሳዊ ምግባራት መከታተያ ፕሮግራም">
+    <meta property="twitter:image" content="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]"; ?>/assets/favicon_io/android-chrome-512x512.png">
 
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="<?php echo BASE_URL; ?>/assets/favicon_io/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo BASE_URL; ?>/assets/favicon_io/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo BASE_URL; ?>/assets/favicon_io/favicon-16x16.png">
-    <link rel="manifest" href="<?php echo BASE_URL; ?>/assets/favicon_io/site.webmanifest">
-
-    <!-- Stylesheets -->
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="../assets/favicon_io/site.webmanifest">
+    <link rel="shortcut icon" href="../assets/favicon_io/favicon.ico">
+    
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/styles.css"> <!-- Shared styles -->
-    <?php 
-    // Include page-specific CSS if needed (e.g., based on $page_title or script name)
-    if (file_exists(dirname(__DIR__) . '/user/css/' . $current_page_name . '.css')) {
-        echo '<link rel="stylesheet" href="' . USER_URL . '/css/' . $current_page_name . '.css">';
-    }
-    ?>
-
-    <!-- Scripts -->
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../user/css/style.css">
+    <!-- Mobile specific meta -->
+    <meta name="theme-color" content="#DAA520">
+    <!-- jQuery (load before Bootstrap) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 </head>
 <body class="user-body">
     <!-- Off-canvas Sidebar -->
