@@ -199,7 +199,7 @@ include_once '../includes/user_header.php';
                     <div class="col-md-6 mb-3">
                         <div class="card h-100">
                             <div class="card-body text-center">
-                                <h5 class="card-title">ለዚህ ድረ ገጽ ገጹ አዲስ ነዎት?</h5>
+                                <h5 class="card-title">ለዚህ ድረገጽ አዲስ ነዎት?</h5>
                                  
                                 <a href="welcome.php?step=1" class="btn">እዚህ ላይ ይጫኑ</a>
                             </div>
