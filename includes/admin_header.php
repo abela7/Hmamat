@@ -25,18 +25,19 @@ $admin_username = $admin_logged_in ? $_SESSION['admin_username'] : '';
     <!-- Off-canvas Sidebar -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasSidebarLabel"><?php echo APP_NAME; ?> Admin</h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <h5 class="offcanvas-title" id="offcanvasSidebarLabel">
+                <i class="fas fa-user-shield me-2"></i> <?php echo APP_NAME; ?> Admin
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
             <?php if ($admin_logged_in): ?>
-            <div class="admin-info mb-4">
+            <div class="admin-info">
                 <div class="admin-name"><?php echo htmlspecialchars($admin_username); ?></div>
                 <small class="text-muted">Administrator</small>
             </div>
             
             <ul class="mobile-menu">
-                <?php if ($admin_logged_in): ?>
                 <li class="mobile-menu-item">
                     <a href="../admin/dashboard.php" class="mobile-menu-link <?php echo $current_page == 'dashboard.php' ? 'active' : ''; ?>">
                         <i class="fas fa-tachometer-alt menu-icon"></i> Dashboard
@@ -67,13 +68,6 @@ $admin_username = $admin_logged_in ? $_SESSION['admin_username'] : '';
                         <i class="fas fa-sign-out-alt menu-icon"></i> Logout
                     </a>
                 </li>
-                <?php else: ?>
-                <li class="mobile-menu-item">
-                    <a href="../admin/login.php" class="mobile-menu-link <?php echo $current_page == 'login.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-sign-in-alt menu-icon"></i> Login
-                    </a>
-                </li>
-                <?php endif; ?>
             </ul>
             <?php else: ?>
             <ul class="mobile-menu">
@@ -84,6 +78,10 @@ $admin_username = $admin_logged_in ? $_SESSION['admin_username'] : '';
                 </li>
             </ul>
             <?php endif; ?>
+            
+            <div class="offcanvas-footer mt-auto p-3 text-center">
+                <small>&copy; <?php echo date('Y'); ?> <?php echo APP_NAME; ?> Admin</small>
+            </div>
         </div>
     </div>
 
@@ -94,7 +92,7 @@ $admin_username = $admin_logged_in ? $_SESSION['admin_username'] : '';
                 <div class="logo"><?php echo APP_NAME; ?> Admin</div>
                 
                 <!-- Mobile Toggle Button - Always Visible -->
-                <button class="navbar-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
+                <button class="navbar-toggle d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
                     <i class="fas fa-bars"></i>
                 </button>
                 

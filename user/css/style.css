@@ -35,6 +35,16 @@ body {
     flex-direction: column;
 }
 
+.user-body {
+    padding-top: 0;
+    position: relative;
+}
+
+.admin-body {
+    padding-top: 0;
+    position: relative;
+}
+
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
@@ -78,24 +88,37 @@ a:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
 }
 
 .navbar-toggle {
-    background: none;
+    background-color: var(--primary-color);
     border: none;
-    font-size: 1.5rem;
-    color: var(--primary-color);
+    font-size: 1.25rem;
+    color: white;
     cursor: pointer;
-    padding: 0.25rem 0.5rem;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.3s;
-    margin-left: auto;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 10;
 }
 
 .navbar-toggle:hover {
-    color: var(--dark-color);
+    background-color: var(--dark-color);
+}
+
+.navbar-toggle:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.3);
 }
 
 .logo {
@@ -114,6 +137,7 @@ a:hover {
     color: var(--text-color);
     font-weight: 500;
     position: relative;
+    padding: 0.5rem 0;
 }
 
 .nav-link:hover {
@@ -131,20 +155,20 @@ a:hover {
     height: 2px;
     background-color: var(--primary-color);
     position: absolute;
-    bottom: -5px;
+    bottom: -2px;
     left: 0;
 }
 
 /* Offcanvas styling */
 .offcanvas {
-    max-width: 80%;
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    max-width: 85%;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
 }
 
 .offcanvas-header {
     background-color: var(--primary-color);
     color: white;
-    padding: 1rem;
+    padding: 1.25rem;
     border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
@@ -152,15 +176,32 @@ a:hover {
     color: white;
     font-weight: 600;
     margin-bottom: 0;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
 }
 
 .offcanvas-body {
     padding: 0;
     background-color: white;
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 73px); /* Adjust based on header height */
+}
+
+.offcanvas-footer {
+    margin-top: auto;
+    padding: 1.5rem;
+    border-top: 1px solid var(--bg-color);
+    color: var(--text-color);
+}
+
+.btn-close-white {
+    filter: brightness(0) invert(1);
 }
 
 .user-info, .admin-info {
-    padding: 1.25rem;
+    padding: 1.5rem;
     background-color: rgba(218, 165, 32, 0.1);
     border-bottom: 1px solid var(--bg-color);
     margin-bottom: 0 !important;
@@ -168,9 +209,9 @@ a:hover {
 
 .user-name, .admin-name {
     font-weight: 600;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     color: var(--dark-color);
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
 }
 
 /* Mobile Menu */
@@ -190,14 +231,17 @@ a:hover {
     align-items: center;
     color: var(--text-color);
     font-weight: 500;
-    padding: 0.9rem 1.25rem;
+    padding: 1.25rem 1.5rem;
     transition: all 0.3s ease;
+    font-size: 1.1rem;
+    text-decoration: none;
 }
 
 .mobile-menu-link:hover {
     background-color: rgba(218, 165, 32, 0.1);
     color: var(--primary-color);
     text-decoration: none;
+    padding-left: 1.75rem;
 }
 
 .mobile-menu-link.active {
@@ -208,10 +252,11 @@ a:hover {
 }
 
 .menu-icon {
-    margin-right: 0.9rem;
-    width: 20px;
+    margin-right: 1rem;
+    width: 24px;
     text-align: center;
     color: var(--primary-color);
+    font-size: 1.2rem;
 }
 
 /* Main content */
@@ -593,6 +638,11 @@ a:hover {
     
     .logo {
         font-size: 1.3rem;
+        margin-right: 50px; /* Space for the toggle button */
+    }
+    
+    .navbar-toggle {
+        right: 0;
     }
     
     .progress-tracker {
@@ -640,7 +690,7 @@ a:hover {
     }
     
     .mobile-menu-link {
-        padding: 0.75rem 1.25rem;
+        padding: 1rem 1.5rem;
     }
 }
 

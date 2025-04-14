@@ -25,12 +25,14 @@ $baptism_name = $user_logged_in ? $_SESSION['baptism_name'] : '';
     <!-- Off-canvas Sidebar -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasSidebarLabel"><?php echo APP_NAME; ?></h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <h5 class="offcanvas-title" id="offcanvasSidebarLabel">
+                <i class="fas fa-cross me-2"></i> <?php echo APP_NAME; ?>
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
             <?php if ($user_logged_in): ?>
-            <div class="user-info mb-4">
+            <div class="user-info">
                 <div class="user-name"><?php echo htmlspecialchars($baptism_name); ?></div>
                 <small class="text-muted">Welcome back!</small>
             </div>
@@ -66,6 +68,10 @@ $baptism_name = $user_logged_in ? $_SESSION['baptism_name'] : '';
                 </li>
                 <?php endif; ?>
             </ul>
+            
+            <div class="offcanvas-footer mt-auto p-3 text-center">
+                <small>&copy; <?php echo date('Y'); ?> <?php echo APP_NAME; ?></small>
+            </div>
         </div>
     </div>
 
