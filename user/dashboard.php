@@ -355,13 +355,13 @@ include_once '../includes/user_header.php';
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title"><?php echo $language === 'am' ? 'ይህን እንቅስቃሴ ማጠናቀቅ ያልቻሉበት ምክንያት ምንድን ነው?' : 'Why couldn\'t you complete this activity?'; ?></h3>
-            <button class="close-modal">&times;</button>
+            <button type="button" class="close-modal">&times;</button>
         </div>
         <div class="modal-body">
-            <form id="notDoneForm">
-                <input type="hidden" id="activity_id" name="activity_id">
+            <form id="notDoneForm" method="post">
+                <input type="hidden" id="activity_id" name="activity_id" value="">
                 
-                <div class="form-group mb-3">
+                <div class="form-group">
                     <label for="reason_id" class="form-label"><?php echo $language === 'am' ? 'እባክዎ ምክንያት ይምረጡ:' : 'Please select a reason:'; ?></label>
                     <select class="form-control" id="reason_id" name="reason_id" required>
                         <option value=""><?php echo $language === 'am' ? 'ምክንያት ይምረጡ' : 'Select a reason'; ?></option>
@@ -685,111 +685,153 @@ include_once '../includes/user_header.php';
 
 <script>
 function markComplete(activityId) {
-    // Store current scroll position
-    const scrollPosition = window.pageYOffset;
+    // Get current scroll position
+    var scrollPos = window.pageYOffset;
     
-    // Submit request directly
-    $.post("ajax/update_activity.php", {
-        activity_id: activityId,
-        status: "done",
-        date: "<?php echo $selected_date; ?>"
-    })
-    .done(function(response) {
-        if (response.success) {
-            window.location.href = "dashboard.php?date=<?php echo $selected_date; ?>&scroll=" + scrollPosition;
+    // Use vanilla AJAX
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'ajax/update_activity.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            try {
+                var response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPos;
+                } else {
+                    alert("Error: " + response.message);
+                    console.log(response);
+                }
+            } catch (e) {
+                console.error("JSON parse error:", e);
+                console.log("Raw response:", xhr.responseText);
+                alert("An error occurred parsing the response.");
+            }
         } else {
-            alert("Error: " + response.message);
-            console.log(response);
+            console.error("AJAX Error:", xhr.status);
+            console.log("Response text:", xhr.responseText);
+            alert("An error occurred. HTTP status: " + xhr.status);
         }
-    })
-    .fail(function(xhr, status, error) {
-        console.error("AJAX Error:", status, error);
-        console.log(xhr.responseText);
-        alert("An error occurred. Please try again.");
-    });
+    };
+    
+    xhr.onerror = function() {
+        console.error("Network Error");
+        alert("A network error occurred.");
+    };
+    
+    xhr.send('activity_id=' + activityId + '&status=done&date=<?php echo $selected_date; ?>');
 }
 
 function markMissed(activityId) {
-    $("#activity_id").val(activityId);
-    $("#notDoneModal").css("display", "flex");
+    document.getElementById('activity_id').value = activityId;
+    document.getElementById('notDoneModal').style.display = 'flex';
 }
 
 function resetActivity(activityId, date) {
-    // Store current scroll position
-    const scrollPosition = window.pageYOffset;
+    // Get current scroll position
+    var scrollPos = window.pageYOffset;
     
-    // Submit request directly
-    $.post("ajax/reset_activity.php", {
-        activity_id: activityId,
-        date: date
-    })
-    .done(function(response) {
-        if (response.success) {
-            window.location.href = "dashboard.php?date=<?php echo $selected_date; ?>&scroll=" + scrollPosition;
+    // Use vanilla AJAX
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'ajax/reset_activity.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            try {
+                var response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPos;
+                } else {
+                    alert("Error: " + response.message);
+                    console.log(response);
+                }
+            } catch (e) {
+                console.error("JSON parse error:", e);
+                console.log("Raw response:", xhr.responseText);
+                alert("An error occurred parsing the response.");
+            }
         } else {
-            alert("Error: " + response.message);
-            console.log(response);
+            console.error("AJAX Error:", xhr.status);
+            console.log("Response text:", xhr.responseText);
+            alert("An error occurred. HTTP status: " + xhr.status);
         }
-    })
-    .fail(function(xhr, status, error) {
-        console.error("AJAX Error:", status, error);
-        console.log(xhr.responseText);
-        alert("An error occurred. Please try again.");
-    });
+    };
+    
+    xhr.onerror = function() {
+        console.error("Network Error");
+        alert("A network error occurred.");
+    };
+    
+    xhr.send('activity_id=' + activityId + '&date=' + date);
 }
 
-// Close modal
-$(".close-modal").click(function() {
-    $("#notDoneModal").css("display", "none");
-});
+// Clear any existing event handlers for the form
+$(document).off('submit', '#notDoneForm');
 
-// Directly handle the Not Done form submission with a cleaner approach
-$("#notDoneForm").submit(function(e) {
+// Add fresh handler for the form submission
+$(document).on('submit', '#notDoneForm', function(e) {
     e.preventDefault();
     
-    const activityId = $("#activity_id").val();
-    const reasonId = $("#reason_id").val();
+    var activityId = document.getElementById('activity_id').value;
+    var reasonId = document.getElementById('reason_id').value;
     
     if (!reasonId) {
         alert("Please select a reason.");
-        return;
+        return false;
     }
     
-    // Close modal first
-    $("#notDoneModal").css("display", "none");
+    // Hide modal
+    document.getElementById('notDoneModal').style.display = 'none';
     
-    // Store current scroll position
-    const scrollPosition = window.pageYOffset;
+    // Get current scroll position
+    var scrollPos = window.pageYOffset;
     
-    // Submit the form directly
-    $.post("ajax/update_activity.php", {
-        activity_id: activityId,
-        status: "missed",
-        reason_id: reasonId,
-        date: "<?php echo $selected_date; ?>"
-    })
-    .done(function(response) {
-        if (response.success) {
-            window.location.href = "dashboard.php?date=<?php echo $selected_date; ?>&scroll=" + scrollPosition;
+    // Create form data
+    var formData = new FormData();
+    formData.append('activity_id', activityId);
+    formData.append('status', 'missed');
+    formData.append('reason_id', reasonId);
+    formData.append('date', '<?php echo $selected_date; ?>');
+    
+    // Use vanilla AJAX
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'ajax/update_activity.php', true);
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            try {
+                var response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPos;
+                } else {
+                    alert("Error: " + response.message);
+                    console.log(response);
+                }
+            } catch (e) {
+                console.error("JSON parse error:", e);
+                console.log("Raw response:", xhr.responseText);
+                alert("An error occurred parsing the response.");
+            }
         } else {
-            alert("Error: " + response.message);
-            console.log(response);
+            console.error("AJAX Error:", xhr.status);
+            console.log("Response text:", xhr.responseText);
+            alert("An error occurred. HTTP status: " + xhr.status);
         }
-    })
-    .fail(function(xhr, status, error) {
-        console.error("AJAX Error:", status, error);
-        console.log(xhr.responseText);
-        alert("An error occurred. Please try again.");
-    });
+    };
+    xhr.onerror = function() {
+        console.error("Network Error");
+        alert("A network error occurred.");
+    };
+    xhr.send(formData);
+    
+    return false;
 });
 
-// Close modal when clicking outside
-window.onclick = function(event) {
-    const modal = document.getElementById('notDoneModal');
-    if (event.target === modal) {
-        $("#notDoneModal").css("display", "none");
-    }
-}
+// Use vanilla JS for the close button
+document.querySelector('.close-modal').addEventListener('click', function() {
+    document.getElementById('notDoneModal').style.display = 'none';
+});
 
 // Restore scroll position after page reload
 $(document).ready(function() {
