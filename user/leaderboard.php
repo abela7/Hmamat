@@ -74,7 +74,7 @@ include_once '../includes/user_header.php';
 
 <div class="simple-container">
     <div class="activity-title-section">
-        <h1 class="main-title"><?php echo $language === 'am' ? 'የምዕመናንመናን ሰሌዳ' : 'Leaderboard'; ?></h1>
+        <h1 class="main-title"><?php echo $language === 'am' ? 'የምዕመናን ሰሌዳ' : 'Leaderboard'; ?></h1>
     </div>
     
     <div class="user-rank-card">

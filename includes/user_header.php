@@ -96,7 +96,7 @@ if ($user_logged_in) {
                 <li class="mobile-menu-item">
                     <a href="../user/leaderboard.php" class="mobile-menu-link <?php echo $current_page == 'leaderboard.php' ? 'active' : ''; ?>">
                         <i class="fas fa-trophy menu-icon"></i> 
-                        <?php echo $language === 'am' ? 'የምዕመናንመናን ሰሌዳ' : 'Leaderboard'; ?>
+                        <?php echo $language === 'am' ? 'የምዕመናን ሰሌዳ' : 'Leaderboard'; ?>
                     </a>
                 </li>
                 <li class="mobile-menu-item">
