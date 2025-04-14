@@ -199,9 +199,9 @@ include_once '../includes/user_header.php';
                     <div class="col-md-6 mb-3">
                         <div class="card h-100">
                             <div class="card-body text-center">
-                                <h5 class="card-title">ለዚህ ድህረ ገጽ አዲስ ነዎት?</h5>
+                                <h5 class="card-title">ለዚህ ድህረ ገጹ አዲስ ነዎት?</h5>
                                  
-                                <a href="welcome.php?step=1" class="btn">እዚህ ላይ ይጫኑይጫኑ</a>
+                                <a href="welcome.php?step=1" class="btn">እዚህ ላይ ይጫኑ</a>
                             </div>
                         </div>
                     </div>
@@ -210,7 +210,7 @@ include_once '../includes/user_header.php';
                             <div class="card-body text-center">
                                 <h5 class="card-title">ካሁን በፊት ተመዝግበዋል?</h5>
                                 
-                                <button type="button" class="btn" data-bs-toggle="collapse" data-bs-target="#loginForm">እዚህ ላይ ይጫኑይጫኑ</button>
+                                <button type="button" class="btn" data-bs-toggle="collapse" data-bs-target="#loginForm">እዚህ ላይ ይጫኑ</button>
                             </div>
                         </div>
                     </div>
