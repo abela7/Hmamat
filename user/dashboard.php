@@ -20,10 +20,13 @@ $language = isset($_COOKIE['user_language']) ? $_COOKIE['user_language'] : 'en';
 // Set timezone to London
 date_default_timezone_set('Europe/London');
 
+// Current server time
+$current_timestamp = time();
+$today = date('Y-m-d', $current_timestamp);
+
 // Set Easter date as April 20, 2024 at 3am (London time)
 $easter = strtotime('2024-04-20 03:00:00');
 $easter_date = date('Y-m-d', $easter);
-$current_timestamp = time();
 $remaining_seconds = max(0, $easter - $current_timestamp);
 
 // Calculate full days and remaining hours/minutes/seconds
@@ -76,14 +79,13 @@ for ($i = 0; $i < 7; $i++) {
 }
 
 // Handle date selection
-$selected_date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
+$selected_date = isset($_GET['date']) ? $_GET['date'] : $today;
 
 // Validate selected date is within Holy Week
 if (!array_key_exists($selected_date, $holy_week_dates)) {
     // If selected date is not in Holy Week, default to current date or closest Holy Week date
-    $current_date = date('Y-m-d');
-    if (array_key_exists($current_date, $holy_week_dates)) {
-        $selected_date = $current_date;
+    if (array_key_exists($today, $holy_week_dates)) {
+        $selected_date = $today;
     } else {
         // Find closest date in Holy Week
         $current_timestamp = time();
@@ -105,8 +107,7 @@ if (!array_key_exists($selected_date, $holy_week_dates)) {
 }
 
 // Get current date and selected day info
-$current_date = date('Y-m-d');
-$is_today = ($selected_date === $current_date);
+$is_today = ($selected_date === $today);
 $selected_day_name = $holy_week_dates[$selected_date]['day_name'];
 $day_of_week = date('N', strtotime($selected_date)); // 1-7 (Monday-Sunday)
 
@@ -856,12 +857,17 @@ $(document).ready(function() {
     
     // Easter countdown timer
     function updateEasterCountdown() {
-        // Easter date - April 20 at 3am London time
-        const easterDate = new Date('2024-04-20T03:00:00+01:00'); // +01:00 is London timezone in April
+        // Easter date - April 20 at 3am London time (BST timezone offset)
+        const easterDate = new Date('2024-04-20T03:00:00+01:00'); // +01:00 is London timezone in April (BST)
+        
+        // Get current time in London timezone
         const now = new Date();
+        const userTimezoneOffset = now.getTimezoneOffset() * 60000; // in milliseconds
+        const londonOffset = -1 * 60 * 60000; // BST: UTC+1 in milliseconds
+        const londonNow = new Date(now.getTime() + userTimezoneOffset + londonOffset);
         
         // Calculate remaining time
-        let diff = easterDate - now;
+        let diff = easterDate - londonNow;
         
         // If Easter has passed, show zeros
         if (diff <= 0) {
@@ -899,9 +905,9 @@ $(document).ready(function() {
         
         // Calculate progress percentage for Holy Week
         const totalHolyWeekMilliseconds = easterDate - holyWeekStart;
-        const elapsedMilliseconds = now - holyWeekStart;
+        const elapsedMilliseconds = londonNow - holyWeekStart;
         
-        if (now >= holyWeekStart) {
+        if (londonNow >= holyWeekStart) {
             const progressPercentage = Math.min(100, Math.round((elapsedMilliseconds / totalHolyWeekMilliseconds) * 100));
             document.querySelector('.progress-bar').style.width = progressPercentage + '%';
         }
@@ -984,11 +990,15 @@ $(document).ready(function() {
     
     // Check for new day
     function checkForNewDay() {
-        const currentDate = new Date().toISOString().split('T')[0];
+        // Use London timezone for consistency with server
+        const now = new Date();
+        const londonTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/London' }));
+        const currentDate = londonTime.toISOString().split('T')[0];
         const storedDate = localStorage.getItem('lastVisitDate');
         
         if (storedDate && storedDate !== currentDate) {
             // It's a new day, reload to the current date
+            console.log('New day detected, reloading to current date');
             window.location.href = 'dashboard.php';
         }
         
@@ -999,14 +1009,46 @@ $(document).ready(function() {
     // Run check for new day
     checkForNewDay();
     
-    // Set interval to check every minute if it's midnight
-    setInterval(function() {
+    // Set interval to check for midnight more frequently near midnight
+    function checkMidnight() {
         const now = new Date();
-        if (now.getHours() === 0 && now.getMinutes() === 0) {
-            // It's midnight, reload the page
+        const londonTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/London' }));
+        const hours = londonTime.getHours();
+        const minutes = londonTime.getMinutes();
+        
+        // If it's close to midnight (23:45 - 00:15), check more frequently
+        if ((hours === 23 && minutes >= 45) || (hours === 0 && minutes <= 15)) {
+            // Check every 20 seconds
+            setTimeout(checkMidnightFrequent, 20000);
+        } else {
+            // Otherwise check every minute
+            setTimeout(checkMidnight, 60000);
+        }
+    }
+    
+    function checkMidnightFrequent() {
+        const now = new Date();
+        const londonTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/London' }));
+        const hours = londonTime.getHours();
+        const minutes = londonTime.getMinutes();
+        
+        // If it's midnight (00:00 - 00:05)
+        if (hours === 0 && minutes <= 5) {
+            console.log('Midnight detected, reloading page');
             window.location.href = 'dashboard.php';
         }
-    }, 60000); // Check every minute
+        
+        // Continue checking frequently if we're near midnight
+        if ((hours === 23 && minutes >= 45) || (hours === 0 && minutes <= 15)) {
+            setTimeout(checkMidnightFrequent, 20000); // Check every 20 seconds
+        } else {
+            // Switch back to less frequent checks
+            setTimeout(checkMidnight, 60000);
+        }
+    }
+    
+    // Start midnight checking
+    checkMidnight();
     
     // Add test data to activity_miss_reasons table if empty
     if (<?php echo count($miss_reasons) === 0 ? 'true' : 'false'; ?>) {
