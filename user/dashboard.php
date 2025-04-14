@@ -17,6 +17,21 @@ $baptism_name = $_SESSION['baptism_name'];
 // Get user's language preference
 $language = isset($_COOKIE['user_language']) ? $_COOKIE['user_language'] : 'en';
 
+// --- Start Fasika Countdown Calculation ---
+$current_year = date('Y');
+$fasika_date_string = $current_year . '-04-20 03:00:00';
+$fasika_timezone = 'Europe/London';
+
+try {
+    $fasika_datetime = new DateTime($fasika_date_string, new DateTimeZone($fasika_timezone));
+    $fasika_timestamp_utc = $fasika_datetime->getTimestamp();
+} catch (Exception $e) {
+    // Handle potential errors in date/timezone creation
+    error_log("Error creating Fasika DateTime: " . $e->getMessage());
+    $fasika_timestamp_utc = null; // Or set a default fallback
+}
+// --- End Fasika Countdown Calculation ---
+
 // Calculate Easter date and remaining time
 function getEasterDate($year = null) {
     if ($year === null) {
@@ -261,8 +276,34 @@ include_once '../includes/user_header.php';
 
 <!-- Daily Message -->
 <?php if (!empty($daily_message)): ?>
-<div class="daily-message mb-4">
-    <p class="mb-0"><?php echo $daily_message; ?></p>
+<div class="daily-message mb-4 p-3 rounded bg-light shadow-sm text-center">
+    <p class="mb-0 fst-italic">"<?php echo $daily_message; ?>"</p>
+</div>
+<?php endif; ?>
+
+<!-- Fasika Countdown Timer -->
+<?php if ($fasika_timestamp_utc !== null): ?>
+<div id="fasika-countdown" class="mb-4 p-3 rounded shadow-sm text-center" style="background-color: #e8e1d9;" data-target-timestamp="<?php echo $fasika_timestamp_utc; ?>">
+    <h4 class="countdown-title mb-3" style="color: #301934; font-weight: 600;"><?php echo $language === 'am' ? 'እስከ ፋሲካ የቀረው ጊዜ' : 'Time Until Fasika Celebration'; ?></h4>
+    <div class="d-flex justify-content-around align-items-center flex-wrap">
+        <div class="countdown-segment mx-2 my-1">
+            <span id="countdown-days" class="display-6 fw-bold" style="color: #5D4225;">00</span><br>
+            <span class="countdown-label small text-muted text-uppercase"><?php echo $language === 'am' ? 'ቀናት' : 'Days'; ?></span>
+        </div>
+        <div class="countdown-segment mx-2 my-1">
+            <span id="countdown-hours" class="display-6 fw-bold" style="color: #5D4225;">00</span><br>
+            <span class="countdown-label small text-muted text-uppercase"><?php echo $language === 'am' ? 'ሰዓታት' : 'Hours'; ?></span>
+        </div>
+        <div class="countdown-segment mx-2 my-1">
+            <span id="countdown-minutes" class="display-6 fw-bold" style="color: #5D4225;">00</span><br>
+            <span class="countdown-label small text-muted text-uppercase"><?php echo $language === 'am' ? 'ደቂቃዎች' : 'Minutes'; ?></span>
+        </div>
+        <div class="countdown-segment mx-2 my-1">
+            <span id="countdown-seconds" class="display-6 fw-bold" style="color: #5D4225;">00</span><br>
+            <span class="countdown-label small text-muted text-uppercase"><?php echo $language === 'am' ? 'ሰከንዶች' : 'Seconds'; ?></span>
+        </div>
+    </div>
+    <div id="countdown-message" class="mt-3 alert alert-success" style="display: none;"><?php echo $language === 'am' ? 'እንኳን ለብርሃነ ትንሣኤው በሰላም አደረሳችሁ! ' : 'Happy Fasika Celebration!'; ?></div>
 </div>
 <?php endif; ?>
 
@@ -643,6 +684,16 @@ include_once '../includes/user_header.php';
     font-size: 1rem;
 }
 
+/* Countdown Styles */
+.countdown-segment span {
+    display: inline-block;
+    line-height: 1;
+}
+.countdown-label {
+    font-size: 0.75rem; /* Adjust size as needed */
+}
+/* End Countdown Styles */
+
 @media (max-width: 576px) {
     .activity-actions {
         flex-direction: column;
@@ -849,6 +900,50 @@ $(document).ready(function() {
             }
         });
     }
+
+    // --- Start Countdown Logic ---
+    const countdownElement = document.getElementById('fasika-countdown');
+    if (countdownElement) {
+        const targetTimestampUTC = parseInt(countdownElement.getAttribute('data-target-timestamp'), 10);
+        
+        const daysEl = document.getElementById('countdown-days');
+        const hoursEl = document.getElementById('countdown-hours');
+        const minutesEl = document.getElementById('countdown-minutes');
+        const secondsEl = document.getElementById('countdown-seconds');
+        const messageEl = document.getElementById('countdown-message');
+        const timerSegments = document.querySelector('#fasika-countdown .d-flex'); // Select the container of the segments
+
+        let intervalId = null;
+
+        function updateCountdown() {
+            const nowUTC = Math.floor(Date.now() / 1000);
+            const remainingSeconds = targetTimestampUTC - nowUTC;
+
+            if (remainingSeconds <= 0) {
+                if (timerSegments) timerSegments.style.display = 'none'; // Hide timer numbers
+                if (messageEl) messageEl.style.display = 'block'; // Show message
+                if (intervalId) clearInterval(intervalId); // Stop the interval
+                return;
+            }
+
+            const days = Math.floor(remainingSeconds / 86400);
+            const hours = Math.floor((remainingSeconds % 86400) / 3600);
+            const minutes = Math.floor((remainingSeconds % 3600) / 60);
+            const seconds = remainingSeconds % 60;
+
+            if (daysEl) daysEl.textContent = String(days).padStart(2, '0');
+            if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
+            if (minutesEl) minutesEl.textContent = String(minutes).padStart(2, '0');
+            if (secondsEl) secondsEl.textContent = String(seconds).padStart(2, '0');
+        }
+
+        // Initial call to display immediately
+        updateCountdown();
+        
+        // Update every second
+        intervalId = setInterval(updateCountdown, 1000);
+    }
+    // --- End Countdown Logic ---
 });
 </script>
 
