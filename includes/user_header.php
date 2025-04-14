@@ -118,12 +118,6 @@ if ($user_logged_in) {
                         <?php echo $language === 'am' ? 'ግባ' : 'ግባ'; ?>
                     </a>
                 </li>
-                <li class="mobile-menu-item">
-                    <a href="../user/register.php" class="mobile-menu-link <?php echo $current_page == 'register.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-user-plus menu-icon"></i> 
-                        <?php echo $language === 'am' ? 'ይመዝገቡ' : 'ይመዝገቡ'; ?>
-                    </a>
-                </li>
                 <?php endif; ?>
             </ul>
             
