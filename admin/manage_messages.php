@@ -167,7 +167,7 @@ $day_names = [
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
     <!-- TinyMCE -->
-    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.tiny.cloud/1/bp34qlijelpncp7quhompliagv83q22qdkyg5tcwnvh5gxc8/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
       let editorInitialized = false;
       
