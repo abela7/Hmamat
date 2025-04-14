@@ -17,32 +17,8 @@ $baptism_name = $_SESSION['baptism_name'];
 // Get user's language preference
 $language = isset($_COOKIE['user_language']) ? $_COOKIE['user_language'] : 'en';
 
-// Calculate Easter date and remaining time
-function getEasterDate($year = null) {
-    if ($year === null) {
-        $year = date('Y');
-    }
-    
-    $a = $year % 19;
-    $b = floor($year / 100);
-    $c = $year % 100;
-    $d = floor($b / 4);
-    $e = $b % 4;
-    $f = floor(($b + 8) / 25);
-    $g = floor(($b - $f + 1) / 3);
-    $h = (19 * $a + $b - $d - $g + 15) % 30;
-    $i = floor($c / 4);
-    $k = $c % 4;
-    $l = (32 + 2 * $e + 2 * $i - $h - $k) % 7;
-    $m = floor(($a + 11 * $h + 22 * $l) / 451);
-    $month = floor(($h + $l - 7 * $m + 114) / 31);
-    $day = (($h + $l - 7 * $m + 114) % 31) + 1;
-    
-    return mktime(0, 0, 0, $month, $day, $year);
-}
-
-// Calculate Easter Sunday and time remaining
-$easter = getEasterDate();
+// Set Easter date as April 20, 2024 at 3am
+$easter = strtotime('2024-04-20 03:00:00');
 $easter_date = date('Y-m-d', $easter);
 $current_timestamp = time();
 $remaining_seconds = $easter - $current_timestamp;
@@ -51,7 +27,7 @@ $remaining_seconds = $easter - $current_timestamp;
 $remaining_days = floor($remaining_seconds / 86400);
 $remaining_hours = floor(($remaining_seconds % 86400) / 3600);
 
-// Calculate progress percentage (assuming Holy Week is 7 days)
+// Calculate progress percentage for Holy Week (7 days before Easter)
 $holy_week_start = $easter - (7 * 86400);
 $total_holy_week_seconds = 7 * 86400;
 $elapsed_seconds = $current_timestamp - $holy_week_start;
@@ -267,6 +243,35 @@ include_once '../includes/user_header.php';
 <?php endif; ?>
 
 <div class="simple-container">
+    <!-- Easter Countdown -->
+    <div class="easter-countdown-card">
+        <h3 class="countdown-title"><?php echo $language === 'am' ? 'የፋሲካ ቀን የቀረው ጊዜ' : 'Time Remaining Until Easter'; ?></h3>
+        <div class="progress-container">
+            <div class="progress-bar" style="width: <?php echo $progress_percentage; ?>%"></div>
+        </div>
+        <div class="countdown-timer">
+            <div class="time-block">
+                <span id="countdown-days" class="time-value">--</span>
+                <span class="time-label"><?php echo $language === 'am' ? 'ቀናት' : 'Days'; ?></span>
+            </div>
+            <div class="time-separator">:</div>
+            <div class="time-block">
+                <span id="countdown-hours" class="time-value">--</span>
+                <span class="time-label"><?php echo $language === 'am' ? 'ሰዓታት' : 'Hours'; ?></span>
+            </div>
+            <div class="time-separator">:</div>
+            <div class="time-block">
+                <span id="countdown-minutes" class="time-value">--</span>
+                <span class="time-label"><?php echo $language === 'am' ? 'ደቂቃዎች' : 'Minutes'; ?></span>
+            </div>
+            <div class="time-separator">:</div>
+            <div class="time-block">
+                <span id="countdown-seconds" class="time-value">--</span>
+                <span class="time-label"><?php echo $language === 'am' ? 'ሰከንዶች' : 'Seconds'; ?></span>
+            </div>
+        </div>
+    </div>
+    
     <!-- Date Navigation -->
     <div class="simple-date-nav">
         <?php
@@ -610,6 +615,74 @@ include_once '../includes/user_header.php';
     padding: 20px;
 }
 
+/* Easter Countdown Styles */
+.easter-countdown-card {
+    background: #F1ECE2;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.countdown-title {
+    font-size: 1.5rem;
+    color: #301934;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.progress-container {
+    height: 10px;
+    background-color: #e0d7c5;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #DAA520;
+    border-radius: 5px;
+    transition: width 0.5s ease;
+}
+
+.countdown-timer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.time-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+}
+
+.time-value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #301934;
+    line-height: 1;
+}
+
+.time-label {
+    font-size: 0.9rem;
+    color: #5D4225;
+    margin-top: 5px;
+}
+
+.time-separator {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #301934;
+    line-height: 1;
+    margin-top: -10px;
+}
+
+/* Form Label */
 .form-label {
     display: block;
     margin-bottom: 8px;
@@ -668,6 +741,26 @@ include_once '../includes/user_header.php';
     
     .modal-title {
         font-size: 1.1rem;
+    }
+    
+    .countdown-timer {
+        flex-wrap: wrap;
+    }
+    
+    .time-value {
+        font-size: 1.8rem;
+    }
+    
+    .time-label {
+        font-size: 0.8rem;
+    }
+    
+    .time-separator {
+        font-size: 1.8rem;
+    }
+    
+    .time-block {
+        min-width: 45px;
     }
 }
 </style>
@@ -736,6 +829,47 @@ $(document).ready(function() {
     $(".close-modal").on("click", function() {
         $("#notDoneModal").css("display", "none");
     });
+    
+    // Easter countdown timer
+    function updateEasterCountdown() {
+        // Easter date - April 20 at 3am
+        const easterDate = new Date('2024-04-20T03:00:00');
+        const now = new Date();
+        
+        // Calculate remaining time
+        let diff = easterDate - now;
+        
+        // If Easter has passed, show zeros
+        if (diff <= 0) {
+            document.getElementById('countdown-days').textContent = '0';
+            document.getElementById('countdown-hours').textContent = '0';
+            document.getElementById('countdown-minutes').textContent = '0';
+            document.getElementById('countdown-seconds').textContent = '0';
+            return;
+        }
+        
+        // Calculate days, hours, minutes, and seconds
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        diff -= days * (1000 * 60 * 60 * 24);
+        
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        diff -= hours * (1000 * 60 * 60);
+        
+        const minutes = Math.floor(diff / (1000 * 60));
+        diff -= minutes * (1000 * 60);
+        
+        const seconds = Math.floor(diff / 1000);
+        
+        // Update the countdown elements
+        document.getElementById('countdown-days').textContent = days;
+        document.getElementById('countdown-hours').textContent = hours < 10 ? '0' + hours : hours;
+        document.getElementById('countdown-minutes').textContent = minutes < 10 ? '0' + minutes : minutes;
+        document.getElementById('countdown-seconds').textContent = seconds < 10 ? '0' + seconds : seconds;
+    }
+    
+    // Update countdown immediately and then every second
+    updateEasterCountdown();
+    setInterval(updateEasterCountdown, 1000);
     
     // Submit not done form with AJAX
     $("#notDoneForm").on("submit", function(e) {
