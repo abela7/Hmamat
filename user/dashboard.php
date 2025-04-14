@@ -358,8 +358,10 @@ include_once '../includes/user_header.php';
             <button type="button" class="close-modal">&times;</button>
         </div>
         <div class="modal-body">
-            <form id="notDoneForm">
+            <form id="notDoneForm" method="post" action="ajax/update_activity.php">
                 <input type="hidden" id="activity_id" name="activity_id">
+                <input type="hidden" name="status" value="missed">
+                <input type="hidden" name="date" value="<?php echo $selected_date; ?>">
                 
                 <div class="form-group mb-3">
                     <label for="reason_id" class="form-label"><?php echo $language === 'am' ? 'እባክዎ ምክንያት ይምረጡ:' : 'Please select a reason:'; ?></label>
@@ -676,19 +678,21 @@ function markComplete(activityId) {
         data: {
             activity_id: activityId,
             status: 'done',
-            date: '<?php echo $selected_date; ?>'
+            date: "<?php echo $selected_date; ?>"
         },
         dataType: "json",
         success: function(response) {
             if (response.success) {
                 // Reload page and maintain scroll position
                 const scrollPosition = window.pageYOffset;
-                window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPosition;
+                window.location.href = "dashboard.php?date=<?php echo $selected_date; ?>&scroll=" + scrollPosition;
             } else {
                 alert("Error: " + response.message);
             }
         },
-        error: function() {
+        error: function(xhr, status, error) {
+            console.error("AJAX Error:", status, error);
+            console.log("Response Text:", xhr.responseText);
             alert("An error occurred. Please try again.");
         }
     });
@@ -712,84 +716,87 @@ function resetActivity(activityId, date) {
             if (response.success) {
                 // Reload page and maintain scroll position
                 const scrollPosition = window.pageYOffset;
-                window.location.href = 'dashboard.php?date=<?php echo $selected_date; ?>&scroll=' + scrollPosition;
-            } else {
-                alert("Error: " + response.message);
-            }
-        },
-        error: function() {
-            alert("An error occurred. Please try again.");
-        }
-    });
-}
-
-// Close modal
-$(".close-modal").click(function() {
-    $("#notDoneModal").css("display", "none");
-});
-
-// Submit not done form
-$("#notDoneForm").submit(function(e) {
-    e.preventDefault();
-    
-    const activityId = $("#activity_id").val();
-    const reasonId = $("#reason_id").val();
-    
-    if (!reasonId) {
-        alert("Please select a reason.");
-        return;
-    }
-    
-    // Log the data being sent (for debugging)
-    console.log("Sending data:", {
-        activity_id: activityId,
-        status: 'missed',
-        reason_id: reasonId,
-        date: "<?php echo $selected_date; ?>"
-    });
-    
-    $.ajax({
-        url: "ajax/update_activity.php",
-        method: "POST",
-        data: {
-            activity_id: activityId,
-            status: 'missed',
-            reason_id: reasonId,
-            date: "<?php echo $selected_date; ?>"
-        },
-        dataType: "json",
-        success: function(response) {
-            console.log("Success response:", response); // Debug
-            if (response.success) {
-                $("#notDoneModal").css("display", "none");
-                
-                // Reload page and maintain scroll position
-                const scrollPosition = window.pageYOffset;
                 window.location.href = "dashboard.php?date=<?php echo $selected_date; ?>&scroll=" + scrollPosition;
             } else {
                 alert("Error: " + response.message);
-                console.log(response);
             }
         },
         error: function(xhr, status, error) {
             console.error("AJAX Error:", status, error);
             console.log("Response Text:", xhr.responseText);
-            console.log("Status Code:", xhr.status);
             alert("An error occurred. Please try again.");
         }
     });
-});
-
-// Close modal when clicking outside
-window.onclick = function(event) {
-    const modal = document.getElementById('notDoneModal');
-    if (event.target === modal) {
-        $("#notDoneModal").css("display", "none");
-    }
 }
 
-// Restore scroll position after page reload
 $(document).ready(function() {
+    // Close modal
+    $(".close-modal").on("click", function() {
+        $("#notDoneModal").css("display", "none");
+    });
+    
+    // Submit not done form with AJAX
+    $("#notDoneForm").on("submit", function(e) {
+        e.preventDefault();
+        
+        const activityId = $("#activity_id").val();
+        const reasonId = $("#reason_id").val();
+        
+        if (!reasonId) {
+            alert("Please select a reason.");
+            return false;
+        }
+        
+        // Debug console logs
+        console.log("Form data:", {
+            activity_id: activityId,
+            status: 'missed',
+            reason_id: reasonId,
+            date: "<?php echo $selected_date; ?>"
+        });
+        
+        $.ajax({
+            url: "ajax/update_activity.php",
+            method: "POST",
+            data: {
+                activity_id: activityId,
+                status: 'missed',
+                reason_id: reasonId,
+                date: "<?php echo $selected_date; ?>"
+            },
+            dataType: "json",
+            success: function(response) {
+                console.log("Success response:", response);
+                if (response.success) {
+                    $("#notDoneModal").css("display", "none");
+                    
+                    // Reload page and maintain scroll position
+                    const scrollPosition = window.pageYOffset;
+                    window.location.href = "dashboard.php?date=<?php echo $selected_date; ?>&scroll=" + scrollPosition;
+                } else {
+                    alert("Error: " + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                console.log("Response Text:", xhr.responseText);
+                console.log("Status Code:", xhr.status);
+                alert("An error occurred. Please try again.");
+            }
+        });
+        
+        return false;
+    });
+    
+    // Close modal when clicking outside
+    $(window).on("click", function(event) {
+        const modal = document.getElementById('notDoneModal');
+        if (event.target === modal) {
+            $("#notDoneModal").css("display", "none");
+        }
+    });
+    
+    // Restore scroll position after page reload
     if (window.location.href.includes('scroll=')) {
         const scrollParam = window.location.href.split('scroll=')[1];
         const scrollPosition = parseInt(scrollParam.split('&')[0]);
@@ -799,7 +806,7 @@ $(document).ready(function() {
         }
     }
     
-    // Check for new day (moved from the duplicate script)
+    // Check for new day
     function checkForNewDay() {
         const currentDate = new Date().toISOString().split('T')[0];
         const storedDate = localStorage.getItem('lastVisitDate');
@@ -824,7 +831,7 @@ $(document).ready(function() {
             window.location.href = 'dashboard.php';
         }
     }, 60000); // Check every minute
-
+    
     // Add test data to activity_miss_reasons table if empty
     if (<?php echo count($miss_reasons) === 0 ? 'true' : 'false'; ?>) {
         $.ajax({

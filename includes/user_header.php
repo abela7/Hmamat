@@ -23,6 +23,8 @@ $language = isset($_COOKIE['user_language']) ? $_COOKIE['user_language'] : 'en';
     <link rel="stylesheet" href="../user/css/style.css">
     <!-- Mobile specific meta -->
     <meta name="theme-color" content="#DAA520">
+    <!-- jQuery (load before Bootstrap) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body class="user-body">
     <!-- Off-canvas Sidebar -->

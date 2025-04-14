@@ -18,11 +18,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get user ID from session
     $user_id = $_SESSION['user_id'];
     
+    // Debug log
+    error_log("Activity Update request from User ID: $user_id");
+    
     // Get parameters
     $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
     $status = isset($_POST['status']) ? $_POST['status'] : '';
     $reason_id = isset($_POST['reason_id']) ? intval($_POST['reason_id']) : 0;
     $date = isset($_POST['date']) ? $_POST['date'] : date('Y-m-d');
+    
+    // Debug log
+    error_log("Parameters: activity_id=$activity_id, status=$status, reason_id=$reason_id, date=$date");
     
     // Validate input
     if (empty($activity_id) || empty($status)) {
@@ -86,14 +92,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity_id, date_completed, status, points_earned, reason_id) VALUES (?, ?, ?, ?, 0, ?)");
             $stmt->bind_param("iissi", $user_id, $activity_id, $date, $status, $reason_id);
+            
+            // Debug log
+            error_log("Missed activity query: user_id=$user_id, activity_id=$activity_id, date=$date, status=$status, reason_id=$reason_id");
         }
     }
     
     if ($stmt->execute()) {
         $response['success'] = true;
         $response['message'] = 'Activity status updated successfully.';
+        error_log("Activity updated successfully for user $user_id, activity $activity_id");
     } else {
         $response['message'] = 'Database error: ' . $conn->error;
+        error_log("Database error: " . $conn->error);
     }
 }
 
