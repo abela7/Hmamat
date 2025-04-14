@@ -267,11 +267,23 @@ function endUserSession() {
         
         // Remove session from database
         if ($conn) {
+            // Delete session records
             $stmt = $conn->prepare("DELETE FROM user_sessions WHERE user_id = ?");
             if ($stmt) {
                 $stmt->bind_param("i", $user_id);
                 $stmt->execute();
                 $stmt->close();
+            }
+            
+            // Also remove device token if present
+            if (isset($_COOKIE['hmt_device_token'])) {
+                $device_token = $_COOKIE['hmt_device_token'];
+                $stmt = $conn->prepare("DELETE FROM user_devices WHERE device_token = ?");
+                if ($stmt) {
+                    $stmt->bind_param("s", $device_token);
+                    $stmt->execute();
+                    $stmt->close();
+                }
             }
         }
     }
@@ -283,8 +295,12 @@ function endUserSession() {
     unset($_SESSION['is_user']);
     unset($_SESSION['role']);
     
-    // Remove the unique ID cookie
+    // Clear all related cookies
     setcookie('user_unique_id', '', time() - 3600, '/');
+    setcookie('hmt_device_token', '', time() - 3600, '/');
+    
+    // Destroy the session completely
+    session_destroy();
 }
 
 /**
