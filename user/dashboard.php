@@ -17,20 +17,73 @@ $baptism_name = $_SESSION['baptism_name'];
 // Get user's language preference
 $language = isset($_COOKIE['user_language']) ? $_COOKIE['user_language'] : 'en';
 
-// --- Start Fasika Countdown Calculation ---
-$current_year = date('Y');
-$fasika_date_string = $current_year . '-04-20 03:00:00';
-$fasika_timezone = 'Europe/London';
+// --- START DATE/TIME CALCULATIONS FOR 2025 --- 
+$target_year = 2025;
 
+// Calculate Easter 2025 Start (00:00 UTC on the day)
+$easter_2025_start = getEasterDate($target_year);
+
+// Calculate Fasika Countdown Target (Specific time in London, converted to UTC timestamp)
+$fasika_date_string = $target_year . '-04-20 03:00:00'; // Explicit year and time
+$fasika_timezone = 'Europe/London'; 
+$fasika_timestamp_utc = null;
 try {
     $fasika_datetime = new DateTime($fasika_date_string, new DateTimeZone($fasika_timezone));
-    $fasika_timestamp_utc = $fasika_datetime->getTimestamp();
+    $fasika_timestamp_utc = $fasika_datetime->getTimestamp(); 
 } catch (Exception $e) {
-    // Handle potential errors in date/timezone creation
     error_log("Error creating Fasika DateTime: " . $e->getMessage());
-    $fasika_timestamp_utc = null; // Or set a default fallback
 }
-// --- End Fasika Countdown Calculation ---
+
+// Calculate Holy Week Progress for 2025
+$holy_week_start_2025 = $easter_2025_start - (6 * 86400); // Holy Monday (6 days before Easter Sunday start)
+$total_holy_week_seconds = 7 * 86400; // 7 days total duration
+$current_utc_timestamp = time(); // Use current UTC time for progress calc
+$elapsed_seconds = $current_utc_timestamp - $holy_week_start_2025;
+$progress_percentage = 0;
+
+// Only calculate progress if we are within or past Holy Week 2025 start
+if ($current_utc_timestamp >= $holy_week_start_2025) {
+    // Ensure progress doesn't exceed 100%
+    // The end point for 100% is the beginning of Easter Sunday
+    $holy_week_end_2025 = $easter_2025_start; 
+    $actual_elapsed = min($current_utc_timestamp, $holy_week_end_2025) - $holy_week_start_2025;
+    $progress_percentage = min(100, round(($actual_elapsed / $total_holy_week_seconds) * 100));
+}
+
+// Has Fasika already passed this year (based on countdown time)?
+$fasika_passed = ($fasika_timestamp_utc !== null && $current_utc_timestamp > $fasika_timestamp_utc);
+
+// Calculate Holy Week dates for 2025
+$easter_date_obj_2025 = new DateTime('@' . $easter_2025_start); // Create DateTime from timestamp
+$holy_week_start_obj_2025 = clone $easter_date_obj_2025;
+$holy_week_start_obj_2025->modify('-6 days'); // Start from Holy Monday
+
+// Create array of Holy Week dates for 2025
+$holy_week_dates = []; // Reset or ensure it uses 2025 dates
+$holy_week_labels = [
+    'Monday' => $language === 'am' ? 'ሰኞ' : 'Monday',
+    'Tuesday' => $language === 'am' ? 'ማክሰኞ' : 'Tuesday',
+    'Wednesday' => $language === 'am' ? 'ረቡዕ' : 'Wednesday',
+    'Thursday' => $language === 'am' ? 'ሐሙስ' : 'Thursday',
+    'Friday' => $language === 'am' ? 'አርብ' : 'Friday',
+    'Saturday' => $language === 'am' ? 'ቅዳሜ' : 'Saturday',
+    'Sunday' => $language === 'am' ? 'እሁድ' : 'Sunday' // Easter Sunday
+];
+
+for ($i = 0; $i < 7; $i++) {
+    $day_obj = clone $holy_week_start_obj_2025; // Use 2025 object
+    $day_obj->modify("+$i days");
+    $day_date = $day_obj->format('Y-m-d');
+    $day_name = $day_obj->format('l');
+    $holy_week_dates[$day_date] = [
+        'date' => $day_date,
+        'day_name' => $day_name,
+        'label' => $holy_week_labels[$day_name] ?? $day_name, // Fallback to day name
+        'date_formatted' => $day_obj->format('d/m')
+    ];
+}
+
+// --- END DATE/TIME CALCULATIONS FOR 2025 --- 
 
 // Calculate Easter date and remaining time
 function getEasterDate($year = null) {
